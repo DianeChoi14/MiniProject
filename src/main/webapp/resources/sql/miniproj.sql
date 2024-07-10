@@ -38,3 +38,11 @@ SELECT * FROM member;
 
 -- dooly회원의 이메일을 수정하는 쿼리문
 UPDATE member SET email='dooly@dooly.com' WHERE userId='dooly';
+
+-- ?회원이 전화번호를 변경할 때 쿼리문
+update member set mobile=? where userId=?;
+
+-- userId가 ?인 회원 정보 삭제 쿼리문
+delete from member where userId=?;
+
+-- 계층형 게시판 생성 퀴리문
