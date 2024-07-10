@@ -14,6 +14,13 @@
 		$(function()
 		{
 			timediifPostDate(); // 함수 호출
+
+
+			$('.modalCloseBtn').click(function() 
+		{
+			//클래스가 modatCloseBtn인 태그를 클릭(실행)하면 실행되는 함수
+			$('#myModal').hide(); // 태그를 숨기는 함수
+		})
 		}) 
 		
 		// window.onload=function(){}, 제이쿼리 $(function(){}) : 웹브라우저 로딩이 끝나면 아래 함수를 실행하라
@@ -56,33 +63,65 @@
 
 		<div class="content">
 			<h1>계층형 게시판 전체 리스트 페이지</h1>
+			${boardList }
+			<c:choose>
+				<c:when test="${boardList!=null}">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Title</th>
+								<th>Writer</th>
+								<th>PostDate</th>
+								<th>ReadCount</th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="board" items="${boardList}">
+								<tr>
+									<td>${board.boardNo}</td>
+									<td>${board.title}</td>
+									<td>${board.writer}</td>
+									<td class="postDate">${board.postDate}</td>
+									<td>${board.readCount}</td>
 
-			<table class="table table-hover">
-				<thead>
-					<tr>
-						<th>#</th>
-						<th>Title</th>
-						<th>Writer</th>
-						<th>PostDate</th>
-						<th>ReadCount</th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach var="board" items="${boardList}">
-						<tr>
-							<td>${board.boardNo}</td>
-							<td>${board.title}</td>
-							<td>${board.writer}</td>
-							<td class="postDate">${board.postDate}</td>
-							<td>${board.readCount}</td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</c:when>
+				<c:when test="${boardList==null and exception=='error' }">
+					<!-- The Modal -->
+					<div class="modal" id="myModal" style="display:block;">
+						<div class="modal-dialog">
+							<div class="modal-content">
 
-						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
+								<!-- Modal Header -->
+								<div class="modal-header">
+									<h4 class="modal-title">MiniProject</h4>
+									<button type="button" class="btn-close modalCloseBtn" data-bs-dismiss="modal"></button> 
+								</div>
+
+								<!-- Modal body -->
+								<div class="modal-body">문제가 발생하였습니다. 데이터를 가져오지 못 했습니다.</div>
+
+								<!-- Modal footer -->
+								<div class="modal-footer">
+									<button type="button" class="btn btn-danger modalCloseBtn"
+										data-bs-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</c:when>
+			</c:choose>
+
+
 		</div>
 		<div>
-			<button type="button" class="btn btn-outline-primary" onclick="location.href='/hboard/saveBoard';">글쓰기</button>
+			<button type="button" class="btn btn-outline-primary"
+				onclick="location.href='/hboard/saveBoard';">글쓰기</button>
 		</div>
 		<c:import url="./../footer.jsp"></c:import>
 </body>
