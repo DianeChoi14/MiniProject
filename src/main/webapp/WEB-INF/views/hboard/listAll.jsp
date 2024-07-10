@@ -82,7 +82,7 @@
 			</table>
 		</div>
 		<div>
-			<button type="button" class="btn btn-outline-primary">글쓰기</button>
+			<button type="button" class="btn btn-outline-primary" onclick="location.href='/hboard/saveBoard';">글쓰기</button>
 		</div>
 		<c:import url="./../footer.jsp"></c:import>
 </body>
