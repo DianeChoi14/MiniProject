@@ -16,17 +16,21 @@ public class HBoardDAOImpl implements HBoardDAO
 	
 	private static String NS = "com.miniproj.mappers.hboardmapper";
 	
+	
+	// Exception 예외처리의 부모 클래스
 	@Override
-	public List<HBoardVO> selectAllBoard() 
+	public List<HBoardVO> selectAllBoard() throws Exception // throws : 현재 메서드에서 예외가 발생하면 현재 메서드를 호출한 곳에서 예외처리를 하도록 미뤄두는 키워드
 	{
 		System.out.println("Here is HBoard DAO..............");
-		
-		List<HBoardVO> list = ses.selectList(NS + ".getAllHBoard");
+			
+		List<HBoardVO> list;
+	
+			list = ses.selectList(NS + ".getAllHBoard");
+			
 //		for (HBoardVO b : list)
 //		{
 //			System.out.println(b.toString());
 //		}
-		return list;
+			return list;
 	}
-
 }

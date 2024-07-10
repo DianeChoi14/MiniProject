@@ -30,13 +30,24 @@ public class HboardController
 	   System.out.println("HBoardController.listAll()~");
 	   
 	   // 서비스단 호출
-	   List<HBoardVO> list = service.getAllBoard();
+	List<HBoardVO> list=null;
+	try 
+	{
+		list = service.getAllBoard();
+		model.addAttribute("boardList", list); // 데이터 바인딩
+		
+	} 
+	catch (Exception e) 
+	{
+		model.addAttribute("exception", "error");
+	}
+	   
 //		for (HBoardVO b : list)
 //		{
 //			System.out.println(b.toString());
 //		}
 	   
-	   model.addAttribute("boardList", list); // 데이터 바인딩
+	   
 	   
 	   // 'hboard/listAll.jsp'로 포워딩 됨
 	   

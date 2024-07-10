@@ -9,7 +9,7 @@ public interface HBoardService
 {
 	// 브레이스가 없는 메서드 추상메서드 > 구현체(impl)이 필요함
 	// 게시판 전체 리스트 조회..하면
-	public List<HBoardVO> getAllBoard(); // 라는 메서드를 조회한다(impl)~
+	public List<HBoardVO> getAllBoard() throws Exception; // 라는 메서드를 조회한다(impl)~
 
 	// 게시판 글 작성
 	
