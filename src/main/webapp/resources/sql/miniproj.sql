@@ -1,4 +1,4 @@
-use webdiane
+use webdiane;
 
 -- 회원 테이블 생성
 CREATE TABLE `webdiane`.`member` (
@@ -46,3 +46,44 @@ update member set mobile=? where userId=?;
 delete from member where userId=?;
 
 -- 계층형 게시판 생성 퀴리문
+select * from hboard order by boardNo desc;
+
+-- 계층형 게시판에 게시글을 등록하는 쿼리문
+insert into hboard(title, content, writer) values('일등 놓쳤네', '내용무...0', 'gildong');
+insert into hboard(title, content, writer) values(?, ?, ?);
+
+-- 유저에게 지급하는 포인트를 정의한 테이블 생성 쿼리문pointdef
+CREATE TABLE `webdiane`.`pointdef` (
+  `pointwhy` VARCHAR(20) NOT NULL,
+  `pointScore` INT NULL,
+  PRIMARY KEY (`pointwhy`))
+COMMENT = '유저에게 적립할 포인트에 대해 정의한 테이블\n어떤 사유로 몇 포인트를 지급하는지에 대해 정의';
+
+-- pointdef 수정
+ALTER TABLE `webdiane`.`pointdef` 
+ADD COLUMN `pointdefNo` INT NOT NULL AUTO_INCREMENT FIRST,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`pointdefNo`);
+;
+
+-- pointdef 테이블의 기초데이터
+INSERT INTO `webdiane`.`pointdef` (`pointwhy`, `pointScore`) VALUES ('회원가입', '100');
+INSERT INTO `webdiane`.`pointdef` (`pointwhy`, `pointScore`) VALUES ('로그인', '1');
+INSERT INTO `webdiane`.`pointdef` (`pointwhy`, `pointScore`) VALUES ('글작성', '10');
+INSERT INTO `webdiane`.`pointdef` (`pointwhy`, `pointScore`) VALUES ('댓글작성', '2');
+INSERT INTO `webdiane`.`pointdef` (`pointwhy`, `pointScore`) VALUES ('게시글신고', '-10');
+
+-- 유저의 포인트 적립내역을 기록하는 pointlog테이블 생성pointlog
+CREATE TABLE `webdiane`.`pointlog` (
+  `pointLogNo` INT NOT NULL AUTO_INCREMENT,
+  `pointWho` VARCHAR(8) NOT NULL,
+  `pointWhen` DATETIME NULL DEFAULT now(),
+  `pointWhy` VARCHAR(20) NOT NULL,
+  `pointScore` INT NOT NULL,
+  PRIMARY KEY (`pointLogNo`),
+  CONSTRAINT `member_pointlog_who_fk`
+    FOREIGN KEY (`pointWho`)
+    REFERENCES `webdiane`.`member` (`userId`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+COMMENT = '어떤 유저에게 어떤 사유로 몇 포인트가 언제 지급되었는지 기록하는 테이블';
