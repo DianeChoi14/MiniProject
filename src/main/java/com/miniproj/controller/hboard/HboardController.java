@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
 import com.miniproj.service.hboard.HBoardService;
 
@@ -47,11 +49,10 @@ public class HboardController
 //			System.out.println(b.toString());
 //		}
 	   
-	   
-	   
 	   // 'hboard/listAll.jsp'로 포워딩 됨
 	   
    }
+   
    // 게시판 글 저장 폼을 출력하는 메서드
    @RequestMapping("/saveBoard")
    public String showSaveBoardForm()
@@ -59,4 +60,11 @@ public class HboardController
 	   return "/hboard/saveBoardForm";
    }
    
+   // 게시글 저장버튼을 눌렀을 때 해당 게시글을 db에 저장하는 메서드
+   @RequestMapping(value="/saveBoard", method=RequestMethod.POST) // get방식은 메서드방식 생략가능 
+   public void saveBoard(HBoardDTO boardDTO)
+   {
+	   System.out.println("이 게시글을 저장하자~!~~~"+boardDTO.toString());
+	   
+   }
 }
