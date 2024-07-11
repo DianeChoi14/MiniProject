@@ -30,7 +30,6 @@
 	        console.log($(".postDate"));
 	        $(".postDate").each(function(i, e) 
 			{
-            	// $(e) td태그
             	//console.log(i+'번째 태그:' + $(e).html());
             	// .html() 매개변수가 없으면 getter, 있으면 setter
             	let postDate = new Date($(e).html());   //글 작성일 저장 (Date객체로 변환후)
@@ -63,7 +62,6 @@
 
 		<div class="content">
 			<h1>계층형 게시판 전체 리스트 페이지</h1>
-			${boardList }
 			<c:choose>
 				<c:when test="${boardList!=null}">
 					<table class="table table-hover">
