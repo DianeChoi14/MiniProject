@@ -17,23 +17,27 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"></script>
 
 <div class="container">
-<c:import url="./../header.jsp"></c:import>
+
+	<c:import url="./../header.jsp"></c:import>
+
     <h2>게시판 글 작성</h2>
-    <form>
+
+    <form action="saveBoard" method="post">
         <div class="mb-3">
             <label for="title" class="form-label">글제목</label>
-            <input type="text" class="form-control" id="title" placeholder="글제목을 입력하세요">
+            <input type="text" class="form-control" id="title" name="title" placeholder="글제목을 입력하세요">
         </div>
         <div class="mb-3">
             <label for="author" class="form-label">작성자</label>
-            <input type="text" class="form-control" id="author" placeholder="작성자를 입력하세요">
+            <input type="text" class="form-control" id="author" name="writer" placeholder="작성자를 입력하세요">
         </div>
         <div class="mb-3">
             <label for="content" class="form-label">내용</label>
-            <textarea class="form-control" id="content" rows="5" placeholder="내용을 입력하세요"></textarea>
+            <textarea class="form-control" id="content" name= "content" rows="5" placeholder="내용을 입력하세요"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">저장</button>
+        <button type="submit" class="btn btn-primary" >저장</button>
     </form>
+
     <c:import url="./../footer.jsp"></c:import>
     
 </div>
