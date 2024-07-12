@@ -87,3 +87,14 @@ CREATE TABLE `webdiane`.`pointlog` (
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 COMMENT = '어떤 유저에게 어떤 사유로 몇 포인트가 언제 지급되었는지 기록하는 테이블';
+
+-- 게시판의 글을 삭제하는 쿼리문 
+DELETE FROM hboard WHERE boardNo=?;
+
+-- 유저에게 포인트를 지급하는 쿼리문 (회원가입시)
+insert into pointlog(pointWho, pointWhy, pointScore) 
+values(?, ?,
+	(
+		select pointScore from pointdef where pointWhy='회원가입'
+    )
+ );
