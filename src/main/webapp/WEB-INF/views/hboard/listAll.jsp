@@ -13,8 +13,8 @@
 		// 웹문서가 로딩이 완료되면 아래에 선언된 함수를 실행하도록
 		$(function()
 		{
+			showModalAccordingToStatus(); // 모달창 함수 호출
 			timediifPostDate(); // 함수 호출
-
 
 			$('.modalCloseBtn').click(function() 
 		{
@@ -22,6 +22,29 @@
 			$('#myModal').hide(); // 태그를 숨기는 함수
 		})
 		}) 
+
+		// 데이터 로딩 상태에 따라 모달창을 띄우는 함수
+		function showModalAccordingToStatus() {
+			 // url주소창에서 status쿼리스트링의 값을 가져와 변수에 저장
+			 let status = '${param.status}';
+			console.log(status);
+			
+			if(status =='success'){
+				// 글 성공 모달창을 띄움
+				$('.modal-body').html("<h5>글 저장 성공</h5>");
+				$('#myModal').show();
+				
+			} else if (status == 'fail') {
+				$('.modal-body').html("<h5>실패실패</h5>");
+				$('#myModal').show();
+			} 
+			
+			let except = '${exception}';
+			if(except=='error'){
+				$('.modal-body').html("<h5>게시글이 없거나 문제가 발생해 데이터를 불러오지 못 했습니다.</h5>");
+				$('#myModal').show();
+			}
+		}
 		
 		// window.onload=function(){}, 제이쿼리 $(function(){}) : 웹브라우저 로딩이 끝나면 아래 함수를 실행하라
 		// 게시글의 글작성일을 얻어와서 2시간이내에 작성한 글이라면 new.png이미지를 붙여 출력한다.
@@ -88,31 +111,7 @@
 						</tbody>
 					</table>
 				</c:when>
-				<c:when test="${boardList==null and exception=='error' }">
-					<!-- The Modal -->
-					<div class="modal" id="myModal" style="display:block;">
-						<div class="modal-dialog">
-							<div class="modal-content">
 
-								<!-- Modal Header -->
-								<div class="modal-header">
-									<h4 class="modal-title">MiniProject</h4>
-									<button type="button" class="btn-close modalCloseBtn" data-bs-dismiss="modal"></button> 
-								</div>
-
-								<!-- Modal body -->
-								<div class="modal-body">문제가 발생하였습니다. 데이터를 가져오지 못 했습니다.</div>
-
-								<!-- Modal footer -->
-								<div class="modal-footer">
-									<button type="button" class="btn btn-danger modalCloseBtn"
-										data-bs-dismiss="modal">Close</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-				</c:when>
 			</c:choose>
 
 
@@ -121,6 +120,30 @@
 			<button type="button" class="btn btn-outline-primary"
 				onclick="location.href='/hboard/saveBoard';">글쓰기</button>
 		</div>
+
+		<!-- The Modal -->
+		<div class="modal" id="myModal" style="display:none;">
+			<div class="modal-dialog">
+				<div class="modal-content">
+
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title">MiniProject</h4>
+						<button type="button" class="btn-close modalCloseBtn" data-bs-dismiss="modal"></button> 
+					</div>
+
+					<!-- Modal body -->
+					<div class="modal-body"> </div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger modalCloseBtn"
+							data-bs-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<c:import url="./../footer.jsp"></c:import>
 </body>
 </html>
