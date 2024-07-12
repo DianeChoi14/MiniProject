@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
@@ -68,11 +69,19 @@ public class HboardController
 	   return "/hboard/saveBoardForm";
    }
    
-   // 게시글 저장버튼을 눌렀을 때 해당 게시글을 db에 저장하는 메서드
+   // 게시글 저장버튼을 눌렀을 때 해당 게시글을 db에 저장하는 메서드 > 작성 후 글목록페이지로 이동
    @RequestMapping(value="/saveBoard", method=RequestMethod.POST) // get방식은 메서드방식 생략가능 
-   public void saveBoard(HBoardDTO boardDTO) throws Exception
+   public String saveBoard(HBoardDTO boardDTO, RedirectAttributes redirectAttributes ) throws Exception
    {
-	   System.out.println("이 게시글을 저장하자~!~~~"+boardDTO.toString());
-	   service.saveBoard(boardDTO);
+	   String returnPage = "redirect:/hboard/listAll";
+	   try {
+		   if(service.saveBoard(boardDTO)) { //게시글 저장에 성공했을 때
+			   redirectAttributes.addAttribute("status", "success");
+		   }
+	   } catch (Exception e) { //게시글 저장에 실패했을 때
+		   e.printStackTrace();
+		   redirectAttributes.addAttribute("status", "fail");
+	   }
+	   return returnPage; // 게시글 전체 목록 페이지로 돌아감
    }
 }
