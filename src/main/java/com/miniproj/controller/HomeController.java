@@ -37,4 +37,9 @@ public class HomeController
 		return "home";
 	}
 	
+	@RequestMapping("/weather")
+	public void goWeatherPage() {
+		
+	}
+	
 }
