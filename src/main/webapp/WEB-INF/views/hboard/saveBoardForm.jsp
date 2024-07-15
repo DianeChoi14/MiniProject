@@ -15,6 +15,42 @@
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
+	let upfiles = new Array(); // 업로드되는 파일을 저장하는 배열로 사용
+
+	$(function(){
+		// 업로드파일영역에 파일을 drag&drop하는 것과 관련한 이벤트(파일의 경우 파일이 웹브라우저에서 실행되는 경우를 방지>이벤트캔슬링)
+		$('.fileUploadArea').on("dragenter dragover", function(evt) {
+			evt.preventDefault(); // 기본 이벤트 캔슬(이미지를 가져가면 웹브라우저로 열리는 이벤트)
+		});
+		$('.fileUploadArea').on("drop", function(evt){
+			evt.preventDefault();
+			//console.log(evt.originalEvent.dataTransfer.files); // 업로드되는 파일 객체의 정보 > 이미지파일일 경우 미리보기
+			
+			for(let file of evt.originalEvent.dataTransfer.files){
+				upfiles.push(file); // 배열에 담기
+
+			//미리보기
+				showPreview(file);
+			}	
+		});
+	});
+
+	// 넘겨진 file이 이미지파일이면 미리보기하여 출력한다.
+	function showPreview(file){
+		let imageType = ["image/jpeg", "image/png", "image/gif"];
+		console.log(file);
+		let fileType = file.type.toLocaleLowerCase();
+		if (imageType.indexOf(fileType) != -1){
+			// 이미지 파일이라면
+			alert("이미지 파일입니다!");
+		} else {
+			// 이미지 파일이 아니면
+			let output =`<div><img src='/resources/images/noimage.png' /><span>\${file.name}</span>`
+			output += `<span><img src='/resources/images/remove.png' width='20px' onclick="remFile(this);"/></span></div>`;
+			$('.preview').append(output);
+		}
+	}
+	
 	function validBoard() {
 		let result = false;
 
@@ -35,42 +71,8 @@
 	}
 	
 	// 자바의 배열은 정적배열(사이즈가 정해짐) 자바스크립트는 동적배열
-	
-	let upfiles = new Array(); // 업로드되는 파일을 저장하는 배열로 사용
-	
-	$(function(){
-		// 업로드파일영역에 파일을 drag&drop하는 것과 관련한 이벤트(파일의 경우 파일이 웹브라우저에서 실행되는 경우를 방지>이벤트캔슬링)
-		$('.fileUploadArea').on("dragenter dragover", function(evt) {
-			evt.preventDefault(); // 기본 이벤트 캔슬(이미지를 가져가면 웹브라우저로 열리는 이벤트)
-		});
-		$('.fileUploadArea').on("drop", function(evt){
-			evt.preventDefault();
-			console.log(evt.originalEvent.dataTransfer.files); // 업로드되는 파일 객체의 정보 > 이미지파일일 경우 미리보기
-			
-			for(let file of evt.originalEvent.dataTransfer.files){
-				upfiles.push(file); // 배열에 담기
 
-			//미리보기
-				showPreview(file);
-			}	
-		});
-	});
-	
-	// 넘겨진 file이 이미지파일이면 미리보기하여 출력한다.
-	function showPreview(file){
-		let imageType = ["image/jpeg", "image/png", "image/gif"];
-		console.log(file);
-		let fileType = file.type.toLowerCase();
-		if (imageType.indexOf(fileType) != -1)) {
-			// 이미지 파일이라면
-			alert("이미지 파일입니다!");
-		} else() {
-			// 이미지 파일이 아니면
-			let output =`<div><img src='/resources/images/noimage.png' /><span>\${file.name}</span>`
-			output += `<span><img src='/resources/images/remove.png' width='20px' onclick="remFile(this);"/></span></div>`;
-			$('.preview').html(output);
-		}
-	}
+
 	
 	function remFile(obj){
 		let removedFileName = $(obj).parent().prev().html();
