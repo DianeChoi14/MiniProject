@@ -1,22 +1,63 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
+	<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>일별 박스오피스</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-	let apiKey = '141d3124fbc0d431971daa2035ed8e59';
-	let baseUrl = 'http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=' + apiKey +'&targetDt=20240712'
+	let now = new Date(); // 현재 날짜와 시간
+	now.setDate(now.getDate()-1);
+	now = now.toLocaleDateString(); // 2024.7.14. > .을 기준으로 숫자를 나눠서 자릿수에 맞춘 값으로 변환 e.g.20240714
+	//let targetDt = 박스오피스 기준일을 현재날짜-1 일을 가져오게 함
+	let targetDt = toTargetDt(now);
 
+	let apiKey = '141d3124fbc0d431971daa2035ed8e59';
+	let baseUrl = 'http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=' + apiKey +'&targetDt='+ targetDt;
+		
 	$(function(){
-		getTodayMovie();
+		getTodayMovie(targetDt);
+		$('#selectDate').change(function(){
+			//alert('선택한 태그의 값이 변경됨 :' + $(this).val());
+			let selectDate = new Date($(this).val());
+			let targetDt =  toTargetDt(selectDate.toLocaleDateString());
+			console.log(targetDt);
+			getTodayMovie(targetDt);
+		});
 	}); // InnerFunction > 외부의 함수는 함수로 감싸져있는 내부함수를 불러들일 수 없지만 내부에서는 외부를 불러들일 수 있다
 	
-	function getTodayMovie(){
+	function toTargetDt(now){
+		let dateArr = now.split('.');
+		let targetDt = '';
+		for(let i=0; i<3 ; i++) {
+			targetDt = dateArr[0].trim();
+			if (parseInt(dateArr[1]) < 10){
+				targetDt += '0' + dateArr[1].trim();	
+			} else {
+				targetDt += dateArr[1].trim();
+			}
+			if (parseInt(dateArr[2]) < 10){
+				targetDt += '0' + dateArr[2].trim();	
+			} else {
+				targetDt += dateArr[2].trim();	
+			}
+			
+			console.log("변환된 값 : "+ targetDt);
+			return targetDt;
+		}
+	}
+	
+	function getTodayMovie(targetDt){
+		let apiKey = '141d3124fbc0d431971daa2035ed8e59';
+		let baseUrl = 'http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=' + apiKey +'&targetDt='+ targetDt;
 		$.ajax({
 			url:baseUrl,
 			type:'get',
@@ -24,7 +65,7 @@
 			success:function(data){
 				movieData(data);
 			}
-		})
+		});
 	}
 	
 	function movieData(data){
@@ -52,15 +93,14 @@
 	<div class="container">
 		<c:import url="./header.jsp"></c:import>
 
-	
-	<div class="boxOffice">
-		<h1>일별 박스오피스! 1위!!</h1>	
-		
-		
-    <a href="#" class="list-group-item list-group-item-action">First item</a>
-    <a href="#" class="list-group-item list-group-item-action">Second item</a>
-    <a href="#" class="list-group-item list-group-item-action">Third item</a>
-  </div>
+
+		<div class="boxOffice">
+			<h1>일별 박스오피스! 1위!!</h1>
+			<div style="margin-top: 15px; margin-bottom: 15px;">
+				<input type="date" class="form-control" id="selectDate">
+				<button type="button" class="btn btn-success">Success</button>
+			</div>
+		</div>
 	</div>
 	<div class="showRange"></div>
 	<div class="boxofficeType"></div>
@@ -69,9 +109,9 @@
 	<div class="openDt"></div>
 	<div class="salesAmt"></div>
 	<div class="audiCnt"></div>
-	
+
 	<c:import url="./footer.jsp"></c:import>
+
 	
-	</div>
 </body>
 </html>

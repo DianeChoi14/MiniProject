@@ -9,6 +9,9 @@
 <title>Insert title here</title>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script>
+
+	</script>
 <script>
 		// 웹문서가 로딩이 완료되면 아래에 선언된 함수를 실행하도록
 		$(function()

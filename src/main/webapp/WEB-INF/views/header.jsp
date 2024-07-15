@@ -33,6 +33,9 @@
          <li class="nav-item">
           <a class="nav-link" href="/movie">오늘의 영화</a>
         </li>
+         <li class="nav-item">
+          <a class="nav-link" href="/news">오늘의 뉴스(xml연습)</a>
+        </li>
       </ul>
       <form class="d-flex">
         <input class="form-control me-2" type="text" placeholder="Search">
