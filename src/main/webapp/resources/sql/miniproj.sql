@@ -98,3 +98,26 @@ values(?, ?,
 		select pointScore from pointdef where pointWhy='회원가입'
     )
  );
+ 
+ -- 유저에게 지금된 포인트를 update하는 쿼리문
+ update member set userPoint = userPoint + (select pointScore from pointdef where pointwhy='글작성' )where userId=?;
+ 
+ 
+ -- 게시글의 첨부파일을 저장하는 테이블 생성
+ CREATE TABLE `webdiane`.`boardimg` (
+  `boardImgNo` INT NOT NULL AUTO_INCREMENT,
+  `newFileName` VARCHAR(50) NULL,
+  `originalFileName` VARCHAR(50) NULL,
+  `ext` VARCHAR(4) NULL,
+  `size` INT NOT NULL,
+  `boardNo` INT NULL,
+  `base64Img` TEXT NULL,
+  INDEX `board_boardNo_fk_idx` (`boardNo` ASC) VISIBLE,
+  PRIMARY KEY (`boardImgNo`),
+  CONSTRAINT `board_boardNo_fk`
+    FOREIGN KEY (`boardNo`)
+    REFERENCES `webdiane`.`hboard` (`boardNo`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+COMMENT = '게시판에 업로드되는 파일을 기록하는 테이블';
+
