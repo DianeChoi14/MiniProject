@@ -121,3 +121,16 @@ values(?, ?,
     ON UPDATE NO ACTION)
 COMMENT = '게시판에 업로드되는 파일을 기록하는 테이블';
 
+-- 게시글 첨부파일 테이블 수정
+ALTER TABLE `webdiane`.`boardimg` 
+ADD COLUMN `thumbFileName` VARCHAR(60) NULL AFTER `originalFileName`;
+
+-- 게시글 첨부파일 테이블 이름 변경
+ALTER TABLE `webdiane`.`boardimg` 
+RENAME TO  `webdiane`.`boardupfiles` ;
+-- 게시글 첨부파일 테이블 컬럼명 변경
+ALTER TABLE `webdiane`.`boardupfiles` 
+CHANGE COLUMN `boardImgNo` `boardUpFileNo` INT NOT NULL AUTO_INCREMENT ;
+-- 컬럼 사이즈 변경
+ALTER TABLE `webdiane`.`boardupfiles` 
+CHANGE COLUMN `ext` `ext` VARCHAR(20) NULL DEFAULT NULL ;
