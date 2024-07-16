@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.Calendar;
+//import java.lang 생략가능
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +17,7 @@ import com.miniproj.model.BoardUpFilesVODTO;
 public class FileProcess {
 	
 	// file을 realPath에 저장하는 메서드
-	public BoardUpFilesVODTO saveFileToRealPath(byte[] upfile, String realPath, String ext, String originalFileName, long fileSize) {
+	public BoardUpFilesVODTO saveFileToRealPath(byte[] upfile, String realPath, String contentType, String originalFileName, long fileSize) throws IOException {
 		
 		BoardUpFilesVODTO result = null;
 //		
@@ -29,8 +31,66 @@ public class FileProcess {
 		String[] ymd = makeCalendarPath(realPath);
 		makeDirectory(realPath, ymd);
 		
-		return result;
+		String saveFilePath = realPath + ymd[ymd.length-1]; // 실제 파일의 저장경로
+		String newFileName = null;
+		String ext = originalFileName.substring(originalFileName.lastIndexOf(".")+1);
+		if(fileSize>0) {
+			// 파일이름 중복 검사 후, 중복될 경우 이름변경
+			if(checkFileExist(saveFilePath, originalFileName)) {
+				newFileName = renameFileName(originalFileName);
+			} else {
+				newFileName = originalFileName;
+			}
+			
+			if(ImageMimeType.isImage(ext)) {
+				// 이미지파일파일 > 썸네일이미지, base64문자열 만들고 이미지와 함께 저장
+			} else {
+				// 이미지파일X > 그냥 현재 파일만 하드디스크에 저장
+				File saveFile = new File(saveFilePath + File.separator + newFileName);
+				FileUtils.writeByteArrayToFile(saveFile, upfile); // file 파일이 저장될 경로와 객체, 실제 파일 저장
+				
+				result = BoardUpFilesVODTO.builder()
+						.ext(contentType)
+						.newFileName(newFileName)
+						.originalFileName(originalFileName)
+						.size(fileSize)
+						.build();
+			}
+		}
 		
+		return result; // 저장된 파일의 정보를 담은 객체
+		
+	}
+	
+	// 파일이름을 바꾸는 메서드
+	// ex. originalFileName_timeStamp.확장자
+	private String renameFileName(String originalFileName) {
+		String timeStamp = System.currentTimeMillis()+""; // 현재시각을 타임스탬프값으로 리턴
+		String ext = originalFileName.substring(originalFileName.lastIndexOf(".")+1);
+		String fileNameWithOutExt = originalFileName.substring(0,originalFileName.lastIndexOf("."));
+		String newFileName = fileNameWithOutExt + "_" + timeStamp + "." + ext ;
+//		System.out.println("old filename = " + originalFileName);
+//		System.out.println("새로운 파일 이름 : " + newFileName);
+		
+		return newFileName;
+	}
+
+	// originalFileName이 saveFilePath에 존재하는지 (파일 중복여부 확인)
+	// 중복된 파일이 있다면 true 없으면 false
+	private boolean checkFileExist(String saveFilePath, String originalFileName) {
+		File tmp = new File(saveFilePath);
+		boolean isFind = false;
+		
+		for(String name : tmp.list()) {
+			if(name.equals(originalFileName)) {
+				System.out.println("같은 이름이 있다");
+				isFind = true;
+			}
+		}
+		if(!isFind) {
+			System.out.println("같은이름의 파일이 없는 상태");
+		}
+		return isFind;
 	}
 	// 파일이 저장될 경로의 디렉토리 구조를 "/연/월/일"형태로 만드는 메서드
 	private String[] makeCalendarPath(String realPath) {
