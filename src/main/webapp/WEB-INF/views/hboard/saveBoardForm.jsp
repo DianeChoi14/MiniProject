@@ -29,17 +29,16 @@
 				//console.log(evt.originalEvent.dataTransfer.files); // 업로드되는 파일 객체의 정보 > 이미지파일일 경우 미리보기
 				
 				// 파일사이즈 검사하여 10MB가 넘게되면 파일 업로드 안 되도록
-				if(file.size > 10485760) {
-					alert("파일용량이 너무 큽니다. 업로드한 파일을 확인해주세요!");
-					
-				} else {
+				
 				
 					for(let file of evt.originalEvent.dataTransfer.files){
 						upfiles.push(file); // 배열에 담기
-					
+						if(file.size > 10485760) {
+							alert("파일용량이 너무 큽니다. 업로드한 파일을 확인해주세요!");
+							
+						} else {
 					//해당 파일을 업로드
-					fileUpload(file);
-						
+					fileUpload(file);	
 						
 					//미리보기
 					showPreview(file);
