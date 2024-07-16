@@ -40,8 +40,7 @@
 					//해당 파일을 업로드
 					fileUpload(file);	
 						
-					//미리보기
-					showPreview(file);
+					
 				}
 			}	
 		});
@@ -56,14 +55,30 @@
 			url : '/hboard/upfiles', 					// 데이터가 송수신될 서버의 주소
 			type : 'post', 				// 통신 방식 : GET, POST, PUT, DELETE, PATCH   
 			data : fd,					// 전송할 데이터
-			dataType : 'json', 			// 수신 받을 데이터의 타입 (text, xml, json)
+			dataType : 'text', 			// 수신 받을 데이터의 타입 (text, xml, json)
 				// processData : false - 데이터를 쿼리스트링형태로 보내지 않겠다는 설정
 				// contentType의 디폴트값이 "application/x-www-form-urlencoded"인데, 파일을 전송하는 방식이기에 "multipart/form-data"가 되어야 함
 				// 
 			processData : false,
 			contentType : false,
+			async : false, // 비동기통신을 false로 한다, 동기식으로 변경 > 요청을하고 응답이 제대로 올 때까지 기다린다음에 다음 작업을 수행하도록
 			success : function(data) { 	// 비동기 통신에 성공하면 자동으로 호출될 callback function
 				console.log(data);
+				if(data == 'success'){
+					//미리보기
+					showPreview(file);
+				}
+			},
+			error : function(data) {
+					console.log(data);
+					if(data=='fail'){
+						alert('파일을 업로드하지 못 했습니다.');
+						for (let i = 0; i < upfiles.length; i++){
+							if(upfiles[i].name == file.name){
+								upfiles.splice(i,1);
+							}
+						}
+					}
 			}
 		});
 	}
@@ -117,7 +132,6 @@
             upfiles.splice(i, 1);  // 배열에서 삭제
             console.log(upfiles);
             $(obj).parent().parent().remove();   // 태그 삭제
-
 			}	
 		}
 	}
@@ -149,7 +163,7 @@
 
 		<h2>게시판 글 작성</h2>
 		<!-- multipart/form-data : 데이터를 여러 조각으로 나누어서 전송하는 방식, 수신되는 곳에서 재조립이 필요하다 -->
-		<form action="saveBoard" method="multipart/form-data" >
+		<form action="saveBoard" method="post" >
 			<div class="mb-3">
 				<label for="title" class="form-label">글제목</label> <input type="text"
 					class="form-control" id="title" name="title"
