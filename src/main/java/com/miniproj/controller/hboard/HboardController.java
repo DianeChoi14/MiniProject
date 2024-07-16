@@ -7,8 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.miniproj.model.HBoardDTO;
@@ -83,5 +85,11 @@ public class HboardController
 		   redirectAttributes.addAttribute("status", "fail");
 	   }
 	   return returnPage; // 게시글 전체 목록 페이지로 돌아감
+   }
+   
+   @RequestMapping(value="/upfiles", method=RequestMethod.POST)
+   public void saveBoardFile(MultipartFile file) {
+
+	   
    }
 }
