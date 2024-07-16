@@ -1,6 +1,7 @@
 package com.miniproj.controller.hboard;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,15 +9,19 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
 import com.miniproj.service.hboard.HBoardService;
@@ -42,6 +47,8 @@ public class HboardController {
 	@Autowired
 	private FileProcess fileProcess;
 
+	private List<BoardUpFilesVODTO> uploadFileList = new ArrayList<BoardUpFilesVODTO>(); // List는 인터페이스, new ArrayList는 클래스
+	
 	// 게시판전체목록리스트를 출력하는 메소드
 	@RequestMapping("/listAll")
 	public void listAll(Model model) {
@@ -88,12 +95,14 @@ public class HboardController {
 		return returnPage; // 게시글 전체 목록 페이지로 돌아감
 	}
 
-	@RequestMapping(value = "/upfiles", method = RequestMethod.POST)
-	public void saveBoardFile(@RequestParam("file")MultipartFile file, HttpServletRequest request) {
+	@RequestMapping(value = "/upfiles", method = RequestMethod.POST, produces = "text/plain; charset=UTF-8;")
+	public ResponseEntity<String> saveBoardFile(@RequestParam("file")MultipartFile file, HttpServletRequest request) {
 
 		System.out.println("파일 전송됨 ... 저장해야함");
 
-		String ext = file.getContentType();
+		ResponseEntity<String> result = null;
+		
+		String contentType = file.getContentType();
 		String originalFileName = file.getOriginalFilename();
 		long fileSize = file.getSize();
 		byte[] upFile = null;
@@ -101,16 +110,30 @@ public class HboardController {
 			upFile = file.getBytes();
 			// 요청의 http세션 객체를 얻어온뒤 서블릿을 얻고난 뒤에 경로얻기 가능
 			String realPath = request.getSession().getServletContext().getRealPath("/resources/boardUpFiles");
-			fileProcess.saveFileToRealPath(upFile, realPath, ext, originalFileName, fileSize);
+			BoardUpFilesVODTO fileInfo = fileProcess.saveFileToRealPath(upFile, realPath, contentType, originalFileName, fileSize);
 			System.out.println(
 				"서버의 실제 경로 : " + request.getSession().getServletContext().getRealPath("/resources/boardUpFiles"));
-
+			System.out.println("저장된 파일의 정보 : " + fileInfo.toString());
+			
+			this.uploadFileList.add(fileInfo);
+			
+			
+			System.out.println("=============================================");
+			System.out.println("========현재 파일리스트에 있는 파일들=========");
+			for (BoardUpFilesVODTO f : this.uploadFileList) {
+				System.out.println( f.toString());
+			}
+			System.out.println("=============================================");
+			
+			result = new ResponseEntity<String>("success", HttpStatus.OK); // EnumClass : sf값만 가질 수 있는 클래스
+			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// 저장실패시 오게되는 곳
 			e.printStackTrace();
+			result = new ResponseEntity<String>("fail", HttpStatus.NOT_ACCEPTABLE);
 		}
 		// request.getRealPath("/resources/boardUpFiles"); // getRealPath서버에 있는 물리적 경로를 제공
-		
+		return result; 
 
 	}
 }
