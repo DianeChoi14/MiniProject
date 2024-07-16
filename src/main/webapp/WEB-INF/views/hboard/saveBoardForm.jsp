@@ -16,24 +16,59 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 	let upfiles = new Array(); // 업로드되는 파일을 저장하는 배열로 사용
-
+	
+	
+	// 유저가 fileUploadArea에 파일을 드래그 드랍하면 실행되는 함수
 	$(function(){
 		// 업로드파일영역에 파일을 drag&drop하는 것과 관련한 이벤트(파일의 경우 파일이 웹브라우저에서 실행되는 경우를 방지>이벤트캔슬링)
 		$('.fileUploadArea').on("dragenter dragover", function(evt) {
 			evt.preventDefault(); // 기본 이벤트 캔슬(이미지를 가져가면 웹브라우저로 열리는 이벤트)
 		});
 		$('.fileUploadArea').on("drop", function(evt){
-			evt.preventDefault();
-			//console.log(evt.originalEvent.dataTransfer.files); // 업로드되는 파일 객체의 정보 > 이미지파일일 경우 미리보기
-			
-			for(let file of evt.originalEvent.dataTransfer.files){
-				upfiles.push(file); // 배열에 담기
-
-			//미리보기
-				showPreview(file);
+				evt.preventDefault();
+				//console.log(evt.originalEvent.dataTransfer.files); // 업로드되는 파일 객체의 정보 > 이미지파일일 경우 미리보기
+				
+				// 파일사이즈 검사하여 10MB가 넘게되면 파일 업로드 안 되도록
+				if(file.size > 10485760) {
+					alert("파일용량이 너무 큽니다. 업로드한 파일을 확인해주세요!");
+					
+				} else {
+				
+					for(let file of evt.originalEvent.dataTransfer.files){
+						upfiles.push(file); // 배열에 담기
+					
+					//해당 파일을 업로드
+					fileUpload(file);
+						
+						
+					//미리보기
+					showPreview(file);
+				}
 			}	
 		});
-	});
+	}); 
+	
+	// 실제로 유저가 업로드한 파일을 컨트롤러단에 전송하여 저장하도록하는 함수
+	function fileUpload(file){
+		let result = false;
+		let fd = new FormData(); // FormData객체 생성 : form태그와 같은 역할의 객체(페이지를 전송 및 이동)
+		fd.append("file", file);
+		$.ajax({
+			url : '/hboard/upfiles', 					// 데이터가 송수신될 서버의 주소
+			type : 'post', 				// 통신 방식 : GET, POST, PUT, DELETE, PATCH   
+			data : fd,					// 전송할 데이터
+			dataType : 'json', 			// 수신 받을 데이터의 타입 (text, xml, json)
+				// processData : false - 데이터를 쿼리스트링형태로 보내지 않겠다는 설정
+				// contentType의 디폴트값이 "application/x-www-form-urlencoded"인데, 파일을 전송하는 방식이기에 "multipart/form-data"가 되어야 함
+				// 
+			processData : false,
+			contentType : false,
+			success : function(data) { 	// 비동기 통신에 성공하면 자동으로 호출될 callback function
+				console.log(data);
+			}
+		});
+	}
+	
 
 	// 넘겨진 file이 이미지파일이면 미리보기하여 출력한다.
 	function showPreview(file){
@@ -74,17 +109,21 @@
 
 
 	
-	function remFile(obj){
-		let removedFileName = $(obj).parent().prev().html();
-		for(let i=0 ; i <upfiles.length ; i++){
-			if(upfiles[i].name == removedFileName){
-				// 파일 삭제
-				upfiles.splice(i, 1);//배열에서 삭제
-				console.log(upfiles)
-				$(obj).parent().parent().remove(); // 태그 삭제
+   function remFile(obj) {
+      let removedFileName = $(obj).parent().prev().html();
+      
+      for (let i = 0; i < upfiles.length; i++){
+         if(upfiles[i].name == removedFileName){
+            // 파일 삭제
+            upfiles.splice(i, 1);  // 배열에서 삭제
+            console.log(upfiles);
+            $(obj).parent().parent().remove();   // 태그 삭제
+
 			}	
 		}
 	}
+	
+	
 </script>
 <style>
 .fileUploadArea {
@@ -92,7 +131,7 @@
 	height: 300px;
 	background-color: lightgray;
 	text-align: center;
-	line-height : 300px;
+	line-height: 300px;
 }
 </style>
 </head>
@@ -111,7 +150,7 @@
 
 		<h2>게시판 글 작성</h2>
 		<!-- multipart/form-data : 데이터를 여러 조각으로 나누어서 전송하는 방식, 수신되는 곳에서 재조립이 필요하다 -->
-		<form action="saveBoard" method="multipart/form-data">
+		<form action="saveBoard" method="multipart/form-data" >
 			<div class="mb-3">
 				<label for="title" class="form-label">글제목</label> <input type="text"
 					class="form-control" id="title" name="title"
