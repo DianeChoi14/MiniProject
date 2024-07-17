@@ -64,7 +64,7 @@
 			async : false, // 비동기통신을 false로 한다, 동기식으로 변경 > 요청을하고 응답이 제대로 올 때까지 기다린다음에 다음 작업을 수행하도록
 			success : function(data) { 	// 비동기 통신에 성공하면 자동으로 호출될 callback function
 				console.log(data);
-				if(data == 'success') {
+				if(data != null) {
 					showPreview(file); //미리보기
 				}
 			},
@@ -132,7 +132,7 @@
 				url : '/hboard/removefile', 					// 데이터가 송수신될 서버의 주소
 				type : 'post', 				// 통신 방식 : GET, POST, PUT, DELETE, PATCH   
 				data : {"removedFileName" : removedFileName},					// 전송할 데이터
-				dataType : 'text', 			// 수신 받을 데이터의 타입 (text, xml, json)
+				dataType : 'json', 			// 수신 받을 데이터의 타입 (text, xml, json)
 				async : false, // 비동기통신을 false로 한다, 동기식으로 변경 > 요청을하고 응답이 제대로 올 때까지 기다린다음에 다음 작업을 수행하도록
 				success : function(data) { 	// 비동기 통신에 성공하면 자동으로 호출될 callback function
 					console.log(data);
