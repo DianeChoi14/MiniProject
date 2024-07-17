@@ -1,5 +1,6 @@
 package com.miniproj.controller.hboard;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class HboardController {
 	@Autowired
 	private FileProcess fileProcess;
 
+	// 유저가 업로드한 파일을 임시 저장하는 객체
 	private List<BoardUpFilesVODTO> uploadFileList = new ArrayList<BoardUpFilesVODTO>(); // List는 인터페이스, new ArrayList는 클래스
 	
 	// 게시판전체목록리스트를 출력하는 메소드
@@ -97,17 +99,17 @@ public class HboardController {
 
 	@RequestMapping(value = "/upfiles", method = RequestMethod.POST, produces = "text/plain; charset=UTF-8;")
 	public ResponseEntity<String> saveBoardFile(@RequestParam("file")MultipartFile file, HttpServletRequest request) {
-
+		// 리퀘스트 객체는 서블릿에서만 동작
 		System.out.println("파일 전송됨 ... 저장해야함");
 
 		ResponseEntity<String> result = null;
-		
+		// 파일의 기본정보 가져옴
 		String contentType = file.getContentType();
 		String originalFileName = file.getOriginalFilename();
 		long fileSize = file.getSize();
 		byte[] upFile = null;
 		try {
-			upFile = file.getBytes();
+			upFile = file.getBytes(); // 파일의 실제 데이터를 읽어옴
 			// 요청의 http세션 객체를 얻어온뒤 서블릿을 얻고난 뒤에 경로얻기 가능
 			String realPath = request.getSession().getServletContext().getRealPath("/resources/boardUpFiles");
 			BoardUpFilesVODTO fileInfo = fileProcess.saveFileToRealPath(upFile, realPath, contentType, originalFileName, fileSize);
@@ -125,7 +127,8 @@ public class HboardController {
 			}
 			System.out.println("=============================================");
 			
-			result = new ResponseEntity<String>("success", HttpStatus.OK); // EnumClass : sf값만 가질 수 있는 클래스
+			String tmp = fileInfo.getNewFileName().substring(fileInfo.getNewFileName().lastIndexOf(File.separator)+1);
+			result = new ResponseEntity<String>("success_" + tmp, HttpStatus.OK); // EnumClass : sf값만 가질 수 있는 클래스
 			
 		} catch (IOException e) {
 			// 저장실패시 오게되는 곳
@@ -135,5 +138,17 @@ public class HboardController {
 		// request.getRealPath("/resources/boardUpFiles"); // getRealPath서버에 있는 물리적 경로를 제공
 		return result; 
 
+	}
+	
+	@RequestMapping(value = "/removefile", method=RequestMethod.POST)
+	public void removeUpFile(@RequestParam("removedFileName") String removedFileName) {
+		System.out.println("업로드된 파일 삭제하는 곳~~ : " + removedFileName);
+		// 넘겨진 removeFileName과 uploadFileList배열의 originalFileName과 비교하여 같은 것이 있다면 삭제처리함(배열,하드디스크)
+		for(int i=0 ; i<this.uploadFileList.size() ; i++) { //삭제할 파일의 경로와 이름을 주면서 delete()
+			if(removedFileName.equals(this.uploadFileList.get(i).getOriginalFileName())) {
+				// 하드디스크에서 삭제
+				
+			}
+		}
 	}
 }
