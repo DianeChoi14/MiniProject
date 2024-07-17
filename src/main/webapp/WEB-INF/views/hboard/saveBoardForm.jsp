@@ -64,9 +64,8 @@
 			async : false, // 비동기통신을 false로 한다, 동기식으로 변경 > 요청을하고 응답이 제대로 올 때까지 기다린다음에 다음 작업을 수행하도록
 			success : function(data) { 	// 비동기 통신에 성공하면 자동으로 호출될 callback function
 				console.log(data);
-				if(data == 'success'){
-					//미리보기
-					showPreview(file);
+				if(data == 'success') {
+					showPreview(file); //미리보기
 				}
 			},
 			error : function(data) {
@@ -122,13 +121,25 @@
 	// 자바의 배열은 정적배열(사이즈가 정해짐) 자바스크립트는 동적배열
 
 
-	
+	// 업로드한 파일을 지운다(화면, front배열, 백엔드)
    function remFile(obj) {
       let removedFileName = $(obj).parent().prev().html();
       
       for (let i = 0; i < upfiles.length; i++){
          if(upfiles[i].name == removedFileName){
-            // 파일 삭제
+            // 파일 삭제(백엔드에서 삭제가 성공하면 front단, 화면에서도 삭제해야함)
+            $.ajax({
+				url : '/hboard/removefile', 					// 데이터가 송수신될 서버의 주소
+				type : 'post', 				// 통신 방식 : GET, POST, PUT, DELETE, PATCH   
+				data : {"removedFileName" : removedFileName},					// 전송할 데이터
+				dataType : 'text', 			// 수신 받을 데이터의 타입 (text, xml, json)
+				async : false, // 비동기통신을 false로 한다, 동기식으로 변경 > 요청을하고 응답이 제대로 올 때까지 기다린다음에 다음 작업을 수행하도록
+				success : function(data) { 	// 비동기 통신에 성공하면 자동으로 호출될 callback function
+					console.log(data);
+				}
+
+		});
+            
             upfiles.splice(i, 1);  // 배열에서 삭제
             console.log(upfiles);
             $(obj).parent().parent().remove();   // 태그 삭제
@@ -163,7 +174,7 @@
 
 		<h2>게시판 글 작성</h2>
 		<!-- multipart/form-data : 데이터를 여러 조각으로 나누어서 전송하는 방식, 수신되는 곳에서 재조립이 필요하다 -->
-		<form action="saveBoard" method="post" >
+		<form action="saveBoard" method="post">
 			<div class="mb-3">
 				<label for="title" class="form-label">글제목</label> <input type="text"
 					class="form-control" id="title" name="title"
