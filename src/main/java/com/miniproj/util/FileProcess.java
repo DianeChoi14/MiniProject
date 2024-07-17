@@ -51,8 +51,8 @@ public class FileProcess {
 				
 				result = BoardUpFilesVODTO.builder()
 						.ext(contentType)
-						.newFileName(newFileName)
-						.originalFileName(originalFileName)
+						.newFileName(ymd[2] + File.separator + newFileName )
+						.originalFileName(ymd[2] + File.separator + originalFileName)
 						.size(fileSize)
 						.build();
 			}
@@ -92,6 +92,7 @@ public class FileProcess {
 		}
 		return isFind;
 	}
+	
 	// 파일이 저장될 경로의 디렉토리 구조를 "/연/월/일"형태로 만드는 메서드
 	private String[] makeCalendarPath(String realPath) {
 		Calendar now = Calendar.getInstance(); // 현재날짜및시간 객체
@@ -106,6 +107,7 @@ public class FileProcess {
 		
 		return ymd;
 	}
+	
 	//실제 디렉토리를 만드는 메서드
 	// 가변인자 메서드(eg String...ymd) : 전달된 year, month, date의 값이 ymd라는 하나의 배열로 처리한다
 	private void makeDirectory(String realPath, String...ymd) {
