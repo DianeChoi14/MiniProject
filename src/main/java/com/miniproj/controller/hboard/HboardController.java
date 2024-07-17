@@ -127,6 +127,7 @@ public class HboardController {
 			}
 			System.out.println("=============================================");
 			
+			// 저장된 새로운 파일이름을 제이슨으로 리턴
 			String tmp = fileInfo.getNewFileName().substring(fileInfo.getNewFileName().lastIndexOf(File.separator)+1);
 			result = new ResponseEntity<String>("success_" + tmp, HttpStatus.OK); // EnumClass : sf값만 가질 수 있는 클래스
 			
