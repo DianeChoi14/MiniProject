@@ -97,12 +97,12 @@ public class HboardController {
 		return returnPage; // 게시글 전체 목록 페이지로 돌아감
 	}
 
-	@RequestMapping(value = "/upfiles", method = RequestMethod.POST, produces = "text/plain; charset=UTF-8;")
-	public ResponseEntity<String> saveBoardFile(@RequestParam("file")MultipartFile file, HttpServletRequest request) {
+	@RequestMapping(value = "/upfiles", method = RequestMethod.POST, produces = "application/json; charset=UTF-8;")
+	public ResponseEntity<BoardUpFilesVODTO> saveBoardFile(@RequestParam("file")MultipartFile file, HttpServletRequest request) {
 		// 리퀘스트 객체는 서블릿에서만 동작
 		System.out.println("파일 전송됨 ... 저장해야함");
 
-		ResponseEntity<String> result = null;
+		ResponseEntity<BoardUpFilesVODTO> result = null;
 		// 파일의 기본정보 가져옴
 		String contentType = file.getContentType();
 		String originalFileName = file.getOriginalFilename();
@@ -129,12 +129,12 @@ public class HboardController {
 			
 			// 저장된 새로운 파일이름을 제이슨으로 리턴
 			String tmp = fileInfo.getNewFileName().substring(fileInfo.getNewFileName().lastIndexOf(File.separator)+1);
-			result = new ResponseEntity<String>("success_" + tmp, HttpStatus.OK); // EnumClass : sf값만 가질 수 있는 클래스
+			result = new ResponseEntity<BoardUpFilesVODTO>(fileInfo, HttpStatus.OK); // EnumClass : sf값만 가질 수 있는 클래스
 			
 		} catch (IOException e) {
 			// 저장실패시 오게되는 곳
 			e.printStackTrace();
-			result = new ResponseEntity<String>("fail", HttpStatus.NOT_ACCEPTABLE);
+			result = new ResponseEntity<>(HttpStatus.OK);
 		}
 		// request.getRealPath("/resources/boardUpFiles"); // getRealPath서버에 있는 물리적 경로를 제공
 		return result; 
