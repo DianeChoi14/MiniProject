@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.miniproj.controller.HomeController;
+import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
 import com.miniproj.model.PointLogDTO;
@@ -51,6 +52,15 @@ public class HBoardServiceImpl implements HBoardService
 		boolean result = false;
 //		1. newBoard를 DAO단을 통해 insert해본다 
 		if(bDao.insertNewBoard(newBoard)==1){
+//			1-1. 위에서 저장된 게시글의 pk(boardNo)를 가져와야한다(select)
+			int newBoardNo = bDao.getMaxBoardNo();
+			
+//			1-2. 첨부된 파일이 있다면 첨부파일 또한 저장한다..(insert)
+			for(BoardUpFilesVODTO file : newBoard.getFileList()) {
+				file.setBoardNo(newBoardNo);
+				bDao.insertBoardUpFile(file);
+			}
+			
 //			2. 1이 성공했을 때 글작성자의 포인트를 부여한다. (select+insert)
 			if(pDao.insertPointLog(new PointLogDTO(newBoard.getWriter(), "글작성", 0))==1) {
 //				3. 작성자의 userPoint값을 update
