@@ -1,13 +1,19 @@
 package com.miniproj.util;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
+import java.util.Base64;
 import java.util.Calendar;
 //import java.lang 생략가능
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.io.FileUtils;
+import org.imgscalr.Scalr;
+import org.imgscalr.Scalr.Mode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,7 +22,7 @@ import com.miniproj.model.BoardUpFilesVODTO;
 @Component // 스프링이 컨테이너에게 객체를 만들어 관리하도록하는 어노테이션
 public class FileProcess {
 	
-	// file을 realPath에 저장하는 메서드
+	// file을 realPath에 저장하는 메서드	
 	public BoardUpFilesVODTO saveFileToRealPath(byte[] upfile, String realPath, String contentType, String originalFileName, long fileSize) throws IOException {
 		
 		BoardUpFilesVODTO result = null;
@@ -32,8 +38,10 @@ public class FileProcess {
 		makeDirectory(realPath, ymd);
 		
 		String saveFilePath = realPath + ymd[ymd.length-1]; // 실제 파일의 저장경로
-		String newFileName = null;
+
 		String ext = originalFileName.substring(originalFileName.lastIndexOf(".")+1);
+		String newFileName = null;		
+		
 		if(fileSize>0) {
 			// 파일이름 중복 검사 후, 중복될 경우 이름변경
 			if(checkFileExist(saveFilePath, originalFileName)) {
@@ -41,13 +49,40 @@ public class FileProcess {
 			} else {
 				newFileName = originalFileName;
 			}
+
+			File saveFile = new File(saveFilePath + File.separator + newFileName);
+			FileUtils.writeByteArrayToFile(saveFile, upfile); // file 파일이 저장될 경로와 객체, 실제 파일 저장
 			
 			if(ImageMimeType.isImage(ext)) {
 				// 이미지파일파일 > 썸네일이미지, base64문자열 만들고 이미지와 함께 저장
+				// abc.jpg > thumb_abc.jpg
+				String thumbImgName = makeThumbNailImage(saveFilePath, newFileName);
+				
+				//저장된 썸네일이미지를 base64 문자열로 변경
+				makeBase64String(saveFilePath + File.separator + thumbImgName);
+				
+				// base64문자열로 인코딩 작업 
+				// 이진수(binary) 데이터를 Text로 바꾸는 인코딩의 하나로써 이진수 데이터를 ASCII(아스키코드) 영역의 문자로만 이루어진 문자열로 바꾸는 인코딩 방식이다.
+				// 파일을 별도로 저장할 공간이 필요하지 않다, 하지만 파일을 저장하는 것보다 크기가 커진다.
+				// 문자열을 저장한다면 파일을 저장하는 것보다 크기가 크다. (base64디코딩 > 바이트배열로 저장 > 하드에 저장가능)
+				// 인코딩, 디코딩에 따른 부하가 걸린다.
+				
+				// 용량이 큰 이미지는 문자열로 만들지 못하므로 썸네일 이미지만 base64로 처리할 것
+				String base64Str = makeBase64String(saveFilePath + File.separator + thumbImgName);
+//				System.out.println("========================BASE64============================");
+//				System.out.println(base64Str);
+//				System.out.println("====================================================");
+				result = BoardUpFilesVODTO.builder()
+						.ext(contentType)
+						.newFileName(ymd[2] + File.separator + newFileName )
+						.originalFileName(ymd[2] + File.separator + originalFileName)
+						.size(fileSize)
+						.base64Img(base64Str)
+						.thumbFileName(ymd[2] + File.separator + thumbImgName)
+						.build();
 			} else {
 				// 이미지파일X > 그냥 현재 파일만 하드디스크에 저장
-				File saveFile = new File(saveFilePath + File.separator + newFileName);
-				FileUtils.writeByteArrayToFile(saveFile, upfile); // file 파일이 저장될 경로와 객체, 실제 파일 저장
+
 				
 				result = BoardUpFilesVODTO.builder()
 						.ext(contentType)
@@ -60,6 +95,53 @@ public class FileProcess {
 		
 		return result; // 저장된 파일의 정보를 담은 객체
 		
+	}
+	
+	private String makeBase64String(String thumbNailFileName) throws IOException {
+		// 반환될 string result를 초기화
+		String result = null;
+		
+		// 썸네일파일의 경로로 File객체 생성,  
+		File thumb = new File(thumbNailFileName);
+		
+		// File객체가 가리키는 파일을 읽어와 byte[]
+		byte[] upfile = FileUtils.readFileToByteArray(thumb);
+
+		// 인코딩
+		result = Base64.getEncoder().encodeToString(upfile);
+		return result;
+	}
+
+	private String makeThumbNailImage(String saveFilePath, String newFileName) throws IOException {
+		//원본 이미지파일을 읽음
+		BufferedImage originalImage = ImageIO.read(new File(saveFilePath + File.separator + newFileName)) ; // > BufferedImage이미지데이터가 메모리에 올라가 있는 것 
+		
+		//원본이미지파일을 읽어 세로크기를 50px으로 맞춰 리사이즈 >> 리사이즈된 bufferedimage
+		BufferedImage thumbNailImage = Scalr.resize(originalImage, Mode.FIT_TO_HEIGHT, 50);
+		String thumbImgName = "thumb_" + newFileName;
+		System.out.println(thumbImgName);
+		
+		File saveThumbImg = new File(saveFilePath + File.separator + thumbImgName);
+		String ext = thumbImgName.substring(thumbImgName.lastIndexOf(".")+1);
+		
+		// 부모는 자식을 매개로 받을 수 있다 bufferedimage는 renderimage의 자식
+		if(ImageIO.write(thumbNailImage, ext, saveThumbImg)) {
+			
+			return thumbImgName;
+		} else {
+			return null;
+		}
+	}
+	
+	// 업로드 되었던 파일을 하드에서 삭제하는 메서드
+	// removedFileName = realPath + 년월일경로 파일이름.확장자
+	public boolean removeFile(String removedFileName) {
+		File tmpFile = new File(removedFileName);
+		boolean result = false;
+		if(tmpFile.exists()) {
+			result = tmpFile.delete();
+		}
+		return result;
 	}
 	
 	// 파일이름을 바꾸는 메서드
