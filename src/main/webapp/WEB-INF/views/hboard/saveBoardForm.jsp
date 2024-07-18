@@ -55,7 +55,7 @@
 			url : '/hboard/upfiles', 					// 데이터가 송수신될 서버의 주소
 			type : 'post', 				// 통신 방식 : GET, POST, PUT, DELETE, PATCH   
 			data : fd,					// 전송할 데이터
-			dataType : 'text', 			// 수신 받을 데이터의 타입 (text, xml, json)
+			dataType : 'json', 			// 수신 받을 데이터의 타입 (text, xml, json)
 				// processData : false - 데이터를 쿼리스트링형태로 보내지 않겠다는 설정
 				// contentType의 디폴트값이 "application/x-www-form-urlencoded"인데, 파일을 전송하는 방식이기에 "multipart/form-data"가 되어야 함
 				// 
@@ -64,8 +64,8 @@
 			async : false, // 비동기통신을 false로 한다, 동기식으로 변경 > 요청을하고 응답이 제대로 올 때까지 기다린다음에 다음 작업을 수행하도록
 			success : function(data) { 	// 비동기 통신에 성공하면 자동으로 호출될 callback function
 				console.log(data);
-				if(data != null) {
-					showPreview(file); //미리보기
+				if(data.msg == 'success') {
+					showPreview(file, data.newFileName); //미리보기
 				}
 			},
 			error : function(data) {
@@ -84,17 +84,20 @@
 	
 
 	// 넘겨진 file이 이미지파일이면 미리보기하여 출력한다.
-	function showPreview(file){
+	function showPreview(file, newFileName){
 		let imageType = ["image/jpeg", "image/png", "image/gif"];
 		console.log(file);
 		let fileType = file.type.toLocaleLowerCase();
 		if (imageType.indexOf(fileType) != -1){
 			// 이미지 파일이라면
-			alert("이미지 파일입니다!");
+
+			let output =`<div><img src='/resources/boardUpFiles/\${newFileName}' /><span>\${file.name}</span>`
+				output += `<span><img src='/resources/images/remove.png' width='20px' onclick="remFile(this);" id="\${newFileName}"/></span></div>`;
+				$('.preview').append(output);
 		} else {
 			// 이미지 파일이 아니면
 			let output =`<div><img src='/resources/images/noimage.png' /><span>\${file.name}</span>`
-			output += `<span><img src='/resources/images/remove.png' width='20px' onclick="remFile(this);"/></span></div>`;
+			output += `<span><img src='/resources/images/remove.png' width='20px' onclick="remFile(this);" id="\${newFileName}"/></span></div>`;
 			$('.preview').append(output);
 		}
 	}
@@ -123,30 +126,47 @@
 
 	// 업로드한 파일을 지운다(화면, front배열, 백엔드)
    function remFile(obj) {
-      let removedFileName = $(obj).parent().prev().html();
-      
+      let removedFileName = $(obj).attr('id'); // attr attribute속성
+      console.log('지워야할 파일 이름 : ' + removedFileName);
       for (let i = 0; i < upfiles.length; i++){
-         if(upfiles[i].name == removedFileName){
+         if(upfiles[i].name == $(obj).parent().prev().html()){
             // 파일 삭제(백엔드에서 삭제가 성공하면 front단, 화면에서도 삭제해야함)
-            $.ajax({
-				url : '/hboard/removefile', 					// 데이터가 송수신될 서버의 주소
-				type : 'post', 				// 통신 방식 : GET, POST, PUT, DELETE, PATCH   
-				data : {"removedFileName" : removedFileName},					// 전송할 데이터
-				dataType : 'json', 			// 수신 받을 데이터의 타입 (text, xml, json)
-				async : false, // 비동기통신을 false로 한다, 동기식으로 변경 > 요청을하고 응답이 제대로 올 때까지 기다린다음에 다음 작업을 수행하도록
-				success : function(data) { 	// 비동기 통신에 성공하면 자동으로 호출될 callback function
-					console.log(data);
-				}
+	            $.ajax({
+					url : '/hboard/removefile', 					// 데이터가 송수신될 서버의 주소
+					type : 'post', 				// 통신 방식 : GET, POST, PUT, DELETE, PATCH   
+					data : {"removedFileName" : removedFileName},					// 전송할 데이터
+					dataType : 'json', 			// 수신 받을 데이터의 타입 (text, xml, json)
+					async : false, // 비동기통신을 false로 한다, 동기식으로 변경 > 요청을하고 응답이 제대로 올 때까지 기다린다음에 다음 작업을 수행하도록
+					success : function(data) { 	// 비동기 통신에 성공하면 자동으로 호출될 callback function
+						console.log(data);
+						if (data.msg == 'success'){
+				            upfiles.splice(i, 1);  // 배열에서 삭제
+				            console.log(upfiles);
+				            $(obj).parent().parent().remove();   // 태그 삭제						
+						}
+					}
+	
+				});
 
-		});
-            
-            upfiles.splice(i, 1);  // 배열에서 삭제
-            console.log(upfiles);
-            $(obj).parent().parent().remove();   // 태그 삭제
 			}	
 		}
 	}
 	
+	// 유저가 취소버튼을 클릭하면 서버에 저장한 업로드파일을 지우고 게시판 전체조회페이지로 돌아감
+	function cancelBoard() {
+		$.ajax({
+			url : '/hboard/cancelBoard', 					// 데이터가 송수신될 서버의 주소
+			type : 'get', 				// 통신 방식 : GET, POST, PUT, DELETE, PATCH   
+			dataType : 'json', 			// 수신 받을 데이터의 타입 (text, xml, json)
+			async : false, // 비동기통신을 false로 한다, 동기식으로 변경 > 요청을하고 응답이 제대로 올 때까지 기다린다음에 다음 작업을 수행하도록
+			success : function(data) { 	// 비동기 통신에 성공하면 자동으로 호출될 callback function
+				console.log(data);
+				if (data.msg=='success'){
+					location.href='/hboard/listAll';
+				}
+			}
+		});
+	}
 	
 </script>
 <style>
@@ -199,6 +219,8 @@
 
 			<button type="submit" class="btn btn-primary"
 				onclick="return validBoard();">저장</button>
+				<button type="button" class="btn btn-warning"
+				onclick="cancelBoard();">취소</button><!-- reset타입은 페이지를 재로딩할 뿐 서버의 데이터를 지우지 않기 때문에 사용X -->
 		</form>
 
 		<c:import url="./../footer.jsp"></c:import>
