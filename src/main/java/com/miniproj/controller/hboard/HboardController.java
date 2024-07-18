@@ -86,6 +86,8 @@ public class HboardController {
 	// 게시글 저장버튼을 눌렀을 때 해당 게시글을 db에 저장하는 메서드 > 작성 후 글목록페이지로 이동
 	@RequestMapping(value = "/saveBoard", method = RequestMethod.POST) // get방식은 메서드방식 생략가능
 	public String saveBoard(HBoardDTO boardDTO, RedirectAttributes redirectAttributes) throws Exception {
+		boardDTO.setFileList(this.uploadFileList); // 첨부파일리스트를 BoardDTO에 주입
+		
 		String returnPage = "redirect:/hboard/listAll";
 		try {
 			if (service.saveBoard(boardDTO)) { // 게시글 저장에 성공했을 때
