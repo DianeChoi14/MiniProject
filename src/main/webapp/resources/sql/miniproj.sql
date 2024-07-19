@@ -134,3 +134,36 @@ CHANGE COLUMN `boardImgNo` `boardUpFileNo` INT NOT NULL AUTO_INCREMENT ;
 -- 컬럼 사이즈 변경
 ALTER TABLE `webdiane`.`boardupfiles` 
 CHANGE COLUMN `ext` `ext` VARCHAR(20) NULL DEFAULT NULL ;
+
+-- 방금 insert된 글의 글번호를 가져오는 쿼리문
+select max(boardNo) from hboard;
+
+-- 유저가 게시글을 저장할 때 파일을 업로드하는 쿼리문
+insert into boardupfiles(newFileName, originalFileName, thumbFileName, ext, size, boardNo, base64Img)
+values (?, ?, ?, ?, ?, ?, ?);
+
+-- 게시판 상세페이지 출력
+select * from hboard where boardNo=24;
+select * from boardupfiles where boardNo=24;
+
+-- 게시판 상세페이지에서 그 게시글을 작성한 유저의 정보까지 출력
+select h.boardNo, h.title, m.userId, m.userName
+from hboard as h inner join member as m
+on h.writer = m.userId
+where h.boardNo=24;
+
+-- 게시글과 첨부파일을 함께 출력해보자
+select h.boardNo, h.title, h.content, h.writer, h.postDate, h.readCount,
+f.*, m.username, m.email
+from hboard as h left outer join boardupfiles f 
+on h.boardNo = f.boardNo
+inner join member m
+on h.writer = m.userId
+where h.boardNo=24;
+
+select *
+from hboard as h left outer join boardupfiles f 
+on h.boardNo = f.boardNo;
+-- 오른쪽 테이블의 누락된 정보를 쓰려면 right outer join, 양 테이블의 정보를 모두 가져오려면 full outer join
+
+
