@@ -24,8 +24,49 @@
 
 	<!-- 업로드된 첨부파일을 저장하는 쿼리문 -->
 	<insert id="saveUpFile">
-		insert into boardupfiles(newFileName, originalFileName,
+		insert into boardupfiles(newFileName,
+		originalFileName,
 		thumbFileName, ext, size, boardNo, base64Img)
-		values (#{newFileName}, #{originalFileName}, #{thumbFileName}, #{ext}, #{size}, #{boardNo}, #{base64Img});
+		values
+		(#{newFileName}, #{originalFileName}, #{thumbFileName}, #{ext},
+		#{size}, #{boardNo}, #{base64Img});
 	</insert>
+
+	<!-- 게시글의 상세정보를 담기 위한 resultmap설정 -->
+	<resultMap type="com.miniproj.model.BoardDetailInfo" id="boardDetailInfoMap">
+		<result column="boardNo"  property="boardNo" javaType="int" />
+		<result column="title"  property="title" javaType="String" />
+		<result column="content"  property="content" javaType="String" />
+		<result column="writer"  property="writer" javaType="String" />
+		<result column="postDate"  property="postDate" javaType="java.sql.Timestamp" /> <!-- Timestamp는 기본 클래스가 아니므로 타입에 클래스까지 적어줘야함 -->
+		<result column="readCount"  property="readCount" javaType="int" />
+
+		<result column="userName"  property="userName" javaType="String" />
+		<result column="email"  property="email" javaType="String" />
+		
+		<!-- 리스트타입은 collection 태그로 묶어서 사용-->
+		<collection property="fileList" ofType="com.miniproj.model.BoardUpFilesVODTO" javaType="java.util.ArrayList">
+			<result column="boardUpFileNo"  property="boardUpFileNo" javaType="int" />
+			<result column="newFileName"  property="newFileName" javaType="String" />
+			<result column="originalFileName"  property="originalFileName" javaType="String" />
+			<result column="thumbFileName"  property="thumbFileName" javaType="String" />
+			<result column="ext"  property="ext" javaType="String" />
+			<result column="size"  property="size" javaType="long" />
+			<result column="boardNo"  property="boardNo" javaType="int" />
+			<result column="base64Img"  property="base64Img" javaType="String" />
+		</collection>
+
+	</resultMap>
+	<!-- 게시글의 상세정보를 담는 조인문 -->
+	<select id="selectBoardDetailInfoByBoardNo" resultMap="boardDetailInfoMap" >
+		select h.boardNo, h.title, h.content, h.writer,
+		h.postDate, h.readCount,
+		f.*, m.username, m.email
+		from hboard as h left outer join boardupfiles f
+		on h.boardNo = f.boardNo
+		inner join member m
+		on h.writer = m.userId
+		where h.boardNo=#{boardNo}
+	</select>
+
 </mapper>
