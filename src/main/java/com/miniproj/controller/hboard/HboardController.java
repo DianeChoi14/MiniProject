@@ -93,6 +93,7 @@ public class HboardController {
 		try {
 			if (service.saveBoard(boardDTO)) { // 게시글 저장에 성공했을 때
 				redirectAttributes.addAttribute("status", "success");
+				this.uploadFileList.clear();
 			}
 		} catch (Exception e) { // 게시글 저장에 실패했을 때
 			e.printStackTrace();
@@ -220,7 +221,9 @@ public class HboardController {
 	public void viewBoard(@RequestParam("boardNo") int boardNo, Model model) {
 		try {
 			List<BoardDetailInfo> boardDetailInfo = service.read(boardNo);
+
 			model.addAttribute("boardDetailInfo",boardDetailInfo);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
