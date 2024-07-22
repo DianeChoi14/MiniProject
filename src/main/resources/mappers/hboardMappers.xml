@@ -69,4 +69,26 @@
 		where h.boardNo=#{boardNo}
 	</select>
 
+	<!-- 게시글의 조회수를 증가하는 쿼리문 -->
+	<update id="updateReadCount">
+		update hboard set readCount = readCount+1 where boardNo=#{boardNo}
+	</update>
+	
+	<!-- ipAddr의 유저가 boardNo글을 조회한 시간차를 얻는 메서드 ( 조회한 적이 없으면 -1반환) -->
+	<select id="selectBoardDateDiff" resultType="int">
+	select ifnull( 
+	DATEDIFF(now(),
+		(select readWhen from boardreadlog where readWho=#{readWho} and boardNo=#{boardNo})
+		), -1) as datediff;
+	</select>
+	
+	<!-- ipAddr의 유저가 boardNo글을 현재 시간에 조회한다고 기록 -->
+	<insert id="saveBoardReadLog">
+		insert into boardreadlog(readWho, boardNo) values(#{readWho}, #{boardNo})
+	</insert>
+	
+	<!-- 조회수 증가한 날짜로 업데이트 -->
+	<update id="updateBoardReadLog">
+		update boardreadlog set readWhen = now() where readWho=#{readWho} and boardNo=#{boardNo}
+	</update>
 </mapper>

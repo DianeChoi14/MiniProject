@@ -28,7 +28,7 @@ public interface HBoardService
 	
 	
 	// 게시판 상세 보기
-	public List<BoardDetailInfo> read(int boardNo) throws Exception;
+	public List<BoardDetailInfo> read(int boardNo, String  ipAddr) throws Exception;
 	
 	
 	// 게시판 글 삭제
