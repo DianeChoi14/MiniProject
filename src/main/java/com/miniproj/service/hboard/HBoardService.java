@@ -2,6 +2,7 @@ package com.miniproj.service.hboard;
 
 import java.util.List;
 
+import com.miniproj.model.BoardDetailInfo;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
 
@@ -20,10 +21,15 @@ public interface HBoardService
 
 	// 게시판 글 작성
 	public boolean saveBoard(HBoardDTO newBoard) throws Exception;
+
+	// 최근 저장된 글의 글번호를 얻어오는 메서드
 	
 	// 게시판 글 수정
 	
+	
 	// 게시판 상세 보기
+	public List<BoardDetailInfo> read(int boardNo) throws Exception;
+	
 	
 	// 게시판 글 삭제
 	

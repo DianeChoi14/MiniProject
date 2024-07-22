@@ -2,6 +2,7 @@ package com.miniproj.persistence;
 
 import java.util.List;
 
+import com.miniproj.model.BoardDetailInfo;
 import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
@@ -19,4 +20,8 @@ public interface HBoardDAO
 	
 	// 업로드된 첨부파일을 저장하는 쿼리문
 	int insertBoardUpFile(BoardUpFilesVODTO upFile) throws Exception;
+	
+	// 게시글의 상세정조블 얻어오는 메서드
+	List<BoardDetailInfo> selectBoardByBoardNo(int boardNo) throws Exception;
+
 }

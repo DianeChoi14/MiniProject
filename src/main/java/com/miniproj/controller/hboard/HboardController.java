@@ -22,6 +22,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.miniproj.model.BoardDetailInfo;
 import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
@@ -213,5 +214,15 @@ public class HboardController {
 			this.uploadFileList.clear();
 		}
 		return new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, "", "success"), HttpStatus.OK);
+	}
+	
+	@RequestMapping (value = "/viewBoard")
+	public void viewBoard(@RequestParam("boardNo") int boardNo, Model model) {
+		try {
+			List<BoardDetailInfo> boardDetailInfo = service.read(boardNo);
+			model.addAttribute("boardDetailInfo",boardDetailInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
