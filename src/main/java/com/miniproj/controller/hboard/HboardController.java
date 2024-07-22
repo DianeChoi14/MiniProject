@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import com.miniproj.model.HBoardVO;
 import com.miniproj.model.MyResponseWithoutData;
 import com.miniproj.service.hboard.HBoardService;
 import com.miniproj.util.FileProcess;
+import com.miniproj.util.GetClientIPAddr;
 
 //// 컨트롤러단에서 해야할 일 
 //1) uri맵핑(어떤 uri가 어떤방식(get/post)으로 호출되었을 때 어떤 메서드에 매핑시킬 것인가)
@@ -218,11 +220,14 @@ public class HboardController {
 	}
 	
 	@RequestMapping (value = "/viewBoard")
-	public void viewBoard(@RequestParam("boardNo") int boardNo, Model model) {
+	public void viewBoard(@RequestParam("boardNo") int boardNo, Model model, HttpServletRequest reuqest) {
 		try {
-			List<BoardDetailInfo> boardDetailInfo = service.read(boardNo);
-
+			String ipAddr = GetClientIPAddr.getClientIp(reuqest);
+			List<BoardDetailInfo> boardDetailInfo = service.read(boardNo, ipAddr);
 			model.addAttribute("boardDetailInfo",boardDetailInfo);
+			// 게시글 조회시 ip주소를 얻어오기(request객체)
+			
+			System.out.println(ipAddr + "가" + boardNo + "글을 조회한다!=================");
 			
 		} catch (Exception e) {
 			e.printStackTrace();
