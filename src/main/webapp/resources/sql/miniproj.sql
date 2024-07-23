@@ -167,3 +167,38 @@ on h.boardNo = f.boardNo;
 -- 오른쪽 테이블의 누락된 정보를 쓰려면 right outer join, 양 테이블의 정보를 모두 가져오려면 full outer join
 
 
+-- 게시글의 조회수를 증가하는 쿼리문
+update hboard set readCount = readCount+1 where boardNo=?;
+
+-- 게시글을 조회할 때 그 내역을 기록하는 쿼리문 " readwho가 ip주소이고, boardNo가 ?이고, 
+-- 1. 같은 아이피 주소로 읽은 내역이 있는지 먼저 검사, 
+select * from boardreadlog;
+select readWhen from boardreadlog where readWho=? and boardNo=?;
+-- 2. 위 결과가 null이 면 insert 
+insert into boardreadlog(readWho, boardNo) values(?, ?);
+-- 3. 위 결과가 null이 아니면 현재날짜와 이전에 읽은 날짜의 차이를 구해야한다 (1번+3번 서브쿼리와 함수이용 )
+select ifnull( 
+	DATEDIFF(now(),
+		(select readWhen from boardreadlog where readWho='0:0:0:0:0:0:0:1' and boardNo=29)
+		), -1) as datediff;
+-- 4. datediff 값이 1보다 같거나 크면 기존 readDate를 update한다. 
+update boardreadlog set readWhen = now() where readWho=? and boardNo=?;
+
+
+CREATE TABLE `webdiane`.`boardreadlog` (
+  `boardReadLogNo` INT NOT NULL AUTO_INCREMENT,
+  `readWho` VARCHAR(130) NOT NULL,
+  `readWhen` DATETIME NULL DEFAULT now(),
+  `boardNo` INT NOT NULL,
+  PRIMARY KEY (`boardReadLogNo`))
+COMMENT = '게시글 조회내역을 기록하는 테이블';
+
+-- 계층형 게시판을 만드는 쿼리문
+-- 1) 기존 게시글의 ref컬럼 값을 boardNo로 업데이트(기존의 글들은 모두 부모글이므로)
+-- 2) 앞으로 저장될 게시글에도 ref컬럼값을 boardNo로 업데이트
+update hboard set ref=? where boardNo=?;
+-- 2-1) 부모글에 대한 다른 답글이 있는 상태에서, 부모글에 답글이 추가되는 경우 (자리확보를 위해) 기존 답글의 refOrder값을 수정(+1해서 뒤로 미뤄줌)
+update hboard set refOrder=refOrder+1 where ref= ? and refOrder> ? ;
+-- 3) 부모글 정보와 답글 정보를 모두 가져와서 저장하는 메서드
+insert into hboard(title, content, writer, ref, step, refOrder)
+values (?, ?, ?, ?, ?, ?);
