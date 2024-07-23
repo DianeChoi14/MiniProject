@@ -32,6 +32,9 @@ public class BoardDetailInfo {
 	private String writer;
 	private Timestamp postDate;
 	private int readCount;
+	private int ref;
+	private int step;
+	private int refOrder;
 	
 //	private int boardUpFileNo;
 //	private String newFileName;
