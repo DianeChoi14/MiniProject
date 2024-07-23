@@ -36,4 +36,7 @@ public interface HBoardDAO
 	// 조회수 증가한 날짜로 업데이트
 	int updateReadWhen(int boardNo, String ipAddr) throws Exception;
 
+	// 글 번호를 ref컬럼에 업데이트
+	int updateBoardRef(int newBoardNo) throws Exception;
+
 }

@@ -91,4 +91,9 @@
 	<update id="updateBoardReadLog">
 		update boardreadlog set readWhen = now() where readWho=#{readWho} and boardNo=#{boardNo}
 	</update>
+	
+	<!-- 글 번호를 ref컬럼에 업데이트 -->
+	<update id="updateBoardRef">
+		update hboard set ref=#{boardNo} where boardNo=#{boardNo}
+	</update>
 </mapper>

@@ -54,6 +54,9 @@ public class HBoardServiceImpl implements HBoardService {
 		if (bDao.insertNewBoard(newBoard) == 1) {
 //			1-1. 위에서 저장된 게시글의 pk(boardNo)를 가져와야한다(select)
 			int newBoardNo = bDao.getMaxBoardNo();
+			
+//			1-1-1 위에서 가져온 글 번호를 ref컬럼에 update
+			bDao.updateBoardRef(newBoardNo);
 
 //			1-2. 첨부된 파일이 있다면 첨부파일 또한 저장한다..(insert)
 			for (BoardUpFilesVODTO file : newBoard.getFileList()) {
