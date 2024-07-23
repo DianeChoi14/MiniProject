@@ -47,6 +47,9 @@
 						<label for="content" class="form-label">내용</label>
 						<textarea class="form-control" id="content" value="" readonly>${board.content}</textarea>
 					</div>
+					<div>${board.ref } ${board.step } ${board.refOrder }</div>
+
+
 				</div>
 				<div class="fileList" style="padding: 15px">
 					<c:forEach var="file" items="${board.fileList }">
@@ -67,19 +70,21 @@
 						</c:choose>
 					</c:forEach>
 				</div>
-		</div>
-		</c:forEach>
 
-		<div class="btns">
-			<button type="button" class="btn btn-info"
-				onclick="">답글달기</button>
-			<button type="button" class="btn btn-primary"
-				onclick="">글수정</button>
-			<button type="button" class="btn btn-danger"
-				onclick="">글삭제</button>
-			<button type="button" class="btn btn-secondary"
-				onclick="location.href='/hboard/listAll';">리스트페이지로</button>
+
+
+				<div class="btns">
+					<button type="button" class="btn btn-info"
+						onclick="location.href='/hboard/showReplyForm?boardNo=${board.boardNo}&ref=${board.boardNo }&step=${board.step }&refOrder=${board.refOrder }';">답글달기</button>
+					<button type="button" class="btn btn-primary" onclick="">글수정</button>
+					<button type="button" class="btn btn-danger" onclick="">글삭제</button>
+					<button type="button" class="btn btn-secondary"
+						onclick="location.href='/hboard/listAll';">리스트페이지로</button>
+				</div>
+
+			</c:forEach>
 		</div>
+		
 		<c:import url="../footer.jsp"></c:import>
 
 	</div>
