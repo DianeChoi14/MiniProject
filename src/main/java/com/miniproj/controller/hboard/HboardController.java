@@ -27,6 +27,7 @@ import com.miniproj.model.BoardDetailInfo;
 import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
+import com.miniproj.model.HReplyBoardDTO;
 import com.miniproj.model.MyResponseWithoutData;
 import com.miniproj.service.hboard.HBoardService;
 import com.miniproj.util.FileProcess;
@@ -53,8 +54,9 @@ public class HboardController {
 	private FileProcess fileProcess;
 
 	// 유저가 업로드한 파일을 임시 저장하는 객체
-	private List<BoardUpFilesVODTO> uploadFileList = new ArrayList<BoardUpFilesVODTO>(); // List는 인터페이스, new ArrayList는 클래스
-	
+	private List<BoardUpFilesVODTO> uploadFileList = new ArrayList<BoardUpFilesVODTO>(); // List는 인터페이스, new ArrayList는
+																							// 클래스
+
 	// 게시판전체목록리스트를 출력하는 메소드
 	@RequestMapping("/listAll")
 	public void listAll(Model model) {
@@ -90,7 +92,7 @@ public class HboardController {
 	@RequestMapping(value = "/saveBoard", method = RequestMethod.POST) // get방식은 메서드방식 생략가능
 	public String saveBoard(HBoardDTO boardDTO, RedirectAttributes redirectAttributes) throws Exception {
 		boardDTO.setFileList(this.uploadFileList); // 첨부파일리스트를 BoardDTO에 주입
-		
+
 		String returnPage = "redirect:/hboard/listAll";
 		try {
 			if (service.saveBoard(boardDTO)) { // 게시글 저장에 성공했을 때
@@ -105,7 +107,8 @@ public class HboardController {
 	}
 
 	@RequestMapping(value = "/upfiles", method = RequestMethod.POST, produces = "application/json; charset=UTF-8;")
-	public ResponseEntity<MyResponseWithoutData> saveBoardFile(@RequestParam("file")MultipartFile file, HttpServletRequest request) {
+	public ResponseEntity<MyResponseWithoutData> saveBoardFile(@RequestParam("file") MultipartFile file,
+			HttpServletRequest request) {
 		// 리퀘스트 객체는 서블릿에서만 동작
 		System.out.println("파일 전송됨 ... 저장해야함");
 
@@ -119,118 +122,145 @@ public class HboardController {
 			upFile = file.getBytes(); // 파일의 실제 데이터를 읽어옴
 			// 요청의 http세션 객체를 얻어온뒤 서블릿을 얻고난 뒤에 경로얻기 가능
 			String realPath = request.getSession().getServletContext().getRealPath("/resources/boardUpFiles");
-			BoardUpFilesVODTO fileInfo = fileProcess.saveFileToRealPath(upFile, realPath, contentType, originalFileName, fileSize);
+			BoardUpFilesVODTO fileInfo = fileProcess.saveFileToRealPath(upFile, realPath, contentType, originalFileName,
+					fileSize);
 			System.out.println(
-				"서버의 실제 경로 : " + request.getSession().getServletContext().getRealPath("/resources/boardUpFiles"));
+					"서버의 실제 경로 : " + request.getSession().getServletContext().getRealPath("/resources/boardUpFiles"));
 			System.out.println("저장된 파일의 정보 : " + fileInfo.toString());
-			
+
 			this.uploadFileList.add(fileInfo);
-			
-			
+
 			System.out.println("=============================================");
 			System.out.println("========현재 파일리스트에 있는 파일들=========");
 			for (BoardUpFilesVODTO f : this.uploadFileList) {
-				System.out.println( f.toString());
+				System.out.println(f.toString());
 			}
 			System.out.println("=============================================");
-			
-			String tmp = null; 
-			if(fileInfo.getThumbFileName() != null) {
-				//이미지
+
+			String tmp = null;
+			if (fileInfo.getThumbFileName() != null) {
+				// 이미지
 				tmp = fileInfo.getThumbFileName();
 			} else {
-				tmp = fileInfo.getNewFileName().substring(fileInfo.getNewFileName().lastIndexOf(File.separator)+1);
+				tmp = fileInfo.getNewFileName().substring(fileInfo.getNewFileName().lastIndexOf(File.separator) + 1);
 			}
-				
+
 			// 저장된 새로운 파일이름을 제이슨으로 리턴
-			
-			MyResponseWithoutData mrw =MyResponseWithoutData.builder()
-				.code(200)
-				.msg("success")
-				.newFileName(tmp).build();
+
+			MyResponseWithoutData mrw = MyResponseWithoutData.builder().code(200).msg("success").newFileName(tmp)
+					.build();
 			result = new ResponseEntity<MyResponseWithoutData>(mrw, HttpStatus.OK); // EnumClass : sf값만 가질 수 있는 클래스
-			
+
 		} catch (IOException e) {
 			// 저장실패시 오게되는 곳
 			e.printStackTrace();
 			result = new ResponseEntity<>(HttpStatus.OK);
 		}
-		// request.getRealPath("/resources/boardUpFiles"); // getRealPath서버에 있는 물리적 경로를 제공
-		return result; 
+		// request.getRealPath("/resources/boardUpFiles"); // getRealPath서버에 있는 물리적 경로를
+		// 제공
+		return result;
 
 	}
-	
-	@RequestMapping(value = "/removefile", method=RequestMethod.POST, produces = "application/json; charset=UTF-8;")
-	public ResponseEntity<MyResponseWithoutData> removeUpFile(@RequestParam("removedFileName") String removedFileName, HttpServletRequest request) {
+
+	@RequestMapping(value = "/removefile", method = RequestMethod.POST, produces = "application/json; charset=UTF-8;")
+	public ResponseEntity<MyResponseWithoutData> removeUpFile(@RequestParam("removedFileName") String removedFileName,
+			HttpServletRequest request) {
 		System.out.println("업로드된 파일 삭제하는 곳~~ : " + removedFileName);
-		
+
 		boolean removeResult = false;
-		ResponseEntity<MyResponseWithoutData> result = null; 
+		ResponseEntity<MyResponseWithoutData> result = null;
 		int removeIndex = -1;
-		
-		// 넘겨진 removeFileName과 uploadFileList배열의 originalFileName과 비교하여 같은 것이 있다면 삭제처리함(배열,하드디스크)
-		for(int i=0 ; i<this.uploadFileList.size() ; i++) { //삭제할 파일의 경로와 이름을 주면서 delete()
-			if(uploadFileList.get(i).getNewFileName().contains(removedFileName)) {
+
+		// 넘겨진 removeFileName과 uploadFileList배열의 originalFileName과 비교하여 같은 것이 있다면
+		// 삭제처리함(배열,하드디스크)
+		for (int i = 0; i < this.uploadFileList.size(); i++) { // 삭제할 파일의 경로와 이름을 주면서 delete()
+			if (uploadFileList.get(i).getNewFileName().contains(removedFileName)) {
 				// 하드디스크에서 삭제
-				System.out.println(i+"번째에서 해당파일 찾앗다!"+uploadFileList.get(i).getNewFileName());
+				System.out.println(i + "번째에서 해당파일 찾앗다!" + uploadFileList.get(i).getNewFileName());
 				// uploadFileList.remove(i);
 				String realPath = request.getSession().getServletContext().getRealPath("/resources/boardUpFiles");
-				if(fileProcess.removeFile(realPath+uploadFileList.get(i).getNewFileName())) {
+				if (fileProcess.removeFile(realPath + uploadFileList.get(i).getNewFileName())) {
 					removeIndex = i;
 					removeResult = true;
 					break;
 				}
 			}
 		}
-		if(removeResult) {
+		if (removeResult) {
 			uploadFileList.remove(removeIndex);
 			System.out.println("=============================================");
 			System.out.println("========현재 파일리스트에 있는 파일들=========");
 			for (BoardUpFilesVODTO f : this.uploadFileList) {
-				System.out.println( f.toString());
+				System.out.println(f.toString());
 			}
-			System.out.println("=============================================");		
-			
-			result = new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, "", "success"), HttpStatus.OK);
+			System.out.println("=============================================");
+
+			result = new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, "", "success"),
+					HttpStatus.OK);
 		} else {
-			result = new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(400, "", "fail"), HttpStatus.CONFLICT);
+			result = new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(400, "", "fail"),
+					HttpStatus.CONFLICT);
 		}
-		
+
 		return result;
-		
+
 	}
-	
-	@RequestMapping(value="/cancelBoard", method=RequestMethod.GET, produces = "application/json; charset=UTF-8;")
+
+	@RequestMapping(value = "/cancelBoard", method = RequestMethod.GET, produces = "application/json; charset=UTF-8;")
 	public ResponseEntity<MyResponseWithoutData> cancelBoard(HttpServletRequest request) {
 		System.out.println("유저가 업로드한 모든 파일을 삭제");
 		String realPath = request.getSession().getServletContext().getRealPath("/resources/boardUpFiles");
-		// 페이지에 들어갈 때마다 리스트객체가 new되므로 =!null으로 표현식 불가 
-		if(this.uploadFileList.size() > 0) {
-			for(int i =0 ; i<uploadFileList.size(); i++) {
-				fileProcess.removeFile(realPath+uploadFileList.get(i).getNewFileName());
-				
+		// 페이지에 들어갈 때마다 리스트객체가 new되므로 =!null으로 표현식 불가
+		if (this.uploadFileList.size() > 0) {
+			for (int i = 0; i < uploadFileList.size(); i++) {
+				fileProcess.removeFile(realPath + uploadFileList.get(i).getNewFileName());
+
 				// 이미지파일일 경우 썸네일파일까지 삭제함
-				if(uploadFileList.get(i).getThumbFileName() != null || uploadFileList.get(i).getThumbFileName() != "") {
-					fileProcess.removeFile(realPath+uploadFileList.get(i).getThumbFileName());
+				if (uploadFileList.get(i).getThumbFileName() != null
+						|| uploadFileList.get(i).getThumbFileName() != "") {
+					fileProcess.removeFile(realPath + uploadFileList.get(i).getThumbFileName());
 				}
 			}
 			this.uploadFileList.clear();
 		}
 		return new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, "", "success"), HttpStatus.OK);
 	}
-	
-	@RequestMapping (value = "/viewBoard")
+
+	@RequestMapping(value = "/viewBoard")
 	public void viewBoard(@RequestParam("boardNo") int boardNo, Model model, HttpServletRequest reuqest) {
 		try {
 			String ipAddr = GetClientIPAddr.getClientIp(reuqest);
 			List<BoardDetailInfo> boardDetailInfo = service.read(boardNo, ipAddr);
-			model.addAttribute("boardDetailInfo",boardDetailInfo);
+			model.addAttribute("boardDetailInfo", boardDetailInfo);
 			// 게시글 조회시 ip주소를 얻어오기(request객체)
-			
+
 			System.out.println(ipAddr + "가" + boardNo + "글을 조회한다!=================");
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@RequestMapping("/showReplyForm")
+	public String showReplyForm() {
+		return "/hboard/showReplyForm";
+
+	}
+
+	@RequestMapping(value = "/saveReply", method = RequestMethod.POST)
+	public String saveReplyBoard(HReplyBoardDTO replyBoard, RedirectAttributes redirectattributes) {
+		System.out.println(replyBoard + "를 답글로 저장하자........");
+		String returnPage = "redirect:/hboard/listAll";
+		try {
+			if(service.saveReply(replyBoard)) {
+				redirectattributes.addAttribute("status", "success");
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			redirectattributes.addAttribute("status", "fail");
+		}
+		return returnPage;
 	}
 }

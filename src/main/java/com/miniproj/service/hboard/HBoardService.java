@@ -5,6 +5,7 @@ import java.util.List;
 import com.miniproj.model.BoardDetailInfo;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
+import com.miniproj.model.HReplyBoardDTO;
 
 //// Service단에서 해야할 작업
 //1) Controller단에서 넘겨진 파라미터를 처리한 후(비즈니스 로직에 의해(트랜잭션처리를 통해))
@@ -33,5 +34,7 @@ public interface HBoardService
 	
 	// 게시판 글 삭제
 	
+	// 게시글 답글달기
+	public boolean saveReply(HReplyBoardDTO replyBoard) throws Exception;
 	
 }

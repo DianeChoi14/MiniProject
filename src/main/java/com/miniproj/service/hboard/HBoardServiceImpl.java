@@ -15,6 +15,7 @@ import com.miniproj.model.BoardDetailInfo;
 import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
+import com.miniproj.model.HReplyBoardDTO;
 import com.miniproj.model.PointLogDTO;
 import com.miniproj.persistence.HBoardDAO;
 import com.miniproj.persistence.MemberDAO;
@@ -114,4 +115,21 @@ public class HBoardServiceImpl implements HBoardService {
 		}
 	}
 
+	@Override
+	public boolean saveReply(HReplyBoardDTO replyBoard) throws Exception {
+		boolean result = false;
+		// 부모글에 대한 다른 답글이 있는 상태에서, 부모글에 답글이 추가되는 경우 (자리확보를 위해) 기존 답글의 refOrder값을 수정
+		bDao.updateBoardRef(replyBoard.getRef(), replyBoard.getRefOrder());
+		
+		// 1) 부모글의 boardNo를 ref값으로, 부모글의 step+1을 step에, 부모글의 refOrder+1값을 refOrder에 저장 + 답글 데이터
+		replyBoard.setStep(replyBoard.getStep()+1);
+		replyBoard.setRefOrder(replyBoard.getRefOrder()+1);
+		
+		if(bDao.insertReplyBoard(replyBoard)==1) {
+			result=true;
+		}
+		return result;
+	}
+		
+	
 }
