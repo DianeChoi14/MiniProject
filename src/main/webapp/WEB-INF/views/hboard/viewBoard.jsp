@@ -32,6 +32,9 @@
 			<h1>게시글 상세 페이지</h1>
 
 			<c:forEach var="board" items="${boardDetailInfo}">
+				<c:if test="${board.isDelete =='Y' }">
+					<c:redirect url="/hboard/listAll?status=wrongAccess"></c:redirect>
+				</c:if>
 				<div class="boardInfo">
 					<div class="mb-3">
 						<label for="boardNo" class="form-label">글 번호</label> <input
@@ -63,26 +66,26 @@
 						<textarea class="form-control" id="content" value="" readonly>${board.content}</textarea>
 					</div>
 					<div>${board.ref }${board.step }${board.refOrder }</div>
-
-
 				</div>
+				
 				<div class="fileList" style="padding: 15px">
 					<c:forEach var="file" items="${board.fileList }">
+					<c:if test="${file.boardUpFileNo !='0' }">
 						<c:choose>
 							<c:when test="${file.thumbFileName !=null }">
 								<div>
 									<img src="/resources/boardUpFiles/${file.newFileName }" />
 								</div>
 							</c:when>
-							<c:otherwise>
-								<!-- otherwise = else -->
+							<c:when test="${file.thumbFileName == null }">
 								<div>
 									<a href="/resources/boardUpFiles/${file.newFileName }"> <img
 										src="/resources/images/noimage.png"> ${file.newFileName }
 									</a>
 								</div>
-							</c:otherwise>
+							</c:when>			
 						</c:choose>
+						</c:if>
 					</c:forEach>
 				</div>
 

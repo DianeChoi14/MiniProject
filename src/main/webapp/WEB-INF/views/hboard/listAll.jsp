@@ -9,7 +9,7 @@
 <title>Insert title here</title>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script>
+<script>
 
 	</script>
 <script>
@@ -98,22 +98,39 @@
 								<th>Writer</th>
 								<th>PostDate</th>
 								<th>ReadCount</th>
+								<th>isDelete</th>
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach var="board" items="${boardList}">
-								<tr onclick="location.href='/hboard/viewBoard?boardNo=${board.boardNo}';">
-									<td>${board.boardNo}</td>
-									<td>
-									<c:forEach var="i" begin="1" end="${board.step}">
-										<img src="/resources/images/reply.png" />
-									</c:forEach>
-									${board.title}</td>
-									<td>${board.writer}</td>
-									<td class="postDate">${board.postDate}</td>
-									<td>${board.readCount}</td>
 
-								</tr>
+							<c:forEach var="board" items="${boardList}">
+								<c:choose>
+									<c:when test='${board.isDelete=="N"}'>
+
+										<tr
+											onclick="location.href='/hboard/viewBoard?boardNo=${board.boardNo}';">
+											<td>${board.boardNo}</td>
+											<td><c:forEach var="i" begin="1" end="${board.step}">
+													<img src="/resources/images/reply.png" />
+												</c:forEach> ${board.title}</td>
+											<td>${board.writer}</td>
+											<td class="postDate">${board.postDate}</td>
+											<td>${board.readCount}</td>
+											<td>${board.isDelete}</td>
+										</tr>
+									</c:when>
+									<c:when test="${board.isDelete=='Y' }">
+										<tr>
+											<td>${board.boardNo}</td>
+											<td>삭제된 글입니다......</td>
+											<td></td>
+											<td class="postDate"></td>
+											<td>${board.isDelete}</td>
+										</tr>
+									</c:when>
+								</c:choose>
+
+
 							</c:forEach>
 						</tbody>
 					</table>
@@ -129,18 +146,19 @@
 		</div>
 
 		<!-- The Modal -->
-		<div class="modal" id="myModal" style="display:none;">
+		<div class="modal" id="myModal" style="display: none;">
 			<div class="modal-dialog">
 				<div class="modal-content">
 
 					<!-- Modal Header -->
 					<div class="modal-header">
 						<h4 class="modal-title">MiniProject</h4>
-						<button type="button" class="btn-close modalCloseBtn" data-bs-dismiss="modal"></button> 
+						<button type="button" class="btn-close modalCloseBtn"
+							data-bs-dismiss="modal"></button>
 					</div>
 
 					<!-- Modal body -->
-					<div class="modal-body"> </div>
+					<div class="modal-body"></div>
 
 					<!-- Modal footer -->
 					<div class="modal-footer">
