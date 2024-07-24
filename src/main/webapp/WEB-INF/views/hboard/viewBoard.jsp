@@ -6,6 +6,21 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+	function showRemoveModal() {
+		$(function(){
+			// Close, X 버튼 클릭하면 모달창 종료
+			$('.modalCloseBtn').click(function(){
+				$('#myModal').hide(100);
+			});
+		});
+		let boardNo = $('#boardNo').val();
+		$('.modal-body').html(boardNo+ "번 글을 정말로 삭제하시겠습니까?");
+		$('#myModal').show(500); // .show() 괄호 안에 숫자를 넣으면 m/s단위로 애니메이션 추가됨
+	}
+</script>
 </head>
 <body>
 
@@ -47,7 +62,7 @@
 						<label for="content" class="form-label">내용</label>
 						<textarea class="form-control" id="content" value="" readonly>${board.content}</textarea>
 					</div>
-					<div>${board.ref } ${board.step } ${board.refOrder }</div>
+					<div>${board.ref }${board.step }${board.refOrder }</div>
 
 
 				</div>
@@ -77,14 +92,43 @@
 					<button type="button" class="btn btn-info"
 						onclick="location.href='/hboard/showReplyForm?boardNo=${board.boardNo}&ref=${board.ref }&step=${board.step }&refOrder=${board.refOrder }';">답글달기</button>
 					<button type="button" class="btn btn-primary" onclick="">글수정</button>
-					<button type="button" class="btn btn-danger" onclick="">글삭제</button>
+					<button type="button" class="btn btn-danger"
+						onclick="showRemoveModal()">글삭제</button>
 					<button type="button" class="btn btn-secondary"
 						onclick="location.href='/hboard/listAll';">리스트페이지로</button>
 				</div>
 
 			</c:forEach>
 		</div>
-		
+
+		<!-- The Modal -->
+		<div class="modal" id="myModal" style="display:none;">
+			<div class="modal-dialog">
+				<div class="modal-content">
+
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title">MiniProject</h4>
+						<button type="button" class="btn-close modalCloseBtn"
+							data-bs-dismiss="modal"></button>
+					</div>
+
+					<!-- Modal body -->
+					<div class="modal-body"></div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-info"
+							data-bs-dismiss="modal" onclick="location.href='/hboard/removeBoard?boardNo=${param.boardNo}';">삭제</button>
+					
+						<button type="button" class="btn btn-danger modalCloseBtn"
+							data-bs-dismiss="modal">취소</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
 		<c:import url="../footer.jsp"></c:import>
 
 	</div>
