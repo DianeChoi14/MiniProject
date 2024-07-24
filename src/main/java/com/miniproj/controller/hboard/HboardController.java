@@ -110,7 +110,7 @@ public class HboardController {
 	public ResponseEntity<MyResponseWithoutData> saveBoardFile(@RequestParam("file") MultipartFile file,
 			HttpServletRequest request) {
 		// 리퀘스트 객체는 서블릿에서만 동작
-		System.out.println("파일 전송됨 ... 저장해야함"); 
+		System.out.println("파일 전송됨 ... 저장해야함");
 
 		ResponseEntity<MyResponseWithoutData> result = null;
 		// 파일의 기본정보 가져옴
@@ -205,6 +205,7 @@ public class HboardController {
 		return result;
 
 	}
+
 //================================================================================================================================
 	private void allUploadFileDelete(String realPath, List<BoardUpFilesVODTO> fileList) {
 		for (int i = 0; i < fileList.size(); i++) {
@@ -239,7 +240,7 @@ public class HboardController {
 			// Optional : 객체 안에 데이터가 있는지 확인하는 클래스 ; Optional<List<BoardUpFilesVODTO>> t;로
 			// null인지 확인 가능
 			String realPath = request.getSession().getServletContext().getRealPath("/resources/boardUpFiles");
-			
+
 			if (fileList.size() > 0) {
 				allUploadFileDelete(realPath, fileList);
 			}
@@ -252,23 +253,45 @@ public class HboardController {
 		}
 		return "redirect:/hboard/listAll";
 	}
-	
+
 //================================================================================================================================
 
-	@RequestMapping(value = "/viewBoard")
-	public void viewBoard(@RequestParam("boardNo") int boardNo, Model model, HttpServletRequest reuqest) {
+	// 아래의 viewBoard() 메서드는 /viewBoard, /modifyBoard(게시글 수정을 위해 게시글 호출) 기능일 때 두 경우에
+	// 호출된다
+	@RequestMapping(value = { "/viewBoard", "/modifyBoard" })
+	public String viewBoard(@RequestParam("boardNo") int boardNo, Model model, HttpServletRequest request) {
+	
+		String returnViewPage = "";
+		String ipAddr = GetClientIPAddr.getClientIp(request);
+		List<BoardDetailInfo> boardDetailInfo = null;
+		
+		System.out.println("=========" + ipAddr + "가" + boardNo + "글을 조회한다!=================");
+		System.out.println("URI출력 : " + request.getRequestURI());
+		// 수정페이지 호출 시에는 조회수 업데이트 X, 상세보기와 수정페이지는 뷰단이 다르다
+		
 		try {
-			String ipAddr = GetClientIPAddr.getClientIp(reuqest);
-			List<BoardDetailInfo> boardDetailInfo = service.read(boardNo, ipAddr);
-			model.addAttribute("boardDetailInfo", boardDetailInfo);
-			// 게시글 조회시 ip주소를 얻어오기(request객체)
+			if (request.getRequestURI().equals("/hboard/viewBoard")) {
+				System.out.println("게시판상세보기 호출~~~~~~~~~~~~~~~");
+				returnViewPage = "/hboard/viewBoard";
+				boardDetailInfo = service.read(boardNo, ipAddr);
 
-			System.out.println(ipAddr + "가" + boardNo + "글을 조회한다!=================");
-
-		} catch (Exception e) {
-			e.printStackTrace();
+			} else if (request.getRequestURI().equals("/hboard/modifyBoard")) {
+				System.out.println("게시판 수정페이지 호출~~~~~~~~~~~~~~~~~~~~~~~~~");
+				returnViewPage = "/hboard/modifyBoard";
+				boardDetailInfo = service.read(boardNo);
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			returnViewPage = "redirect:/hboard/listAll?status=fail";
 		}
+		model.addAttribute("boardDetailInfo", boardDetailInfo);
+		return returnViewPage;
 	}
+
+//	@RequestMapping("/modifyBoard")
+//	public void modifyBoard(@RequestParam("boardNo") int boardNo, HttpServletRequest request) {
+//		System.out.println("URI출력 : " + request.getRequestURI());
+//	}
 
 	@RequestMapping("/showReplyForm")
 	public String showReplyForm() {

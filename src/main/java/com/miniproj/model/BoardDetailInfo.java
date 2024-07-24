@@ -35,6 +35,7 @@ public class BoardDetailInfo {
 	private int ref;
 	private int step;
 	private int refOrder;
+	private String isDelete;
 	
 //	private int boardUpFileNo;
 //	private String newFileName;

@@ -67,17 +67,16 @@
 			<result column="size" property="size" javaType="long" />
 			<result column="boardNo" property="boardNo" javaType="int" />
 			<result column="base64Img" property="base64Img"
-				javaType="String" />
-			
+				javaType="String" />	
 		</collection>
 
 	</resultMap>
 	<!-- 게시글의 상세정보를 담는 조인문 -->
 	<select id="selectBoardDetailInfoByBoardNo"
 		resultMap="boardDetailInfoMap">
-		select h.boardNo, h.title, h.content, h.isDelete,
+		select h.boardNo, h.title, h.content, 
 		h.writer,
-		h.postDate, h.readCount, h.ref, h.step, h.refOrder,
+		h.postDate, h.readCount, h.ref, h.step, h.refOrder, h.isDelete,
 		f.*, m.username, m.email
 		from
 		hboard as h left outer join boardupfiles f
@@ -133,7 +132,7 @@
 
 	<!-- 첨부파일이 있다면 서버에서 삭제하기 전에 해당 글의 첨부파일 정보를 불러온다 -->
 	<select id="selectBoardUpFiles" resultType="com.miniproj.model.BoardUpFilesVODTO">
-		select * from boardupfiles where boardNo=${boardNo}
+		select * from boardupfiles where boardNo=#{boardNo}
 	</select>
 	
 	<!-- boardupfiles에서 boardNo번 글의 첨부파일을 삭제하는 쿼리문 -->

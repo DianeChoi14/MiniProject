@@ -8,19 +8,7 @@
 <title>Insert title here</title>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script>
-	function showRemoveModal() {
-		$(function(){
-			// Close, X 버튼 클릭하면 모달창 종료
-			$('.modalCloseBtn').click(function(){
-				$('#myModal').hide(100);
-			});
-		});
-		let boardNo = $('#boardNo').val();
-		$('.modal-body').html(boardNo+ "번 글을 정말로 삭제하시겠습니까?");
-		$('#myModal').show(500); // .show() 괄호 안에 숫자를 넣으면 m/s단위로 애니메이션 추가됨
-	}
-</script>
+
 </head>
 <body>
 
@@ -29,12 +17,9 @@
 
 
 		<div class="content">
-			<h1>게시글 상세 페이지</h1>
+			<h1>게시글 수정 페이지</h1>
 
 			<c:forEach var="board" items="${boardDetailInfo}">
-				<c:if test="${board.isDelete =='Y' }">
-					<c:redirect url="/hboard/listAll?status=wrongAccess"></c:redirect>
-				</c:if>
 				<div class="boardInfo">
 					<div class="mb-3">
 						<label for="boardNo" class="form-label">글 번호</label> <input
@@ -44,7 +29,7 @@
 					<div class="mb-3">
 						<label for="title" class="form-label">글제목</label> <input
 							type="text" class="form-control" id="title"
-							value="${board.title}" readonly>
+							value="${board.title}" >
 					</div>
 					<div class="mb-3">
 						<label for="writer" class="form-label">작성자</label> <input
@@ -63,7 +48,7 @@
 					</div>
 					<div class="mb-3">
 						<label for="content" class="form-label">내용</label>
-						<textarea class="form-control" id="content" value="" readonly>${board.content}</textarea>
+						<textarea class="form-control" id="content" rows="5">${board.content}</textarea>
 					</div>
 					<div>${board.ref }${board.step }${board.refOrder }</div>
 				</div>
@@ -92,11 +77,6 @@
 
 
 				<div class="btns">
-					<button type="button" class="btn btn-info"
-						onclick="location.href='/hboard/showReplyForm?boardNo=${board.boardNo}&ref=${board.ref }&step=${board.step }&refOrder=${board.refOrder }';">답글달기</button>
-					<button type="button" class="btn btn-primary" onclick="location.href='/hboard/modifyBoard?boardNo=${board.boardNo}';">글수정</button>
-					<button type="button" class="btn btn-danger"
-						onclick="showRemoveModal()">글삭제</button>
 					<button type="button" class="btn btn-secondary"
 						onclick="location.href='/hboard/listAll';">리스트페이지로</button>
 				</div>

@@ -86,12 +86,12 @@ public class HBoardServiceImpl implements HBoardService {
 
 		List<BoardDetailInfo> boardInfo = bDao.selectBoardByBoardNo(boardNo);
 
-//		for(BoardDetailInfo b : boardInfo) {
-//			System.out.println(b.toString());
-//		}
-//		for(int i=0 ; i < boardInfo.size() ; i++) {
-//			System.out.println(i+"번째"+ boardInfo.get(i).toString());
-//		}
+		for(BoardDetailInfo b : boardInfo) {
+			System.out.println(b.toString());
+		}
+		for(int i=0 ; i < boardInfo.size() ; i++) {
+			System.out.println(i+"번째"+ boardInfo.get(i).toString());
+		}
 
 		// 조회수 증가 > 글을 읽어오기 전에 조회수를 가져와서 글을 가져왔을 경우 조회수를 1 늘린다.
 		if (boardInfo != null) {
@@ -108,6 +108,13 @@ public class HBoardServiceImpl implements HBoardService {
 		}
 		return boardInfo;
 
+	}
+	
+	@Override
+	@Transactional(readOnly=true, rollbackFor=Exception.class)
+	public List<BoardDetailInfo> read(int boardNo) throws Exception {
+		List<BoardDetailInfo> boardInfo = bDao.selectBoardByBoardNo(boardNo);
+		return boardInfo;
 	}
 
 	private void updateReadCount(int boardNo, List<BoardDetailInfo> boardInfo) {
@@ -154,5 +161,7 @@ public class HBoardServiceImpl implements HBoardService {
 		}
 
 	}
+
+
 
 }

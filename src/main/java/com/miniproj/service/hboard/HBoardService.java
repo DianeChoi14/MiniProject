@@ -32,11 +32,15 @@ public interface HBoardService
 	// 게시판 상세 보기
 	public List<BoardDetailInfo> read(int boardNo, String  ipAddr) throws Exception;
 	
+	// 게시글 수정을 위해 게시글을 불러오는 메서드, read메서드 오버로딩
+	public List<BoardDetailInfo> read(int boardNo) throws Exception;
 	
 	// 게시판 글 삭제
 	public List<BoardUpFilesVODTO> removeBoard(int boardNo) throws Exception;
 	
 	// 게시글 답글달기
 	public boolean saveReply(HReplyBoardDTO replyBoard) throws Exception;
+
+	
 	
 }
