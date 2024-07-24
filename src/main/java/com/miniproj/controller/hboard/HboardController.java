@@ -110,7 +110,7 @@ public class HboardController {
 	public ResponseEntity<MyResponseWithoutData> saveBoardFile(@RequestParam("file") MultipartFile file,
 			HttpServletRequest request) {
 		// 리퀘스트 객체는 서블릿에서만 동작
-		System.out.println("파일 전송됨 ... 저장해야함");
+		System.out.println("파일 전송됨 ... 저장해야함"); 
 
 		ResponseEntity<MyResponseWithoutData> result = null;
 		// 파일의 기본정보 가져옴
@@ -205,6 +205,17 @@ public class HboardController {
 		return result;
 
 	}
+//================================================================================================================================
+	private void allUploadFileDelete(String realPath, List<BoardUpFilesVODTO> fileList) {
+		for (int i = 0; i < fileList.size(); i++) {
+			fileProcess.removeFile(realPath + uploadFileList.get(i).getNewFileName());
+
+			// 이미지파일일 경우 썸네일파일까지 삭제함
+			if (uploadFileList.get(i).getThumbFileName() != null || fileList.get(i).getThumbFileName() != "") {
+				fileProcess.removeFile(realPath + fileList.get(i).getThumbFileName());
+			}
+		}
+	}
 
 	@RequestMapping(value = "/cancelBoard", method = RequestMethod.GET, produces = "application/json; charset=UTF-8;")
 	public ResponseEntity<MyResponseWithoutData> cancelBoard(HttpServletRequest request) {
@@ -212,19 +223,37 @@ public class HboardController {
 		String realPath = request.getSession().getServletContext().getRealPath("/resources/boardUpFiles");
 		// 페이지에 들어갈 때마다 리스트객체가 new되므로 =!null으로 표현식 불가
 		if (this.uploadFileList.size() > 0) {
-			for (int i = 0; i < uploadFileList.size(); i++) {
-				fileProcess.removeFile(realPath + uploadFileList.get(i).getNewFileName());
-
-				// 이미지파일일 경우 썸네일파일까지 삭제함
-				if (uploadFileList.get(i).getThumbFileName() != null
-						|| uploadFileList.get(i).getThumbFileName() != "") {
-					fileProcess.removeFile(realPath + uploadFileList.get(i).getThumbFileName());
-				}
-			}
+			allUploadFileDelete(realPath, this.uploadFileList);
 			this.uploadFileList.clear();
 		}
 		return new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, "", "success"), HttpStatus.OK);
 	}
+
+	@RequestMapping("/removeBoard")
+	public String removeBoard(@RequestParam("boardNo") int boardNo, RedirectAttributes redirectattributes,
+			HttpServletRequest request) {
+		System.out.println(boardNo + "번 글을 삭제하려고요~~~~~");
+		try {
+			List<BoardUpFilesVODTO> fileList = service.removeBoard(boardNo);
+			// 서비스단에서 리스트객체가 생성되어 반환되기 때문에 첨부파일이 없어도 빈 리스트 객체를 반환함 > null이 아니다!!
+			// Optional : 객체 안에 데이터가 있는지 확인하는 클래스 ; Optional<List<BoardUpFilesVODTO>> t;로
+			// null인지 확인 가능
+			String realPath = request.getSession().getServletContext().getRealPath("/resources/boardUpFiles");
+			
+			if (fileList.size() > 0) {
+				allUploadFileDelete(realPath, fileList);
+			}
+			redirectattributes.addAttribute("status", "success");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectattributes.addAttribute("status", "fail");
+
+		}
+		return "redirect:/hboard/listAll";
+	}
+	
+//================================================================================================================================
 
 	@RequestMapping(value = "/viewBoard")
 	public void viewBoard(@RequestParam("boardNo") int boardNo, Model model, HttpServletRequest reuqest) {
@@ -252,10 +281,10 @@ public class HboardController {
 		System.out.println(replyBoard + "를 답글로 저장하자........");
 		String returnPage = "redirect:/hboard/listAll";
 		try {
-			if(service.saveReply(replyBoard)) {
+			if (service.saveReply(replyBoard)) {
 				redirectattributes.addAttribute("status", "success");
 			}
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -263,4 +292,5 @@ public class HboardController {
 		}
 		return returnPage;
 	}
+
 }

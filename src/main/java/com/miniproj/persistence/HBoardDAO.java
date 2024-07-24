@@ -45,5 +45,13 @@ public interface HBoardDAO
 
 	// 부모글에 대한 다른 답글이 있는 상태에서, 부모글에 답글이 추가되는 경우 (자리확보를 위해) 기존 답글의 refOrder값을 수정
 	void updateBoardRef(int ref, int refOrder) throws Exception;
+	
+	// 첨부파일이 있다면 서버에서 삭제하기 전에 해당 글의 첨부파일 정보를 불러온다
+	List<BoardUpFilesVODTO> selectBoardUpFiles (int boardNo) throws Exception;
 
+	// boardupfiles에서 첨부파일을 삭제하는 메서드
+	void deleteBoardUpFiles(int boardNo) throws Exception;
+
+	// boardNo번 글을 삭제처리
+	int deleteBoardByBoardNo(int boardNo) throws Exception ;
 }

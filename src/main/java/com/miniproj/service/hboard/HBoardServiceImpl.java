@@ -28,15 +28,18 @@ import com.miniproj.persistence.PointLogDAO;
 
 @Service // 아래의 클래스가 서비스객체임을 컴파일러에 고지
 public class HBoardServiceImpl implements HBoardService {
+
 	@Autowired
 	private HBoardDAO bDao;
 
 	@Autowired
 	private PointLogDAO pDao;
+
 	@Autowired
 	private MemberDAO mDao;
 
 	@Override
+	@Transactional(readOnly = true) // 트랜젝션이 발동하지 않음
 	public List<HBoardVO> getAllBoard() throws Exception {
 		// logger.info("HBoardServiceImpl...............");
 		System.out.println("HBoardServiceImpl...............");
@@ -55,7 +58,7 @@ public class HBoardServiceImpl implements HBoardService {
 		if (bDao.insertNewBoard(newBoard) == 1) {
 //			1-1. 위에서 저장된 게시글의 pk(boardNo)를 가져와야한다(select)
 			int newBoardNo = bDao.getMaxBoardNo();
-			
+
 //			1-1-1 위에서 가져온 글 번호를 ref컬럼에 update
 			bDao.updateBoardRef(newBoardNo);
 
@@ -77,7 +80,7 @@ public class HBoardServiceImpl implements HBoardService {
 		return result;
 	}
 
-	@Override 
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
 	public List<BoardDetailInfo> read(int boardNo, String ipAddr) throws Exception {
 
@@ -116,20 +119,40 @@ public class HBoardServiceImpl implements HBoardService {
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
 	public boolean saveReply(HReplyBoardDTO replyBoard) throws Exception {
 		boolean result = false;
 		// 부모글에 대한 다른 답글이 있는 상태에서, 부모글에 답글이 추가되는 경우 (자리확보를 위해) 기존 답글의 refOrder값을 수정
 		bDao.updateBoardRef(replyBoard.getRef(), replyBoard.getRefOrder());
-		
-		// 1) 부모글의 boardNo를 ref값으로, 부모글의 step+1을 step에, 부모글의 refOrder+1값을 refOrder에 저장 + 답글 데이터
-		replyBoard.setStep(replyBoard.getStep()+1);
-		replyBoard.setRefOrder(replyBoard.getRefOrder()+1);
-		
-		if(bDao.insertReplyBoard(replyBoard)==1) {
-			result=true;
+
+		// 1) 부모글의 boardNo를 ref값으로, 부모글의 step+1을 step에, 부모글의 refOrder+1값을 refOrder에 저장 +
+		// 답글 데이터
+		replyBoard.setStep(replyBoard.getStep() + 1);
+		replyBoard.setRefOrder(replyBoard.getRefOrder() + 1);
+
+		if (bDao.insertReplyBoard(replyBoard) == 1) {
+			result = true;
 		}
 		return result;
 	}
-		
-	
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
+	public List<BoardUpFilesVODTO> removeBoard(int boardNo) throws Exception {
+		// 1) boardNo번 글의 첨부파일이 있다면 서버에서 삭제하기 전에 해당 글의 첨부파일 정보를 불러온다 > 여러개일 수도 있으므로 리스트에
+		// 담는다.
+		List<BoardUpFilesVODTO> fileList = bDao.selectBoardUpFiles(boardNo); // select
+
+		// 2) boardNo번 글의 첨부파일이 있다면 첨부파일을 삭제해야한다.
+		bDao.deleteBoardUpFiles(boardNo); // delete
+
+		// 3) boardNo번 글을 삭제처리
+		if (bDao.deleteBoardByBoardNo(boardNo) == 1) { // update
+			return fileList;
+		} else {
+			return null; // 리스트객체가 생성되어 반환되기 때문에 첨부파일이 없어도 빈 리스트 객체를 반환함 > null이 아니다!
+		}
+
+	}
+
 }
