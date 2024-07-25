@@ -97,12 +97,13 @@ public class HboardController {
 		try {
 			if (service.saveBoard(boardDTO)) { // 게시글 저장에 성공했을 때
 				redirectAttributes.addAttribute("status", "success");
-				this.uploadFileList.clear();
+				
 			}
 		} catch (Exception e) { // 게시글 저장에 실패했을 때
 			e.printStackTrace();
 			redirectAttributes.addAttribute("status", "fail");
 		}
+		this.uploadFileList.clear();
 		return returnPage; // 게시글 전체 목록 페이지로 돌아감
 	}
 
