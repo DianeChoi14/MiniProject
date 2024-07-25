@@ -29,7 +29,7 @@
 					<div class="mb-3">
 						<label for="title" class="form-label">글제목</label> <input
 							type="text" class="form-control" id="title"
-							value="${board.title}" >
+							value="${board.title}">
 					</div>
 					<div class="mb-3">
 						<label for="writer" class="form-label">작성자</label> <input
@@ -52,67 +52,81 @@
 					</div>
 					<div>${board.ref }${board.step }${board.refOrder }</div>
 				</div>
-				
-				<div class="fileList" style="padding: 15px">
-					<c:forEach var="file" items="${board.fileList }">
-					<c:if test="${file.boardUpFileNo !='0' }">
-						<c:choose>
-							<c:when test="${file.thumbFileName !=null }">
-								<div>
-									<img src="/resources/boardUpFiles/${file.newFileName }" />
-								</div>
-							</c:when>
-							<c:when test="${file.thumbFileName == null }">
-								<div>
-									<a href="/resources/boardUpFiles/${file.newFileName }"> <img
-										src="/resources/images/noimage.png"> ${file.newFileName }
-									</a>
-								</div>
-							</c:when>			
-						</c:choose>
-						</c:if>
-					</c:forEach>
-				</div>
 
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>uploadedFiles</th>
+							<th>fileName</th>
+						</tr>
 
-
-				<div class="btns">
-					<button type="button" class="btn btn-secondary"
-						onclick="location.href='/hboard/listAll';">리스트페이지로</button>
-				</div>
-
-			</c:forEach>
+					</thead>
+					<tbody>
+						<c:forEach var="file" items="${board.fileList}">
+							<c:if test="${file.boardUpFileNo != '0' }">
+								<tr>
+									<td><input class="form-check-input" type="checkbox"
+										id="file_${file.boardUpFileNo}"></td>
+									<td><c:choose>
+											<c:when test="${file.thumbFileName != null}">
+												<!-- 이미지 파일이라면 -->
+												<img src="/resources/boardUpFiles/${file.newFileName}"
+													width="40px" />
+											</c:when>
+											<c:when test="${file.thumbFileName == null }">
+												<a href="/resources/boardUpFiles/${file.newFileName}"> <img
+													src="/resources/images/noimage.png" /> ${file.newFileName}
+												</a>
+											</c:when>
+										</c:choose></td>
+									<td>${file.newFileName}</td>
+								</tr>
+							</c:if>
+						</c:forEach>
+					</tbody>
+				</table>
 		</div>
 
-		<!-- The Modal -->
-		<div class="modal" id="myModal" style="display:none;">
-			<div class="modal-dialog">
-				<div class="modal-content">
 
-					<!-- Modal Header -->
-					<div class="modal-header">
-						<h4 class="modal-title">MiniProject</h4>
-						<button type="button" class="btn-close modalCloseBtn"
-							data-bs-dismiss="modal"></button>
-					</div>
 
-					<!-- Modal body -->
-					<div class="modal-body"></div>
+		<div class="btns">
+			<button type="button" class="btn btn-secondary"
+				onclick="location.href='/hboard/listAll';">리스트페이지로</button>
+		</div>
 
-					<!-- Modal footer -->
-					<div class="modal-footer">
-						<button type="button" class="btn btn-info"
-							data-bs-dismiss="modal" onclick="location.href='/hboard/removeBoard?boardNo=${param.boardNo}';">삭제</button>
-					
-						<button type="button" class="btn btn-danger modalCloseBtn"
-							data-bs-dismiss="modal">취소</button>
-					</div>
+		</c:forEach>
+	</div>
+
+	<!-- The Modal -->
+	<div class="modal" id="myModal" style="display: none;">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">MiniProject</h4>
+					<button type="button" class="btn-close modalCloseBtn"
+						data-bs-dismiss="modal"></button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body"></div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-info" data-bs-dismiss="modal"
+						onclick="location.href='/hboard/removeBoard?boardNo=${param.boardNo}';">삭제</button>
+
+					<button type="button" class="btn btn-danger modalCloseBtn"
+						data-bs-dismiss="modal">취소</button>
 				</div>
 			</div>
 		</div>
+	</div>
 
 
-		<c:import url="../footer.jsp"></c:import>
+	<c:import url="../footer.jsp"></c:import>
 
 	</div>
 </body>
