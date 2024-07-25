@@ -21,6 +21,15 @@
 		$('#myModal').show(500); // .show() 괄호 안에 숫자를 넣으면 m/s단위로 애니메이션 추가됨
 	}
 </script>
+<style>
+	.content{
+		margin-top : 10px;
+		margin-bottom : 10px;
+		border : 1px solid #dee2e6 ;
+		border-raidus : 0.375rem;
+		padding: 10px;
+	}
+</style>
 </head>
 <body>
 
@@ -63,9 +72,9 @@
 					</div>
 					<div class="mb-3">
 						<label for="content" class="form-label">내용</label>
-						<textarea class="form-control" id="content" value="" readonly>${board.content}</textarea>
+						<div class="content">${board.content}</div>
 					</div>
-					<div>${board.ref }${board.step }${board.refOrder }</div>
+					
 				</div>
 				
 				<div class="fileList" style="padding: 15px">
