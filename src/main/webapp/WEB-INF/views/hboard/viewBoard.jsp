@@ -10,25 +10,25 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 	function showRemoveModal() {
-		$(function(){
+		$(function() {
 			// Close, X 버튼 클릭하면 모달창 종료
-			$('.modalCloseBtn').click(function(){
+			$('.modalCloseBtn').click(function() {
 				$('#myModal').hide(100);
 			});
 		});
 		let boardNo = $('#boardNo').val();
-		$('.modal-body').html(boardNo+ "번 글을 정말로 삭제하시겠습니까?");
+		$('.modal-body').html(boardNo + "번 글을 정말로 삭제하시겠습니까?");
 		$('#myModal').show(500); // .show() 괄호 안에 숫자를 넣으면 m/s단위로 애니메이션 추가됨
 	}
 </script>
 <style>
-	.content{
-		margin-top : 10px;
-		margin-bottom : 10px;
-		border : 1px solid #dee2e6 ;
-		border-raidus : 0.375rem;
-		padding: 10px;
-	}
+.content {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border: 1px solid #dee2e6;
+	border-raidus: 0.375rem;
+	padding: 10px;
+}
 </style>
 </head>
 <body>
@@ -74,47 +74,66 @@
 						<label for="content" class="form-label">내용</label>
 						<div class="content">${board.content}</div>
 					</div>
-					
-				</div>
-				
-				<div class="fileList" style="padding: 15px">
-					<c:forEach var="file" items="${board.fileList }">
-					<c:if test="${file.boardUpFileNo !='0' }">
-						<c:choose>
-							<c:when test="${file.thumbFileName !=null }">
-								<div>
-									<img src="/resources/boardUpFiles/${file.newFileName }" />
-								</div>
-							</c:when>
-							<c:when test="${file.thumbFileName == null }">
-								<div>
-									<a href="/resources/boardUpFiles/${file.newFileName }"> <img
-										src="/resources/images/noimage.png"> ${file.newFileName }
-									</a>
-								</div>
-							</c:when>			
-						</c:choose>
-						</c:if>
-					</c:forEach>
+
 				</div>
 
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>uploadedFiles</th>
+							<th>fileName</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<c:forEach var="file" items="${board.fileList }">
+								<c:if test="${file.boardUpFileNo !='0' }">
+									<tr>
+										<td>
+										<input class="form-check-input" type="checkbox" id="" name="" value="" >
+										</td>
+										<td>
+											<c:choose>
+												<c:when test="${file.thumbFileName !=null }">
+												<!--이미지파일이라면 -->
+												<img src="/resources/boardUpFiles/${file.newFileName }" width="40px" />
+												</c:when>
+												<c:when test="${file.thumbFileName == null }">
+												<!-- 이미지파일이 아니면 -->
+												<a href="/resources/boardUpFiles/${file.newFileName }"> <img
+													src="/resources/images/noimage.png"> ${file.newFileName }
+												</a>
+												</c:when>
+												
+											</c:choose>
+										</td>	
+										<td>
+											${file.newFileName }
+										</td>
+									</tr>
+								</c:if>
+							</c:forEach>
+						</tr>
+					</tbody>
+				</table>
 
 
 				<div class="btns">
 					<button type="button" class="btn btn-info"
 						onclick="location.href='/hboard/showReplyForm?boardNo=${board.boardNo}&ref=${board.ref }&step=${board.step }&refOrder=${board.refOrder }';">답글달기</button>
-					<button type="button" class="btn btn-primary" onclick="location.href='/hboard/modifyBoard?boardNo=${board.boardNo}';">글수정</button>
+					<button type="button" class="btn btn-primary"
+						onclick="location.href='/hboard/modifyBoard?boardNo=${board.boardNo}';">글수정</button>
 					<button type="button" class="btn btn-danger"
 						onclick="showRemoveModal()">글삭제</button>
 					<button type="button" class="btn btn-secondary"
 						onclick="location.href='/hboard/listAll';">리스트페이지로</button>
 				</div>
-
 			</c:forEach>
 		</div>
 
 		<!-- The Modal -->
-		<div class="modal" id="myModal" style="display:none;">
+		<div class="modal" id="myModal" style="display: none;">
 			<div class="modal-dialog">
 				<div class="modal-content">
 
@@ -130,9 +149,9 @@
 
 					<!-- Modal footer -->
 					<div class="modal-footer">
-						<button type="button" class="btn btn-info"
-							data-bs-dismiss="modal" onclick="location.href='/hboard/removeBoard?boardNo=${param.boardNo}';">삭제</button>
-					
+						<button type="button" class="btn btn-info" data-bs-dismiss="modal"
+							onclick="location.href='/hboard/removeBoard?boardNo=${param.boardNo}';">삭제</button>
+
 						<button type="button" class="btn btn-danger modalCloseBtn"
 							data-bs-dismiss="modal">취소</button>
 					</div>

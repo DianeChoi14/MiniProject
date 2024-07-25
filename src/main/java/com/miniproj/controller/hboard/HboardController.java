@@ -285,6 +285,12 @@ public class HboardController {
 			e1.printStackTrace();
 			returnViewPage = "redirect:/hboard/listAll?status=fail";
 		}
+		
+		int fileCount = -1;
+		for (BoardDetailInfo b : boardDetailInfo) {
+			fileCount = b.getFileList().size();
+		}
+		model.addAttribute("fileCount", fileCount);
 		model.addAttribute("boardDetailInfo", boardDetailInfo);
 		return returnViewPage;
 	}
