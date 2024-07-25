@@ -56,6 +56,7 @@ public class HboardController {
 	// 유저가 업로드한 파일을 임시 저장하는 객체
 	private List<BoardUpFilesVODTO> uploadFileList = new ArrayList<BoardUpFilesVODTO>(); // List는 인터페이스, new ArrayList는
 																							// 클래스
+	private List<BoardUpFilesVODTO> modifyFileList;
 
 	// 게시판전체목록리스트를 출력하는 메소드
 	@RequestMapping("/listAll")
@@ -97,7 +98,7 @@ public class HboardController {
 		try {
 			if (service.saveBoard(boardDTO)) { // 게시글 저장에 성공했을 때
 				redirectAttributes.addAttribute("status", "success");
-				
+
 			}
 		} catch (Exception e) { // 게시글 저장에 실패했을 때
 			e.printStackTrace();
@@ -261,15 +262,15 @@ public class HboardController {
 	// 호출된다
 	@RequestMapping(value = { "/viewBoard", "/modifyBoard" })
 	public String viewBoard(@RequestParam("boardNo") int boardNo, Model model, HttpServletRequest request) {
-	
+
 		String returnViewPage = "";
 		String ipAddr = GetClientIPAddr.getClientIp(request);
 		List<BoardDetailInfo> boardDetailInfo = null;
-		
+
 		System.out.println("=========" + ipAddr + "가" + boardNo + "글을 조회한다!=================");
 		System.out.println("URI출력 : " + request.getRequestURI());
 		// 수정페이지 호출 시에는 조회수 업데이트 X, 상세보기와 수정페이지는 뷰단이 다르다
-		
+
 		try {
 			if (request.getRequestURI().equals("/hboard/viewBoard")) {
 				System.out.println("게시판상세보기 호출~~~~~~~~~~~~~~~");
@@ -280,17 +281,27 @@ public class HboardController {
 				System.out.println("게시판 수정페이지 호출~~~~~~~~~~~~~~~~~~~~~~~~~");
 				returnViewPage = "/hboard/modifyBoard";
 				boardDetailInfo = service.read(boardNo);
+
+				int fileCount = -1;
+				for (BoardDetailInfo b : boardDetailInfo) {
+					// DB에서 가저온 업로드된 파일리스트를 멤버변수에 할당
+					fileCount = b.getFileList().size();
+					this.modifyFileList = b.getFileList(); 
+				}
+				model.addAttribute("fileCount", fileCount);
+
+				System.out.println("===================================================");
+				System.out.println("========수정페이지 파일리스트에 있는 파일들=========");
+				for (BoardUpFilesVODTO f : this.modifyFileList) {
+					System.out.println(f.toString());
+				}
+				System.out.println("===================================================");
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			returnViewPage = "redirect:/hboard/listAll?status=fail";
 		}
-		
-		int fileCount = -1;
-		for (BoardDetailInfo b : boardDetailInfo) {
-			fileCount = b.getFileList().size();
-		}
-		model.addAttribute("fileCount", fileCount);
+
 		model.addAttribute("boardDetailInfo", boardDetailInfo);
 		return returnViewPage;
 	}
