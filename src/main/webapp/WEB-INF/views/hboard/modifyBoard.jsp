@@ -8,6 +8,61 @@
 <title>Insert title here</title>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script>
+	
+		function removeFile() {
+			let removeFileArr = []; // 삭제할 파일(체크된)을 담는 배열
+			$('.fileCheck').each(function(i, item){
+				if($(item).is(':checked')){
+					let tmp = $(item).attr('id'); //선택된 파일의 id값(fileBoardNo)
+					removeFileArr.push(tmp); // id값을 배열에 저장
+					console.log("삭제될 파일 : " + removeFileArr);
+				}
+			});
+			
+			$.each(removeFileArr, function(i, item){
+				// 배열 안의 요소의 개수만큼 반복, i 만큼 반복하여 removeFileArr값을 item에 넣는다
+				$.ajax({
+					url : '/hboard/modifyRemoveFileCheck', 	
+					type : 'post', 
+					data : {"removeFileNo" : item },
+					dataType : 'json', 			
+					async : false, 
+					success : function(data) { 	
+						console.log(data);
+					},
+					error : function(data) {
+							console.log(data);
+					}
+				});
+			});
+		}
+		
+		function removeFileCheck(fileId) {
+			// alert('check' + fileId); fileCheck
+			let chkCount = isCheckBoxChecked();
+			if(chkCount>0) {
+				$('.removeUpFileBtn').attr('disabled', false); // .removeAttr('disalbed')
+				$('.removeUpFileBtn').val(chkCount + "개 파일을 삭제합니다!!!!");
+			} else if(chkCount==0) {
+				$('.removeUpFileBtn').attr('disabled', true);
+				$('.removeUpFileBtn').val("선택된 파일 없음");
+			}
+			
+		}
+
+		function isCheckBoxChecked() {
+			let result = 0;
+			$('.fileCheck').each(function(i, item){
+				if($(item).is(':checked')){
+					result++;
+				}
+			});
+			console.log(result);
+			document.getElementsByClassName('fileCheck') // 클래스가 fileCheck인 것을 데려와서 배열로 만들어줌
+			return result;
+		}
+	</script>
 
 </head>
 <body>
@@ -66,8 +121,8 @@
 						<c:forEach var="file" items="${board.fileList}">
 							<c:if test="${file.boardUpFileNo != '0' }">
 								<tr>
-									<td><input class="form-check-input" type="checkbox"
-										id="file_${file.boardUpFileNo}"></td>
+									<td><input class="form-check-input fileCheck" type="checkbox"
+										id="${file.boardUpFileNo}" onclick="removeFileCheck(this.id);"></td>
 									<td><c:choose>
 											<c:when test="${file.thumbFileName != null}">
 												<!-- 이미지 파일이라면 -->
@@ -86,14 +141,14 @@
 						</c:forEach>
 					</tbody>
 				</table>
+				
+				<div class="fileBtns">
+					<input type="button" class="btn btn-danger removeUpFileBtn" value="선택한 파일 삭제" onclick="removeFile();" disabled />
+					<button type="button" class="btn btn-secondary"
+					onclick="location.href='/hboard/listAll';">리스트페이지로</button>
+				</div>
 		</div>
 
-
-
-		<div class="btns">
-			<button type="button" class="btn btn-secondary"
-				onclick="location.href='/hboard/listAll';">리스트페이지로</button>
-		</div>
 
 		</c:forEach>
 	</div>
