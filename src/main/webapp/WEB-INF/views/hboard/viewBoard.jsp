@@ -77,46 +77,26 @@
 
 				</div>
 
-				<table class="table table-hover">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>uploadedFiles</th>
-							<th>fileName</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<c:forEach var="file" items="${board.fileList }">
-								<c:if test="${file.boardUpFileNo !='0' }">
-									<tr>
-										<td>
-										<input class="form-check-input" type="checkbox" id="" name="" value="" >
-										</td>
-										<td>
-											<c:choose>
-												<c:when test="${file.thumbFileName !=null }">
-												<!--이미지파일이라면 -->
-												<img src="/resources/boardUpFiles/${file.newFileName }" width="40px" />
-												</c:when>
-												<c:when test="${file.thumbFileName == null }">
-												<!-- 이미지파일이 아니면 -->
-												<a href="/resources/boardUpFiles/${file.newFileName }"> <img
-													src="/resources/images/noimage.png"> ${file.newFileName }
-												</a>
-												</c:when>
-												
-											</c:choose>
-										</td>	
-										<td>
-											${file.newFileName }
-										</td>
-									</tr>
-								</c:if>
-							</c:forEach>
-						</tr>
-					</tbody>
-				</table>
+				<div class="fileList" style="padding: 15px">
+					<c:forEach var="file" items="${board.fileList }">
+					<c:if test="${file.boardUpFileNo !='0' }">
+						<c:choose>
+							<c:when test="${file.thumbFileName !=null }">
+								<div>
+									<img src="/resources/boardUpFiles/${file.newFileName }" width='300px'/>
+								</div>
+							</c:when>
+							<c:when test="${file.thumbFileName == null }">
+								<div>
+									<a href="/resources/boardUpFiles/${file.newFileName }"> <img
+										src="/resources/images/noimage.png"> ${file.newFileName }
+									</a>
+								</div>
+							</c:when>			
+						</c:choose>
+						</c:if>
+					</c:forEach>
+				</div>
 
 
 				<div class="btns">
