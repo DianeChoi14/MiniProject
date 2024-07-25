@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.miniproj.model.BoardDetailInfo;
+import com.miniproj.model.BoardUpFileStatus;
 import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
@@ -208,6 +209,15 @@ public class HboardController {
 
 	}
 
+	private void outputCurModifyFileList() {
+		System.out.println("=============================================");
+		System.out.println("========글 수정 파일리스트에 있는 파일들=========");
+		for (BoardUpFilesVODTO f : this.modifyFileList) {
+			System.out.println(f.toString());
+		}
+		System.out.println("=============================================");
+	}
+
 //================================================================================================================================
 	private void allUploadFileDelete(String realPath, List<BoardUpFilesVODTO> fileList) {
 		for (int i = 0; i < fileList.size(); i++) {
@@ -317,7 +327,7 @@ public class HboardController {
 
 	}
 
-	@RequestMapping(value = "/saveReply", method = RequestMethod.POST)
+	@RequestMapping(value = "/saveReply", method = RequestMethod.POST )
 	public String saveReplyBoard(HReplyBoardDTO replyBoard, RedirectAttributes redirectattributes) {
 		System.out.println(replyBoard + "를 답글로 저장하자........");
 		String returnPage = "redirect:/hboard/listAll";
@@ -333,5 +343,33 @@ public class HboardController {
 		}
 		return returnPage;
 	}
+	
+	@RequestMapping(value="/modifyRemoveFileCheck", method = RequestMethod.POST, produces = "application/json; charset=UTF-8;")
+	public ResponseEntity<MyResponseWithoutData> modifyRemoveFileCheck(@RequestParam("removeFileNo") int removedFilePK) {
+		// 게시판이 수정되기 전에 파일을 하드에서 삭제할 수 없으므로 삭제될 파일을 미리 확인하는 것
+		// 게시판이 최종 수정이 되면 실제 삭제처리해야한다..
+		System.out.println(removedFilePK + "파일을 삭제처리하쟈~!");
+		for(BoardUpFilesVODTO file : this.modifyFileList) {
+			if(removedFilePK == file.getBoardUpFileNo()) {
+				file.setFileStatus(BoardUpFileStatus.DELETE);
+			}
+		}
+		System.out.println("===================================================");
+		System.out.println("========수정페이지 파일리스트에 있는 파일들=========");
+		for (BoardUpFilesVODTO f : this.modifyFileList) {
+			System.out.println(f.toString());
+		}
+		System.out.println("===================================================");
+		
+		return new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, null, "success"), HttpStatus.OK);
+	}
 
+	@RequestMapping(value="/cancelRemFiles")
+	public ResponseEntity<MyResponseWithoutData> cancelRemFiles() {
+		for(BoardUpFilesVODTO file : this.modifyFileList) {
+				file.setFileStatus(null);
+		}	
+		return new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, null, "success"), HttpStatus.OK);
+		
+	}
 }
