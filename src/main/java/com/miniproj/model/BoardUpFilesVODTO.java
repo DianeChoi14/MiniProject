@@ -24,5 +24,8 @@ public class BoardUpFilesVODTO {
 	private int boardNo;
 	private String base64Img;
 	
+	// 게시글 수정시 첨부파일의 상태를 기록하는 변수(삭제'DELETE', 추가'INSERT')
+	private BoardUpFileStatus fileStatus;
+	
 	
 }

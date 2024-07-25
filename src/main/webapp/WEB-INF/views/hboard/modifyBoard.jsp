@@ -9,7 +9,57 @@
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script>
-	
+		function showPreview(obj) {
+			console.log(obj.files[0]); 
+ 			let reader = new FileReader();//fileReadre객체 생성
+ 			
+			// reader객체에 의해 파일 읽기를 완료하면 실행되는 callback함수
+			reader.onload = function(e) { 
+				let imgTag = `<div style='padding:10px;'><img src='\${e.target.result}' /></div>`;
+				$(imgTag).insertAfter(obj);
+			}
+			reader.readAsDataURL(obj.files[0]); // 업로드된 파일을 읽어오는 메서드
+		}
+		
+		function cancelAddFile(obj) {
+			let fileTag = $(obj).parent().prev().children().eq(0);
+			$(fileTag).val(''); // 선택파일 초기화
+			$(fileTag).parent().parent().remove(); 
+		}
+		
+		function addRows(obj) {
+			let rowCnt = $('.fileListTable tr').length;
+			console.log(rowCnt + "로우카운트~");
+			let row = $(obj).parent().parent(); //tr태그
+			let inputFileTag = `<tr><td colspan='2'><input class='form-control' type='file' id='newFile_\${rowCnt}' onchange='showPreview(this)' /></td>
+								<td><input type="button" class="btn btn-danger " value="파일저장취소" onclick="cancelAddFile(this);"/></td></tr>`;
+			
+			$(inputFileTag).insertBefore(row); // cloneRow를 row위로 추가
+		}
+		
+		
+		function cancelRemoveFile() {
+				$.ajax({
+					url : '/hboard/cancelRemFiles', 	
+					type : 'post', 
+					dataType : 'json', 			
+					async : false, 
+					success : function(data) { 	
+							if(data.msg == 'success') {
+								$('.fileCheck').each(function(i,item){
+									$(item).prop('checked',false);
+									$('#' + $(item).attr('id')).parent().parent().css('opacity', 1);
+									
+								});
+								$('.removeUpFileBtn').attr('disabled', true);
+							}
+					},
+					error : function(data) {
+							console.log(data);
+					}
+				});
+		}
+		
 		function removeFile() {
 			let removeFileArr = []; // 삭제할 파일(체크된)을 담는 배열
 			$('.fileCheck').each(function(i, item){
@@ -30,6 +80,9 @@
 					async : false, 
 					success : function(data) { 	
 						console.log(data);
+						if(data.msg == "success") {
+							$('#'+item).parent().parent().css('opacity', 0.2);
+						}
 					},
 					error : function(data) {
 							console.log(data);
@@ -62,8 +115,18 @@
 			document.getElementsByClassName('fileCheck') // 클래스가 fileCheck인 것을 데려와서 배열로 만들어줌
 			return result;
 		}
+		
+		
 	</script>
-
+<style>
+	.fileBtns {
+		display : flex;
+		justify-content : flex-end;
+	}
+	.fileBtns input, button {
+		margin-left : 5px;
+	}
+</style>
 </head>
 <body>
 
@@ -108,7 +171,7 @@
 					<div>${board.ref }${board.step }${board.refOrder }</div>
 				</div>
 
-				<table class="table table-hover">
+				<table class="table table-hover fileListTable">
 					<thead>
 						<tr>
 							<th>#</th>
@@ -139,11 +202,19 @@
 								</tr>
 							</c:if>
 						</c:forEach>
+						<tr>
+							<td colspan="3" style="text-align :center;">
+								<img src="/resources/images/add.png" onclick="addRows(this);" />
+							</td>
+						</tr>
 					</tbody>
 				</table>
 				
-				<div class="fileBtns">
+				<div class="fileBtns" >
+					
+					<input type="button" class="btn btn-info cancelRemove" value="파일삭제 취소" onclick="cancelRemoveFile();" />
 					<input type="button" class="btn btn-danger removeUpFileBtn" value="선택한 파일 삭제" onclick="removeFile();" disabled />
+					
 					<button type="button" class="btn btn-secondary"
 					onclick="location.href='/hboard/listAll';">리스트페이지로</button>
 				</div>
