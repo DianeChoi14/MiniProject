@@ -8,16 +8,72 @@
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
-	$(function(){
-		// 웹문서가 로딩되면 모달창을 띄운다
-		$('#myModal').show();
-		$('.modalCloseBtn').click(function() 
-		{
+
+	function outputPopBoards(data) {
+		let output = '<table class="table table-hover popBoard">';
+		$.each(data, function(i,e){
+			output += `<tr onclick="location.href='/hboard/viewBoard?boardNo=\${e.boardNo}';">`;
+			output += `<td>\${e.title}</td>`;
+			let postDate = new Date(e.postDate).toLocaleDateString();
+			output += `<td>\${postDate}</td>`;
+			output += '</tr>';
+		});
+		output += '</table>';
+		$('.top5Board').html(output);
+	}
+	function getTop5Board() {
+		$.ajax({
+			url : '/get5Board',
+			type : 'GET',
+			dataType : 'json',
+			success : function(data) {
+				console.log(data);
+				outputPopBoards(data);
+			}
+		});
+	}
+	function checkCookie() {
+		$.ajax({
+			url : '/readCookie',
+			type : 'GET',
+			dataType : 'json',
+			success : function(data) {
+				console.log(data);
+				if (data.msg == 'fail') {
+					$('#myModal').show(200);
+				}
+			}
+		});
+	}
+	$(function() {
+		checkCookie(); // 쿠키를 읽어서 쿠키가 없으면 모달창을 띄운다
+		getTop5Board()
+		$('.modalCloseBtn').click(function() {
+			if ($('#ch_agree').is(':checked')) {
+				$.ajax({
+					url : '/saveCookie',
+					type : 'GET',
+					dataType : 'text',
+					success : function(data) {
+						console.log(data);
+					}
+				});
+			} else {
+				alert("쿠키를 저장하지 않습니다!!!")
+			}
 			//클래스가 modatCloseBtn인 태그를 클릭(실행)하면 실행되는 함수
 			$('#myModal').hide(); // 태그를 숨기는 함수
 		})
 	});
 </script>
+<style>
+.modalFooter {
+	display: flex;
+	justify-content: space-between;
+	padding: 1rem;
+}
+
+</style>
 </head>
 <body>
 
@@ -27,6 +83,7 @@
 
 		<div class="content">
 			<h1>index.jsp</h1>
+			<div class="top5Board"></div>
 		</div>
 
 		<c:import url="./footer.jsp"></c:import>
@@ -52,10 +109,15 @@
 				</div>
 
 				<!-- Modal footer -->
-				<div class="modal-footer">
-					<span> <input class="form-check-input" type="checkbox" id="ch_agree" />하루동안 공지 열지 않기</span>
-					<button type="button" class="btn btn-danger modalCloseBtn"
-						data-bs-dismiss="modal">Close</button>
+				<div class="modalFooter">
+					<div>
+						<input class="form-check-input" type="checkbox" id="ch_agree" />
+						하루동안 공지 열지 않기
+					</div>
+					<div>
+						<button type="button" class="btn btn-danger modalCloseBtn"
+							data-bs-dismiss="modal">Close</button>
+					</div>
 				</div>
 			</div>
 		</div>

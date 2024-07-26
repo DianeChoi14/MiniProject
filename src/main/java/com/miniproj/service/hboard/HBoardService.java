@@ -39,6 +39,9 @@ public interface HBoardService
 	// 게시글 답글달기
 	public boolean saveReply(HReplyBoardDTO replyBoard) throws Exception;
 
+	// 인기글 5개 가져오기
+	public List<HBoardVO> getPopularBoards() throws Exception;
+
 	// 게시판 페이징
 
 	

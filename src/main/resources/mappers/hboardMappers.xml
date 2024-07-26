@@ -154,4 +154,9 @@
 	<delete id="deleteBoardUpFileByPK">
 		delete from boardupfiles where boardUpFileNo=#{boardUpFileNo}
 	</delete>
+	
+	<!-- 삭제되지 않은 글 중에서 조회수가 높은 순, 최신글 순 5개 가져오기 -->
+	<select id="selectPopBoards" resultType="com.miniproj.model.HBoardVO">
+		select boardNo, title, postDate from hboard where isDelete='N' order by readCount desc, boardNo desc limit 5
+	</select>
 </mapper>

@@ -150,7 +150,7 @@ select * from boardupfiles where boardNo=24;
 select h.boardNo, h.title, m.userId, m.userName
 from hboard as h inner join member as m
 on h.writer = m.userId
-where h.boardNo=24;
+where h.boardNo=29;
 
 -- 게시글과 첨부파일을 함께 출력해보자
 select h.boardNo, h.title, h.content, h.writer, h.postDate, h.readCount,
@@ -159,7 +159,7 @@ from hboard as h left outer join boardupfiles f
 on h.boardNo = f.boardNo
 inner join member m
 on h.writer = m.userId
-where h.boardNo=24;
+where h.boardNo=39;
 
 select *
 from hboard as h left outer join boardupfiles f 
@@ -193,6 +193,7 @@ CREATE TABLE `webdiane`.`boardreadlog` (
   PRIMARY KEY (`boardReadLogNo`))
 COMMENT = '게시글 조회내역을 기록하는 테이블';
 
+select * from webdiane.hboard order by ref desc, refOrder asc;
 -- 계층형 게시판을 만드는 쿼리문
 -- 1) 기존 게시글의 ref컬럼 값을 boardNo로 업데이트(기존의 글들은 모두 부모글이므로)
 -- 2) 앞으로 저장될 게시글에도 ref컬럼값을 boardNo로 업데이트
@@ -202,3 +203,35 @@ update hboard set refOrder=refOrder+1 where ref= ? and refOrder> ? ;
 -- 3) 부모글 정보와 답글 정보를 모두 가져와서 저장하는 메서드
 insert into hboard(title, content, writer, ref, step, refOrder)
 values (?, ?, ?, ?, ?, ?);
+
+
+-- ============================= 게시글 삭제 작업 ================================
+-- hboard 테이블에 삭제한 글을 표현하는(Y/N) 컬럼 추가
+alter table `webdiane`.`hboard`
+add column `isDelete` char(1) null default 'N' after `refOrder`;
+
+-- 첨부파일이 있다면 서버에서 삭제하기 전에 해당 글의 첨부파일 정보를 불러온다
+select * from boardupfiles where boardNo=?;
+-- boardupfiles에서 첨부파일을 삭제하는 쿼리문
+delete from boardupfiles where boardNo=?;
+-- boardNo번 글을 삭제처리 :
+-- 	 	delete문을 실행하면 계층형게시판 정렬을 위해 만들어놓은 ref, step, refOrder 컬럼 정보또한 삭제되므로
+-- 		실제로는 update문을 실행해야한다... > 삭제처리된 boardNo번 글에 접근하지 못 하도록 한다.
+-- 		유저가 입력한 내용(title, content)을 null로 바꾼다
+update hboard set isDelete='Y', title='', content='' where boardNo=? ;
+-- view단에서 지워진파일에 접근하지 못하도록 함 (isDelete 컬럼활용)
+
+-- =========================== 게시글 수정 작업 ========================================
+-- 파일 수정이 문제
+-- 수정가능한 column값을 화면에 출력 (select)
+select * from hboard where boardNo=?;
+-- 게시글 내용을 update 
+update hboard set title=?, content=? where boardNo=?;
+
+-- 첨부파일을 pk로 삭제하는 쿼리문 
+delete from boardupfiles where boardUpFileNo=?; 
+
+-- 인기글 가져오기
+-- 삭제되지 않은 글 중에서 조회수가 높은 순, 최신글 순 5개 가져오기
+use webdiane;
+select boardNo, title, postDate from hboard where isDelete='N' order by readCount desc, boardNo desc limit 5 ;

@@ -418,4 +418,6 @@ public class HboardController {
 		}
 		return "redirect:/hboard/viewBoard?boardNo=" + modifyBoard.getBoardNo();
 	}
+	
+	
 }

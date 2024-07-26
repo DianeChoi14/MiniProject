@@ -60,4 +60,7 @@ public interface HBoardDAO
 	
 	// 첨부파일의 PK번호(boardUpFileNo) 로 첨부파일을 일부만 삭제하는 메서드
 	void deleteBoardUpFiles(int boardUpFileNo);
+	
+	// 인기글 5개 가져오기
+	List<HBoardVO> selectPopBoards() throws Exception;
 }

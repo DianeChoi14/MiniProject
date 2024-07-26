@@ -165,6 +165,12 @@ public class HBoardDAOImpl implements HBoardDAO
 	public void deleteBoardUpFiles(int boardUpFileNo) {
 		ses.delete(NS + ".deleteBoardUpFileByPK", boardUpFileNo);
 	}
+
+
+	@Override
+	public List<HBoardVO> selectPopBoards() throws Exception {
+		return ses.selectList(NS + ".selectPopBoards");
+	}
 	
 	
 	
