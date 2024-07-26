@@ -10,6 +10,12 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 		function showPreview(obj) {
+			if(obj.files[0].size > 1024*1024*10) {
+				alert('10MB이하의 파일만 업로드할 수 있습니다...');
+				obj.value=""; // 선택한 파일 초기화
+				return ; // addRows(obj)의 showPreview(this)로 초기화...
+			}
+				
 			console.log(obj.files[0].type); // 파일타입확인하고 .
 			let imageType = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
 			//파일 타입 확인
