@@ -49,9 +49,15 @@ public interface HBoardDAO
 	// 첨부파일이 있다면 서버에서 삭제하기 전에 해당 글의 첨부파일 정보를 불러온다
 	List<BoardUpFilesVODTO> selectBoardUpFiles (int boardNo) throws Exception;
 
-	// boardupfiles에서 첨부파일을 삭제하는 메서드
-	void deleteBoardUpFiles(int boardNo) throws Exception;
+	// boardupfiles에서 첨부파일을 모오두 삭제하는 메서드
+	void deleteAllBoardUpFiles(int boardNo) throws Exception;
 
 	// boardNo번 글을 삭제처리
 	int deleteBoardByBoardNo(int boardNo) throws Exception ;
+	
+	// 수정된 순수 게시글 내용(title, content)을 수정하는 메서드 
+	int updateBoardbyBoardNo(HBoardDTO modifyBoard) throws Exception;
+	
+	// 첨부파일의 PK번호(boardUpFileNo) 로 첨부파일을 일부만 삭제하는 메서드
+	void deleteBoardUpFiles(int boardUpFileNo);
 }

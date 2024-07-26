@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.miniproj.controller.HomeController;
 import com.miniproj.model.BoardDetailInfo;
+import com.miniproj.model.BoardUpFileStatus;
 import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
@@ -151,7 +152,7 @@ public class HBoardServiceImpl implements HBoardService {
 		List<BoardUpFilesVODTO> fileList = bDao.selectBoardUpFiles(boardNo); // select
 
 		// 2) boardNo번 글의 첨부파일이 있다면 첨부파일을 삭제해야한다.
-		bDao.deleteBoardUpFiles(boardNo); // delete
+		bDao.deleteAllBoardUpFiles(boardNo); // delete
 
 		// 3) boardNo번 글을 삭제처리
 		if (bDao.deleteBoardByBoardNo(boardNo) == 1) { // update
@@ -160,6 +161,28 @@ public class HBoardServiceImpl implements HBoardService {
 			return null; // 리스트객체가 생성되어 반환되기 때문에 첨부파일이 없어도 빈 리스트 객체를 반환함 > null이 아니다!
 		}
 
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
+	public boolean modifyBoard(HBoardDTO modifyBoard) throws Exception {
+		boolean result = false;
+		// 1) 게시글 내용 update
+		if(bDao.updateBoardbyBoardNo(modifyBoard)==1) {
+			// 2) 첨부파일의 status가 INSERT면 insert, DELETE면 delete
+			List<BoardUpFilesVODTO> fileList = modifyBoard.getFileList();
+			for(BoardUpFilesVODTO file : fileList) {
+				if(file.getFileStatus()==BoardUpFileStatus.INSERT) {
+					file.setBoardNo(modifyBoard.getBoardNo()); // 저장되는 파일에 글번호를 수정되는 글의 글 번호로 세팅
+					bDao.insertBoardUpFile(file);
+				} else if (file.getFileStatus()==BoardUpFileStatus.DELETE) {
+					bDao.deleteBoardUpFiles(file.getBoardUpFileNo());
+				}
+					
+			}
+			result = true;
+		}
+		return result;
 	}
 
 

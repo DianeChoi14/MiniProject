@@ -51,7 +51,7 @@
 			let rowCnt = $('.fileListTable tr').length;
 			console.log(rowCnt + "로우카운트~");
 			let row = $(obj).parent().parent(); //tr태그
-			let inputFileTag = `<tr><td colspan='2'><input class='form-control' type='file' id='newFile_\${rowCnt}' onchange='showPreview(this)' multiple /></td>
+			let inputFileTag = `<tr><td colspan='2'><input class='form-control' type='file' id='newFile_\${rowCnt}' onchange='showPreview(this)' name='modifyNewFile' multiple /></td>
 								<td><input type="button" class="btn btn-danger " value="파일저장취소" onclick="cancelAddFile(this);"/></td></tr>`;
 			
 			$(inputFileTag).insertBefore(row); // cloneRow를 row위로 추가
@@ -147,6 +147,10 @@
 .fileBtns input, button {
 	margin-left: 5px;
 }
+.btns {
+	display : flex;
+	justify-content:center;
+}
 </style>
 </head>
 <body>
@@ -159,15 +163,16 @@
 			<h1>게시글 수정 페이지</h1>
 
 			<c:forEach var="board" items="${boardDetailInfo}">
+			<form action="/hboard/modifyBoardSave" method="post" enctype="multipart/form-data">
 				<div class="boardInfo">
 					<div class="mb-3">
 						<label for="boardNo" class="form-label">글 번호</label> <input
-							type="text" class="form-control" id="boardNo"
+							type="text" class="form-control" id="boardNo" name="boardNo"
 							value="${board.boardNo}" readonly>
 					</div>
 					<div class="mb-3">
 						<label for="title" class="form-label">글제목</label> <input
-							type="text" class="form-control" id="title"
+							type="text" class="form-control" id="title" name="title"
 							value="${board.title}">
 					</div>
 					<div class="mb-3">
@@ -187,7 +192,7 @@
 					</div>
 					<div class="mb-3">
 						<label for="content" class="form-label">내용</label>
-						<textarea class="form-control" id="content" rows="5">${board.content}</textarea>
+						<textarea class="form-control" id="content" name="content" rows="5">${board.content}</textarea>
 					</div>
 					<div>${board.ref }${board.step }${board.refOrder }</div>
 				</div>
@@ -232,18 +237,22 @@
 				</table>
 
 				<div class="fileBtns">
-
-					<input type="button" class="btn btn-info cancelRemove"
-						value="파일삭제 취소" onclick="cancelRemoveFile();" /> <input
-						type="button" class="btn btn-danger removeUpFileBtn"
-						value="선택한 파일 삭제" onclick="removeFile();" disabled />
-
-					<button type="button" class="btn btn-secondary"
-						onclick="location.href='/hboard/listAll';">리스트페이지로</button>
+					<div>
+						<input type="button" class="btn btn-info cancelRemove"
+							value="파일삭제 취소" onclick="cancelRemoveFile();" /> <input
+							type="button" class="btn btn-danger removeUpFileBtn"
+							value="선택한 파일 삭제" onclick="removeFile();" disabled />
+					</div>
 				</div>
+				<p>
+				<div class="btns">
+					<button type="button" class="btn btn-secondary" onclick="">취소</button>
+					<button type="submit" class="btn btn-primary" onclick="">수정저장</button>
+				</div>
+				
 		</div>
 
-
+		</form>
 		</c:forEach>
 	</div>
 

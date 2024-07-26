@@ -116,17 +116,10 @@ public class HboardController {
 		System.out.println("파일 전송됨 ... 저장해야함");
 
 		ResponseEntity<MyResponseWithoutData> result = null;
-		// 파일의 기본정보 가져옴
-		String contentType = file.getContentType();
-		String originalFileName = file.getOriginalFilename();
-		long fileSize = file.getSize();
-		byte[] upFile = null;
+
 		try {
-			upFile = file.getBytes(); // 파일의 실제 데이터를 읽어옴
-			// 요청의 http세션 객체를 얻어온뒤 서블릿을 얻고난 뒤에 경로얻기 가능
-			String realPath = request.getSession().getServletContext().getRealPath("/resources/boardUpFiles");
-			BoardUpFilesVODTO fileInfo = fileProcess.saveFileToRealPath(upFile, realPath, contentType, originalFileName,
-					fileSize);
+			BoardUpFilesVODTO fileInfo = fileSave(file, request);
+
 			System.out.println(
 					"서버의 실제 경로 : " + request.getSession().getServletContext().getRealPath("/resources/boardUpFiles"));
 			System.out.println("저장된 파일의 정보 : " + fileInfo.toString());
@@ -163,6 +156,22 @@ public class HboardController {
 		// 제공
 		return result;
 
+	}
+
+	private BoardUpFilesVODTO fileSave(MultipartFile file, HttpServletRequest request) throws IOException {
+		// 파일의 기본정보 가져옴
+		String contentType = file.getContentType();
+		String originalFileName = file.getOriginalFilename();
+		long fileSize = file.getSize();
+		byte[] upFile = file.getBytes(); // 파일의 실제 데이터를 읽어옴
+		// 요청의 http세션 객체를 얻어온뒤 서블릿을 얻고난 뒤에 경로얻기 가능
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/boardUpFiles");
+
+		// 실제파일저장(이름변경, base64, thumbnail)
+		BoardUpFilesVODTO fileInfo = fileProcess.saveFileToRealPath(upFile, realPath, contentType, originalFileName,
+				fileSize);
+
+		return fileInfo;
 	}
 
 	@RequestMapping(value = "/removefile", method = RequestMethod.POST, produces = "application/json; charset=UTF-8;")
@@ -296,7 +305,7 @@ public class HboardController {
 				for (BoardDetailInfo b : boardDetailInfo) {
 					// DB에서 가저온 업로드된 파일리스트를 멤버변수에 할당
 					fileCount = b.getFileList().size();
-					this.modifyFileList = b.getFileList(); 
+					this.modifyFileList = b.getFileList();
 				}
 				model.addAttribute("fileCount", fileCount);
 
@@ -327,7 +336,7 @@ public class HboardController {
 
 	}
 
-	@RequestMapping(value = "/saveReply", method = RequestMethod.POST )
+	@RequestMapping(value = "/saveReply", method = RequestMethod.POST)
 	public String saveReplyBoard(HReplyBoardDTO replyBoard, RedirectAttributes redirectattributes) {
 		System.out.println(replyBoard + "를 답글로 저장하자........");
 		String returnPage = "redirect:/hboard/listAll";
@@ -343,14 +352,15 @@ public class HboardController {
 		}
 		return returnPage;
 	}
-	
-	@RequestMapping(value="/modifyRemoveFileCheck", method = RequestMethod.POST, produces = "application/json; charset=UTF-8;")
-	public ResponseEntity<MyResponseWithoutData> modifyRemoveFileCheck(@RequestParam("removeFileNo") int removedFilePK) {
+
+	@RequestMapping(value = "/modifyRemoveFileCheck", method = RequestMethod.POST, produces = "application/json; charset=UTF-8;")
+	public ResponseEntity<MyResponseWithoutData> modifyRemoveFileCheck(
+			@RequestParam("removeFileNo") int removedFilePK) {
 		// 게시판이 수정되기 전에 파일을 하드에서 삭제할 수 없으므로 삭제될 파일을 미리 확인하는 것
 		// 게시판이 최종 수정이 되면 실제 삭제처리해야한다..
 		System.out.println(removedFilePK + "파일을 삭제처리하쟈~!");
-		for(BoardUpFilesVODTO file : this.modifyFileList) {
-			if(removedFilePK == file.getBoardUpFileNo()) {
+		for (BoardUpFilesVODTO file : this.modifyFileList) {
+			if (removedFilePK == file.getBoardUpFileNo()) {
 				file.setFileStatus(BoardUpFileStatus.DELETE);
 			}
 		}
@@ -360,16 +370,52 @@ public class HboardController {
 			System.out.println(f.toString());
 		}
 		System.out.println("===================================================");
-		
-		return new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, null, "success"), HttpStatus.OK);
+
+		return new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, null, "success"),
+				HttpStatus.OK);
 	}
 
-	@RequestMapping(value="/cancelRemFiles")
+	@RequestMapping(value = "/cancelRemFiles")
 	public ResponseEntity<MyResponseWithoutData> cancelRemFiles() {
-		for(BoardUpFilesVODTO file : this.modifyFileList) {
-				file.setFileStatus(null);
-		}	
-		return new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, null, "success"), HttpStatus.OK);
-		
+		for (BoardUpFilesVODTO file : this.modifyFileList) {
+			file.setFileStatus(null);
+		}
+		return new ResponseEntity<MyResponseWithoutData>(new MyResponseWithoutData(200, null, "success"),
+				HttpStatus.OK);
+
+	}
+
+	@RequestMapping(value = "/modifyBoardSave", method = RequestMethod.POST)
+	public String modifyBoardSave(HBoardDTO modifyBoard, @RequestParam("modifyNewFile") MultipartFile[] modifyNewFile,
+			HttpServletRequest request, RedirectAttributes redirectAttributes) {
+//		System.out.println(modifyBoard.toString() + "를 수정하쟈!! ");
+		try {
+			for (int i = 0; i < modifyNewFile.length; i++) {
+				System.out.println(modifyNewFile[i].getOriginalFilename() + "..파일을 업로드도 할 거임!");
+
+				BoardUpFilesVODTO fileInfo = fileSave(modifyNewFile[i], request);
+				this.modifyFileList.add(fileInfo);
+				fileInfo.setFileStatus(BoardUpFileStatus.INSERT); // insert돼야할 파일임을 기록
+			}
+			System.out.println("===================================================");
+			System.out.println("========수정된 modifyFileList에 있는 파일들=========");
+			for (BoardUpFilesVODTO f : this.modifyFileList) {
+				System.out.println(f.toString());
+			}
+			System.out.println("===================================================");
+			
+			// next >> DB에 저장(service에 호출) IOException 보다 더 상위의 Exception으로 변경
+			modifyBoard.setFileList(modifyFileList);
+			
+			if(service.modifyBoard(modifyBoard)) {
+				redirectAttributes.addAttribute("status", "success");
+				
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			redirectAttributes.addAttribute("status", "fail");
+		}
+		return "redirect:/hboard/viewBoard?boardNo=" + modifyBoard.getBoardNo();
 	}
 }

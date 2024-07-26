@@ -135,8 +135,8 @@
 		select * from boardupfiles where boardNo=#{boardNo}
 	</select>
 	
-	<!-- boardupfiles에서 boardNo번 글의 첨부파일을 삭제하는 쿼리문 -->
-	<delete id="deleteBoardFiles">
+	<!-- boardupfiles에서 boardNo번 글의 첨부파일을 >전부< 삭제하는 쿼리문 -->
+	<delete id="deleteAllBoardUpFiles">
 		delete from boardupfiles where boardNo=#{boardNo}
 	</delete>
 
@@ -145,4 +145,13 @@
 		update hboard set isDelete='Y', title='', content='' where boardNo=#{boardNo}
 	</update>
 	
+	<!--  boardNo번의 게시글을 수정하는 쿼리문 -->
+	<update id="updateBoardByBoardNo">
+		update hboard set title=#{title}, content=#{content} where boardNo=#{boardNo};
+	</update>
+	
+	<!-- 첨부파일의 PK번호(boardUpFileNo) 로 첨부파일을 일부만 삭제하는 메서드 -->
+	<delete id="deleteBoardUpFileByPK">
+		delete from boardupfiles where boardUpFileNo=#{boardUpFileNo}
+	</delete>
 </mapper>

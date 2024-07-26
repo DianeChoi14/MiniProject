@@ -23,11 +23,9 @@ public interface HBoardService
 
 	// 게시판 글 작성
 	public boolean saveBoard(HBoardDTO newBoard) throws Exception;
-
-	// 최근 저장된 글의 글번호를 얻어오는 메서드
 	
 	// 게시판 글 수정
-	
+	public boolean modifyBoard(HBoardDTO modifyBoard) throws Exception;	
 	
 	// 게시판 상세 보기
 	public List<BoardDetailInfo> read(int boardNo, String  ipAddr) throws Exception;
@@ -41,6 +39,10 @@ public interface HBoardService
 	// 게시글 답글달기
 	public boolean saveReply(HReplyBoardDTO replyBoard) throws Exception;
 
+	// 게시판 페이징
+
+	
+	// 게시글 검색
 	
 	
 }
