@@ -8,17 +8,31 @@
 <title>Insert title here</title>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script>
+<script>
 		function showPreview(obj) {
-			console.log(obj.files[0]); 
- 			let reader = new FileReader();//fileReadre객체 생성
- 			
-			// reader객체에 의해 파일 읽기를 완료하면 실행되는 callback함수
-			reader.onload = function(e) { 
-				let imgTag = `<div style='padding:10px;'><img src='\${e.target.result}' /></div>`;
+			console.log(obj.files[0].type); // 파일타입확인하고 .
+			let imageType = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+			//파일 타입 확인
+			let fileType = obj.files[0].type;
+			let fileName = obj.files[0].name;
+			if(imageType.indexOf(fileType) != -1) { // 이미지타입이면 위치(숫자)를 반환하고, 아니면 -1을 반환
+				let reader = new FileReader();//fileReadre객체 생성
+				// reader객체에 의해 파일 읽기를 완료하면 실행되는 callback함수
+				reader.onload = function(e) { 				
+					let imgTag = `<div style='padding:10px;'><img src='\${e.target.result}' /></div>`;
+					$(imgTag).insertAfter(obj);
+				}
+				reader.readAsDataURL(obj.files[0]); // 업로드된 파일을 읽어오는 메서드
+			} else {
+				let imgTag = `<div style='padding:10px;'><img src='/resources/images/noimage.png' /><span>\${fileName}</span></div>`;
+				
 				$(imgTag).insertAfter(obj);
 			}
-			reader.readAsDataURL(obj.files[0]); // 업로드된 파일을 읽어오는 메서드
+			
+			
+ 			
+		
+			
 		}
 		
 		function cancelAddFile(obj) {
@@ -31,7 +45,7 @@
 			let rowCnt = $('.fileListTable tr').length;
 			console.log(rowCnt + "로우카운트~");
 			let row = $(obj).parent().parent(); //tr태그
-			let inputFileTag = `<tr><td colspan='2'><input class='form-control' type='file' id='newFile_\${rowCnt}' onchange='showPreview(this)' /></td>
+			let inputFileTag = `<tr><td colspan='2'><input class='form-control' type='file' id='newFile_\${rowCnt}' onchange='showPreview(this)' multiple /></td>
 								<td><input type="button" class="btn btn-danger " value="파일저장취소" onclick="cancelAddFile(this);"/></td></tr>`;
 			
 			$(inputFileTag).insertBefore(row); // cloneRow를 row위로 추가
@@ -119,13 +133,14 @@
 		
 	</script>
 <style>
-	.fileBtns {
-		display : flex;
-		justify-content : flex-end;
-	}
-	.fileBtns input, button {
-		margin-left : 5px;
-	}
+.fileBtns {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.fileBtns input, button {
+	margin-left: 5px;
+}
 </style>
 </head>
 <body>
@@ -184,13 +199,14 @@
 						<c:forEach var="file" items="${board.fileList}">
 							<c:if test="${file.boardUpFileNo != '0' }">
 								<tr>
-									<td><input class="form-check-input fileCheck" type="checkbox"
-										id="${file.boardUpFileNo}" onclick="removeFileCheck(this.id);"></td>
+									<td><input class="form-check-input fileCheck"
+										type="checkbox" id="${file.boardUpFileNo}"
+										onclick="removeFileCheck(this.id);"></td>
 									<td><c:choose>
 											<c:when test="${file.thumbFileName != null}">
 												<!-- 이미지 파일이라면 -->
 												<img src="/resources/boardUpFiles/${file.newFileName}"
-													width="40px" />
+													width="10px" />
 											</c:when>
 											<c:when test="${file.thumbFileName == null }">
 												<a href="/resources/boardUpFiles/${file.newFileName}"> <img
@@ -203,20 +219,21 @@
 							</c:if>
 						</c:forEach>
 						<tr>
-							<td colspan="3" style="text-align :center;">
-								<img src="/resources/images/add.png" onclick="addRows(this);" />
-							</td>
+							<td colspan="3" style="text-align: center;"><img
+								src="/resources/images/add.png" onclick="addRows(this);" /></td>
 						</tr>
 					</tbody>
 				</table>
-				
-				<div class="fileBtns" >
-					
-					<input type="button" class="btn btn-info cancelRemove" value="파일삭제 취소" onclick="cancelRemoveFile();" />
-					<input type="button" class="btn btn-danger removeUpFileBtn" value="선택한 파일 삭제" onclick="removeFile();" disabled />
-					
+
+				<div class="fileBtns">
+
+					<input type="button" class="btn btn-info cancelRemove"
+						value="파일삭제 취소" onclick="cancelRemoveFile();" /> <input
+						type="button" class="btn btn-danger removeUpFileBtn"
+						value="선택한 파일 삭제" onclick="removeFile();" disabled />
+
 					<button type="button" class="btn btn-secondary"
-					onclick="location.href='/hboard/listAll';">리스트페이지로</button>
+						onclick="location.href='/hboard/listAll';">리스트페이지로</button>
 				</div>
 		</div>
 
