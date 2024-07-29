@@ -7,11 +7,12 @@ import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
 import com.miniproj.model.HReplyBoardDTO;
+import com.miniproj.model.PagingInfo;
 
 public interface HBoardDAO
 {
 	// 게시판의 전체 리스트를 가져오는 메서드
-	List<HBoardVO> selectAllBoard() throws Exception; // 인터페이스에서는 public 생략가능
+	List<HBoardVO> selectAllBoard(PagingInfo pi) throws Exception; // 인터페이스에서는 public 생략가능
 	
 	// 게시글을 저장하는 메서드
 	int insertNewBoard(HBoardDTO newBoard);
@@ -63,4 +64,7 @@ public interface HBoardDAO
 	
 	// 인기글 5개 가져오기
 	List<HBoardVO> selectPopBoards() throws Exception;
+
+	// 게시글의 총 갯수를 가져오는 메서드
+	int getTotalPostCnt() throws Exception;
 }

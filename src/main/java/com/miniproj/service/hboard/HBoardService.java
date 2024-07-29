@@ -1,12 +1,14 @@
 package com.miniproj.service.hboard;
 
 import java.util.List;
+import java.util.Map;
 
 import com.miniproj.model.BoardDetailInfo;
 import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
 import com.miniproj.model.HReplyBoardDTO;
+import com.miniproj.model.PagingInfoDTO;
 
 //// Service단에서 해야할 작업
 //1) Controller단에서 넘겨진 파라미터를 처리한 후(비즈니스 로직에 의해(트랜잭션처리를 통해))
@@ -19,7 +21,7 @@ public interface HBoardService
 {
 	// 브레이스가 없는 메서드 추상메서드 > 구현체(impl)이 필요함
 	// 게시판 전체 리스트 조회..하면
-	public List<HBoardVO> getAllBoard() throws Exception; // 라는 메서드를 조회한다(impl)~
+	public Map<String, Object> getAllBoard(PagingInfoDTO dto) throws Exception; // 라는 메서드를 조회한다(impl)~
 
 	// 게시판 글 작성
 	public boolean saveBoard(HBoardDTO newBoard) throws Exception;

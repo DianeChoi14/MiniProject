@@ -1,6 +1,8 @@
 package com.miniproj.service.hboard;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,8 @@ import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
 import com.miniproj.model.HReplyBoardDTO;
+import com.miniproj.model.PagingInfo;
+import com.miniproj.model.PagingInfoDTO;
 import com.miniproj.model.PointLogDTO;
 import com.miniproj.persistence.HBoardDAO;
 import com.miniproj.persistence.MemberDAO;
@@ -41,18 +45,37 @@ public class HBoardServiceImpl implements HBoardService {
 
 	@Override
 	@Transactional(readOnly = true) // 트랜젝션이 발동하지 않음
-	public List<HBoardVO> getAllBoard() throws Exception {
+	public Map<String, Object> getAllBoard(PagingInfoDTO dto) throws Exception {
 		// logger.info("HBoardServiceImpl...............");
 		System.out.println("HBoardServiceImpl...............");
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		// 페이징정보
+		PagingInfo pi = makePagingInfo(dto);
 
-		List<HBoardVO> lst = bDao.selectAllBoard(); // DAO단 호출
+		List<HBoardVO> lst = bDao.selectAllBoard(pi); // DAO단 호출
+		
+		resultMap.put("pagingInfo", pi);
+		resultMap.put("boardList", lst);
+		return resultMap;
+	}
 
-		return lst;
+	private PagingInfo makePagingInfo(PagingInfoDTO dto) throws Exception {
+		PagingInfo pi = new PagingInfo(dto);
+		pi.setTotalPostCnt(bDao.getTotalPostCnt()); // 전체 게시글 수 세팅
+		pi.setTotalPageCnt (); // 전체 페이지 수
+		pi.setStartRowIndex(); // 현재 페이지에서 보여주기 시작할 글의 index번호
+		//페이징블럭만들기
+		pi.setPageBlockNoCurPage();
+		pi.setStartPageNoCurBlock();
+		pi.setEndPageNoCurBlock();
+
+		System.out.println(pi.toString() + "페이징 처리되었다!!!!");
+		return pi;
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class) // 실패하면
-																														// 예외처리된다
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class) // 실패하면																														// 예외처리된다
 	public boolean saveBoard(HBoardDTO newBoard) throws Exception {
 		boolean result = false;
 //		1. newBoard를 DAO단을 통해 insert해본다 

@@ -13,6 +13,7 @@ import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
 import com.miniproj.model.HReplyBoardDTO;
+import com.miniproj.model.PagingInfo;
 
 @Repository // 아래의 클래스가 dao객체임을 명시
 public class HBoardDAOImpl implements HBoardDAO 
@@ -25,19 +26,19 @@ public class HBoardDAOImpl implements HBoardDAO
 	
 	// Exception 예외처리의 부모 클래스
 	@Override
-	public List<HBoardVO> selectAllBoard() throws Exception // throws : 현재 메서드에서 예외가 발생하면 현재 메서드를 호출한 곳에서 예외처리를 하도록 미뤄두는 키워드
+	public List<HBoardVO> selectAllBoard(PagingInfo pi) throws Exception // throws : 현재 메서드에서 예외가 발생하면 현재 메서드를 호출한 곳에서 예외처리를 하도록 미뤄두는 키워드
 	{
 		System.out.println("Here is HBoard DAO..............");
-			
+		
 		List<HBoardVO> list;
 	
-			list = ses.selectList(NS + ".getAllHBoard");
+			list = ses.selectList(NS + ".getAllHBoard", pi);
 			
 //		for (HBoardVO b : list)
 //		{
 //			System.out.println(b.toString());
 //		}
-			return list;
+		return list;
 	}
 
 
@@ -170,6 +171,13 @@ public class HBoardDAOImpl implements HBoardDAO
 	@Override
 	public List<HBoardVO> selectPopBoards() throws Exception {
 		return ses.selectList(NS + ".selectPopBoards");
+	}
+
+
+	@Override
+	public int getTotalPostCnt() throws Exception {
+
+		return ses.selectOne(NS + ".selectTotalCnt");
 	}
 	
 	
