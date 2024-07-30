@@ -44,7 +44,7 @@
 				} else {
 					pageNo = parseInt('${param.pageNo}');
 				}
-				location.href="/hboard/listAll?pagingSize=" + $(this).val() + "&pageNo=" + pageNo ;
+				location.href="/hboard/listAll?pagingSize=" + $(this).val() + "&pageNo=" + pageNo + "&pagingSize=${param.pagingSize}&searchType=${search.searchType}&searchWord=${searchWord}";
 			})
 /* 			// 현재 페이지번호를 가져와서 페이지번호의 pagination의 li태그에 부트스트랩의 active클래스 부여
 			let pageNo ='${param.pageNo}';
@@ -194,7 +194,7 @@
 		<ul class="pagination justify-content-center" margin="center">
 			<c:if test="${param.pageNo >1 }">
 				<li class="page-item"><a class="page-link"
-					href="/hboard/listAll?pageNo=${param.pageNo-1}">Previous</a></li>
+					href="/hboard/listAll?pageNo=${param.pageNo-1}&pagingSize=${param.pagingSize}&searchType=${search.searchType}&searchWord=${searchWord}">Previous</a></li>
 			</c:if>
 			<c:forEach var="i" begin="${pagingInfo.startPageNoCurBlock}"
 				end="${pagingInfo.endPageNoCurBlock}">
@@ -202,17 +202,17 @@
 
 					<c:when test="${param.pageNo == i }">
 						<li class="page-item active" id="${i}"><a class="page-link"
-							href="/hboard/listAll?pageNo=${i}">${i}</a></li>
+							href="/hboard/listAll?pageNo=${i}&pagingSize=${param.pagingSize}&searchType=${search.searchType}&searchWord=${searchWord}">${i}</a></li>
 					</c:when>
 					<c:otherwise>
 						<li class="page-item" id="${i}"><a class="page-link"
-							href="/hboard/listAll?pageNo=${i}">${i}</a></li>
+							href="/hboard/listAll?pageNo=${i}&pagingSize=${param.pagingSize}&searchType=${search.searchType}&searchWord=${searchWord}">${i}</a></li>
 					</c:otherwise>
 				</c:choose>
 			</c:forEach>
 			<c:if test="${param.pageNo < pagingInfo.totalPageCnt }">
 				<li class="page-item"><a class="page-link"
-					href="/hboard/listAll?pageNo=${param.pageNo+1}">Next</a></li>
+					href="/hboard/listAll?pageNo=${param.pageNo+1}&pagingSize=${param.pagingSize}&searchType=${search.searchType}&searchWord=${searchWord}">Next</a></li>
 			</c:if>
 		</ul>
 	</div>

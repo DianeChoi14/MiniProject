@@ -248,4 +248,24 @@ select count(*) from hboard;
 
 -- 페이징 블럭 만들기(1개 페이징 블럭에서 보여줄 페이지 수 : 10페이지씩)
 -- 1) 현재 페이징 블럭에서 출력시작할 페이지 번호 e.g. 7페이지 > 1, 14페이지 >11, 28페이지>21페이지 :: (n/1개 페이징 블럭에서 보여줄 페이지 수) * 1개 페이징 블럭에서 보여줄 페이지 수 +1 
--- 2) 1)에서 나온 값 + 1개 페이징 블럭에서 보여줄 페이지 수 -1
+-- 1-2) 현재 페이지가 속한 페이징블럭의 번호
+-- 현재 페이지번호 / 1개의 페이징 블럭에서 보여줄 페이질 수 > 가 나누어떨어지지 않으면 올림, 나누어 떨어지면 그 값으로 함
+-- 2) 현재 페이징 블럭에서 출력 시작할 페이지번호 
+-- (현재 페이징 블럭번호 -1) * 1개 페이징 블럭에서 보여줄 페이지 수 + 1
+-- 2) 페이징 블럭에서 마지막에 나올 번호 : 1)에서 나온 값 + 1개 페이징 블럭에서 보여줄 페이지 수 -1
+
+-- ===============================검색기능=============================================
+use webdiane;
+-- 제목으로 검색
+-- like 검색과 함께 사용하는 와일드카드 
+-- % : 몇자라도, 
+-- '_' : 한 글자
+select * from hboard where title like '%수정%' order by ref desc, refOrder asc limit startRowIndex, postsPerPage;
+-- 작성자로 검색
+select * from hboard where writer like '%do%' order by ref desc, refOrder asc limit 0, 10;
+-- 내용으로 검색
+select * from hboard where content like '%123%' order by ref desc, refOrder asc limit startRowIndex, postsPerPage;
+-- 검색어가 있을 때 게시물의 데이터 수를 얻어오는 쿼리문
+select count(*) from hboard where title like '%수정%' order by ref desc, refOrder asc limit startRowIndex, postsPerPage;
+select count(*) from hboard where writer like '%do%' order by ref desc, refOrder asc limit 0, 10;
+select count(*) from hboard where content like '%123%' order by ref desc, refOrder asc limit startRowIndex, postsPerPage;

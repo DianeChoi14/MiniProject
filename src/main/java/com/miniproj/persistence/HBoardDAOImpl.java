@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.support.incrementer.HsqlMaxValueIncrementer;
 import org.springframework.stereotype.Repository;
 
 import com.miniproj.model.BoardDetailInfo;
@@ -14,6 +15,7 @@ import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
 import com.miniproj.model.HReplyBoardDTO;
 import com.miniproj.model.PagingInfo;
+import com.miniproj.model.SearchCriteriaDTO;
 
 @Repository // 아래의 클래스가 dao객체임을 명시
 public class HBoardDAOImpl implements HBoardDAO 
@@ -178,6 +180,28 @@ public class HBoardDAOImpl implements HBoardDAO
 	public int getTotalPostCnt() throws Exception {
 
 		return ses.selectOne(NS + ".selectTotalCnt");
+	}
+
+
+	@Override
+	public int getTotalPostCnt(SearchCriteriaDTO sc) throws Exception {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("searchType", sc.getSearchType());
+		params.put("searchWord", "%" + sc.getSearchWord() + "%");
+	
+		return ses.selectOne(NS + ".selectTotatlCntWithSearchCriteria", params);
+	}
+
+
+	@Override
+	public List<HBoardVO> selectAllBoard(PagingInfo pi, SearchCriteriaDTO sc) throws Exception {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("searchType", sc.getSearchType());
+		params.put("searchWord", "%" + sc.getSearchWord() + "%");
+		params.put("startRowIndex", pi.getStartRowIndex());
+		params.put("viewPostCntPerPage", pi.getViewPostCntPerPage());
+		
+		return ses.selectList(NS + ".getSearchBoardWithPaging", params);
 	}
 	
 	

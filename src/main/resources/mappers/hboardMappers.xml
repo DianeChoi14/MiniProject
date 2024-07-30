@@ -165,4 +165,36 @@
 		select count(*) from hboard
 	</select>
 	
+	<!-- 검색어가 있을 경우 데이터 갯수 가져오기 -->
+	<select id="selectTotatlCntWithSearchCriteria" resultType="int">
+		select count(*) from hboard 
+		<choose>
+			<when test="searchType =='title'">
+				 where title like #{searchWord}
+			</when>
+			<when test="searchType =='writer'">
+				 where writer like #{searchWord}
+			</when>
+			<when test="searchType =='content'">
+				 where content like #{searchWord}
+			</when>
+		</choose> 
+	</select>
+	
+	<!-- 검색어가 있을 경우 게시글 데이터 가져오기 -->
+		<select id="getSearchBoardWithPaging" resultType="com.miniproj.model.HBoardVO">
+		select * from hboard 
+		<choose>
+			<when test="searchType =='title'">
+				 where title like #{searchWord}
+			</when>
+			<when test="searchType =='writer'">
+				 where writer like #{searchWord}
+			</when>
+			<when test="searchType =='content'">
+				 where content like #{searchWord}
+			</when>
+		</choose> 
+		order by ref desc, refOrder asc limit #{startRowIndex}, #{viewPostCntPerPage}
+	</select>
 </mapper>

@@ -33,6 +33,7 @@ import com.miniproj.model.HReplyBoardDTO;
 import com.miniproj.model.MyResponseWithoutData;
 import com.miniproj.model.PagingInfo;
 import com.miniproj.model.PagingInfoDTO;
+import com.miniproj.model.SearchCriteriaDTO;
 import com.miniproj.service.hboard.HBoardService;
 import com.miniproj.util.FileProcess;
 import com.miniproj.util.GetClientIPAddr;
@@ -65,8 +66,8 @@ public class HboardController {
 	// 게시판전체목록리스트를 출력하는 메소드
 	// defaultValue : pageNo쿼리스트링 값이 생략되어 호출되면 그 값이 1로 초기값이 부여되도록 함(400에러 방지)
 	@RequestMapping("/listAll")
-	public void listAll(Model model, @RequestParam(value="pageNo", defaultValue = "1") int pageNo, @RequestParam(value="pagingSize", defaultValue="10") int pagingSize) {
-		logger.info("페이징 사이즈 "+pagingSize + "씩 " + pageNo + "번 페이지 출력 HBoardController.listAll()~");
+	public void listAll(Model model, @RequestParam(value="pageNo", defaultValue = "1") int pageNo, @RequestParam(value="pagingSize", defaultValue="10") int pagingSize, SearchCriteriaDTO searchCriteria) {
+		logger.info("페이징 사이즈 "+pagingSize + "씩 " + pageNo + "번 페이지 출력, " + "검색조건 :" + searchCriteria.toString());
 		System.out.println("HBoardController.listAll()~");
 		
 		PagingInfoDTO dto =  PagingInfoDTO.builder()
@@ -78,11 +79,12 @@ public class HboardController {
 		List<HBoardVO> list = null;
 		Map<String, Object> result = null;
 		try {
-			result = service.getAllBoard(dto);
+			result = service.getAllBoard(dto, searchCriteria);
 			PagingInfo pi = (PagingInfo) result.get("pagingInfo");
 			list = (List<HBoardVO>) result.get("boardList");
 			model.addAttribute("pagingInfo", pi); // 데이터 바인딩
 			model.addAttribute("boardList", list); // 데이터 바인딩
+			model.addAttribute("search", searchCriteria); // 데이터 바인딩
 		} catch (Exception e) {
 			model.addAttribute("exception", "error");
 		}
