@@ -10,10 +10,19 @@
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
-
-	</script>
-<script>
-
+		// 검색버튼을 눌렀을 때 searchType가 -1이거나 searchWord가 '' 이면 검색어가 제대로 입력되지 않았으므로
+		//백엔드단으로 데이터를 넘기지 않는다.
+		function isValid() {
+			let result=false;
+			if($('#searchType').val() == -1 || $('#searchWord').val() == '') {
+				alert("검색조건과 검색어를 지정해주세요!");
+				$('#searchType').focus();
+			} else {
+				result= true;
+			}
+			
+			return result;
+		}
 		// 웹문서가 로딩이 완료되면 아래에 선언된 함수를 실행하도록
 		$(function()
 		{	
@@ -121,7 +130,7 @@
 		<h1>계층형 게시판 전체 리스트 페이지</h1>
 
 		<div class="boardControl">
-			<select class="form-select pagingSize" id="pagingSize">
+			<select class="form-select pagingSize" id="pagingSize" style="width:50%">
 				<option value="10">10개씩 보기</option>
 				<option value="20">20개씩 보기</option>
 				<option value="40">40개씩 보기</option>
@@ -187,9 +196,10 @@
 				<li class="page-item"><a class="page-link"
 					href="/hboard/listAll?pageNo=${param.pageNo-1}">Previous</a></li>
 			</c:if>
-			<c:forEach var="i" begin="${pagingInfo.startPageNoCurBlock}" end="${pagingInfo.endPageNoCurBlock}">
+			<c:forEach var="i" begin="${pagingInfo.startPageNoCurBlock}"
+				end="${pagingInfo.endPageNoCurBlock}">
 				<c:choose>
-				
+
 					<c:when test="${param.pageNo == i }">
 						<li class="page-item active" id="${i}"><a class="page-link"
 							href="/hboard/listAll?pageNo=${i}">${i}</a></li>
@@ -207,10 +217,31 @@
 		</ul>
 	</div>
 
-	<div>
+	<div style="float: right; margin-right: 5px">
 		<button type="button" class="btn btn-outline-primary"
 			onclick="location.href='/hboard/saveBoard';">글쓰기</button>
 	</div>
+
+	<form class="searchBar" action="/hboard/listAll" method="post"
+		style="display: flex; flex-direction: row; clear: right; align-items: center; justify-content: center;">
+		<div class="input-group mt-3 mb-3" style="width: 80%">
+			<select class="form-select" name="searchType" id="searchType">
+				<option value="-1">==검색조건==</option> <!--검색조건이 없을 경우를 설정 > 유효성 검사-->
+				<option value="title">제목</option>
+				<option value="writer">작성자</option>
+				<option value="content">내용</option>
+			</select> 
+			<input type="text" class="form-control" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요.." >
+			<input type="hidden" name="pageNo" value="${param.pageNo}"/>
+			<input type="hidden" name="pagingSize" value="${param.pagingSize}"/>
+
+
+			<button type="submit" class="btn btn-primary" onclick="return isValid();">검색</button> 
+			<!-- submit버튼은 onclick에서 retrun반드시! : boolean값을 return하여 인풋데이터를 보낼지말지 여부를 결정 -->
+		</div>
+	</form>
+
+
 
 	<!-- The Modal -->
 	<div class="modal" id="myModal" style="display: none;">
