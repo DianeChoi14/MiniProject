@@ -8,5 +8,9 @@
 		update member set userPoint = userPoint + (select pointScore from pointdef where pointwhy='글작성') where userId=#{userId}
 	</update>
 	
+	<!-- 아이디가 같은 데이터가 있는지 조회 -->
+	<select id="selectUserId" resultType="int">
+		select count(*) from member where userId = #{tmpUserId}
+	</select>
 	
 </mapper>

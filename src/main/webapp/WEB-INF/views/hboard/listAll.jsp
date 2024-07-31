@@ -130,7 +130,8 @@
 		<h1>계층형 게시판 전체 리스트 페이지</h1>
 
 		<div class="boardControl">
-			<select class="form-select pagingSize" id="pagingSize" style="width:50%">
+			<select class="form-select pagingSize" id="pagingSize"
+				style="width: 50%">
 				<option value="10">10개씩 보기</option>
 				<option value="20">20개씩 보기</option>
 				<option value="40">40개씩 보기</option>
@@ -226,17 +227,19 @@
 		style="display: flex; flex-direction: row; clear: right; align-items: center; justify-content: center;">
 		<div class="input-group mt-3 mb-3" style="width: 80%">
 			<select class="form-select" name="searchType" id="searchType">
-				<option value="-1">==검색조건==</option> <!--검색조건이 없을 경우를 설정 > 유효성 검사-->
+				<option value="-1">==검색조건==</option>
+				<!--검색조건이 없을 경우를 설정 > 유효성 검사-->
 				<option value="title">제목</option>
 				<option value="writer">작성자</option>
 				<option value="content">내용</option>
-			</select> 
-			<input type="text" class="form-control" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요.." >
-			<input type="hidden" name="pageNo" value="${param.pageNo}"/>
-			<input type="hidden" name="pagingSize" value="${param.pagingSize}"/>
+			</select> <input type="text" class="form-control" name="searchWord"
+				id="searchWord" placeholder="검색어를 입력하세요.."> <input
+				type="hidden" name="pageNo" value="${param.pageNo}" /> <input
+				type="hidden" name="pagingSize" value="${param.pagingSize}" />
 
 
-			<button type="submit" class="btn btn-primary" onclick="return isValid();">검색</button> 
+			<button type="submit" class="btn btn-primary"
+				onclick="return isValid();">검색</button>
 			<!-- submit버튼은 onclick에서 retrun반드시! : boolean값을 return하여 인풋데이터를 보낼지말지 여부를 결정 -->
 		</div>
 	</form>

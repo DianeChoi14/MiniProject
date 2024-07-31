@@ -260,12 +260,12 @@ use webdiane;
 -- like 검색과 함께 사용하는 와일드카드 
 -- % : 몇자라도, 
 -- '_' : 한 글자
-select * from hboard where title like '%수정%' order by ref desc, refOrder asc limit startRowIndex, postsPerPage;
+select * from hboard where title like '%data%' ;
 -- 작성자로 검색
 select * from hboard where writer like '%do%' order by ref desc, refOrder asc limit 0, 10;
 -- 내용으로 검색
-select * from hboard where content like '%123%' order by ref desc, refOrder asc limit startRowIndex, postsPerPage;
+select * from hboard where content like '%kil%' order by ref desc, refOrder asc ;
 -- 검색어가 있을 때 게시물의 데이터 수를 얻어오는 쿼리문
-select count(*) from hboard where title like '%수정%' order by ref desc, refOrder asc limit startRowIndex, postsPerPage;
-select count(*) from hboard where writer like '%do%' order by ref desc, refOrder asc limit 0, 10;
-select count(*) from hboard where content like '%123%' order by ref desc, refOrder asc limit startRowIndex, postsPerPage;
+select count(*) from hboard where title like '%data%';
+select count(*) from hboard where writer like '%do%' ;
+select count(*) from hboard where content like '%123%';
