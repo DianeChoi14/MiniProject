@@ -269,3 +269,10 @@ select * from hboard where content like '%kil%' order by ref desc, refOrder asc 
 select count(*) from hboard where title like '%data%';
 select count(*) from hboard where writer like '%do%' ;
 select count(*) from hboard where content like '%123%';
+
+-- ================================회원가입기능구현==================================
+-- 회원아이디 중복 여부 ( 
+select count(*) from member where userId ='dooly';
+-- 취미 배열 추가
+ALTER TABLE `webdiane`.`member` 
+ADD COLUMN `hobby` VARCHAR(60) NULL AFTER `email`;

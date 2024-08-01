@@ -235,6 +235,11 @@ prefix="c"%>
         border-radius: 5px;
         margin: 5px 0px;
       }
+     .hobbies {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+     }
     </style>
   </head>
   <body>
@@ -332,6 +337,22 @@ prefix="c"%>
             name="mobile"
           />
         </div>
+
+      <div class="form-check">
+         <div>취미 :</div>
+         <div class="hobbies">
+            <span><input class="form-check-input" type="checkbox" id="check1" name="hobby" value="sleep" checked>낮잠</span>
+            <span><input class="form-check-input" type="checkbox" id="check1" name="hobby" value="reading">독서</span>
+            <span><input class="form-check-input" type="checkbox" id="check1" name="hobby" value="coding">코딩</span>
+            <span><input class="form-check-input" type="checkbox" id="check1" name="hobby" value="game">게임</span>
+         </div>
+      </div>
+
+<!--       <div class="form-check">
+         <label for="customRange" class="form-label">신발사이즈</label>
+         <input type="range" class="form-range" id="customRange" min="210" max="300" step="5">
+		onchange 속성, span태그를 이용
+      </div> -->
 
         <div class="mb-3 mt-3">
           <label for="userImg" class="form-label">회원 프로필: </label>
