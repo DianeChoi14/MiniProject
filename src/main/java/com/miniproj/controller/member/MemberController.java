@@ -73,12 +73,12 @@ public class MemberController {
 		String result = "";
 		// 이메일 전송을 완료한 뒤에 코드를 세션영역에 저장
 		try {
-			new SendMailService().sendMail(tmpUserEmail, authCode);
+//			new SendMailService().sendMail(tmpUserEmail, authCode); // 실제 메일 보내는 기능!
 			// 인증코드를 세션객체에 저장
 			session.setAttribute("authCode", authCode);
 			
 			result = "success";
-		} catch (MessagingException e) {
+		} catch (Exception e) {
 			// 메일발송에 실패했을 경우
 			e.printStackTrace();
 			result = "fail";
