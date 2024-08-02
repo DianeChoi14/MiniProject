@@ -155,38 +155,45 @@ prefix="c"%>
           // 유저가 입력한 인증코드와 백엔드에서 만든 인증코드가 같은지 비교
           // 같고, 인증시간 안에 인증 완료 통과...
 
-          showAuthenticateDiv();  // 인증 코드를 입력하는 div창을 보여주기
-          callSendMail();
-          startTimer()
-
-          clearError($("#userEmail"));
+          if ($('#emailValid').val() == 'checked') {
+            result = true;
+          } else {
+            showAuthenticateDiv();  // 인증 코드를 입력하는 div창을 보여주기
+            callSendMail();// 이메일 발송 하고
+            startTimer(); // 타이머 동작 시키기..
+            clearError($("#userEmail"));
+          
           result = true;
+          }
         }
-
         return result;
       }
-      
+
       function callSendMail() {
-          $.ajax({
-                url: "/member/callSendMail", // 데이터가 송수신될 서버의 주소
-                type: "post", // 통신 방식 : GET, POST, PUT, DELETE, PATCH
-                dataType: "json", // 수신 받을 데이터의 타입 (text, xml, json)
-                data: {
-                  "tmpUserEmail" : $("#userEmail").val()
-                },
-                success: function (data) {
-                  // 비동기 통신에 성공하면 자동으로 호출될 callback function
-                  console.log(data);
-                  
-                },
-                error: function (data) {
-                  console.log(data);
-                },
-              });
-        }
+        $.ajax({
+              url: "/member/callSendMail", // 데이터가 송수신될 서버의 주소
+              type: "post", // 통신 방식 : GET, POST, PUT, DELETE, PATCH
+              dataType: "text", // 수신 받을 데이터의 타입 (text, xml, json)
+              data: {
+                "tmpUserEmail" : $("#userEmail").val()
+              },
+              success: function (data) {
+                // 비동기 통신에 성공하면 자동으로 호출될 callback function
+                console.log(data);
+                if (data == 'success') {
+                  alert("이메일로 인증코드를 발송했습니다..");
+                  $('#userAuthCode').focus();
+                }
+              },
+              error: function (data) {
+                console.log(data);
+              },
+            });
+      }
 
       function showAuthenticateDiv() {
-    	alert("인증코드 발송 완료 ~");
+        alert("이메일로 인증코드를 발송했습니다!\n 인증코드를 입력해주세요~");
+        $('#userAuthCode').focus();
         let authDiv = "<div id='authenticateDiv'>";
         authDiv += `<input type="text" class="form-control" id="userAuthCode" placeholder="인증코드입력..." />`;
         authDiv += `<span class='timer'>3:00</span>`;
@@ -195,6 +202,33 @@ prefix="c"%>
 
         $(authDiv).insertAfter($("#userEmail"));
       }
+
+      function checkAuthCode() {
+        let userAuthCode = $("#userAuthCode").val();
+        $.ajax({
+          url: "/member/checkAuthCode", // 데이터가 송수신될 서버의 주소
+          type: "post", // 통신 방식 : GET, POST, PUT, DELETE, PATCH
+          dataType: "text", // 수신 받을 데이터의 타입 (text, xml, json)
+          data: {
+            "tmpUserAuthCode" : userAuthCode
+          },    
+          success: function (data) {
+                // 비동기 통신에 성공하면 자동으로 호출될 callback function
+                console.log(data);
+                if (data == 'success') {
+                  alert("인증 성공!");
+                  $('#userEmail').attr("readonly", true);
+                  $('#authenticateDiv').remove();
+                  $('#emailValid').val("checked");
+
+                } else if (data == 'fail')  {
+                  alert("인증에 실패 했습니다!");
+                  $('#emailValid').val("");
+                }
+          }
+        });
+      }
+
 
       function genderValid() {
         // 성별을 남성, 여성 중 하나를 반드시 선택해야 한다.
@@ -288,6 +322,11 @@ prefix="c"%>
         flex-direction: row;
         justify-content: space-between;
      }
+     .timer {
+     	color : orangered;
+     	font-weight : bold;
+     	font-size: 0.8em; 
+     }
     </style>
   </head>
   <body>
@@ -373,6 +412,7 @@ prefix="c"%>
         <div class="mb-3 mt-3">
           <label for="userEmail" class="form-label">이메일: </label>
           <input type="text" class="form-control" id="userEmail" name="email" />
+          <input type="hidden" id="emailValid" />
         </div>
 
         <div class="mb-3 mt-3">
