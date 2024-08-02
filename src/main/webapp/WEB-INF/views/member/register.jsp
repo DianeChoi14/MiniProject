@@ -10,6 +10,8 @@ prefix="c"%>
     <script src="/resources/js/timer.js"></script>
     <title>회원 가입 페이지</title>
     <script>
+    
+    
       function outputError(msg, obj) {
         let errorTag = `<div class='error'>\${msg}</div>`;
         $(errorTag).insertAfter(obj);
@@ -107,8 +109,9 @@ prefix="c"%>
         let emailCheck = emailValid();
         let mobileCheck = mobileValid();
         let imgCheck = imgValid();
+        let agreeCheck = $('#agree').is(':checked');
 
-        if (idCheck && pwdCheck && genderCheck && emailCheck && mobileCheck && imgCheck) {
+        if (idCheck && pwdCheck && genderCheck && emailCheck && mobileCheck && imgCheck && agreeCheck) {
           return true;
         } else {
           return false;
