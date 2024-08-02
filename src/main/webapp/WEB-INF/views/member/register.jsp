@@ -156,6 +156,7 @@ prefix="c"%>
           // 같고, 인증시간 안에 인증 완료 통과...
 
           showAuthenticateDiv();  // 인증 코드를 입력하는 div창을 보여주기
+          callSendMail();
           startTimer()
 
           clearError($("#userEmail"));
@@ -164,6 +165,25 @@ prefix="c"%>
 
         return result;
       }
+      
+      function callSendMail() {
+          $.ajax({
+                url: "/member/callSendMail", // 데이터가 송수신될 서버의 주소
+                type: "post", // 통신 방식 : GET, POST, PUT, DELETE, PATCH
+                dataType: "json", // 수신 받을 데이터의 타입 (text, xml, json)
+                data: {
+                  "tmpUserEmail" : $("#userEmail").val()
+                },
+                success: function (data) {
+                  // 비동기 통신에 성공하면 자동으로 호출될 callback function
+                  console.log(data);
+                  
+                },
+                error: function (data) {
+                  console.log(data);
+                },
+              });
+        }
 
       function showAuthenticateDiv() {
     	alert("인증코드 발송 완료 ~");

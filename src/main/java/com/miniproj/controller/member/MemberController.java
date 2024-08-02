@@ -1,5 +1,7 @@
 package com.miniproj.controller.member;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,4 +59,10 @@ public class MemberController {
 		return result;
 	}
 	
+	@RequestMapping("/callSendMail")
+	public void sendMailAuthCode(@RequestParam("tmpUserEmail") String tmpUserEmail) {
+		String authCode = UUID.randomUUID().toString();
+		System.out.println(tmpUserEmail + "로" + authCode + "인증코드 보내자~");
+		// 이메일 전송을 완료한 뒤에 코드를 세션영역에 저장
+	}
 }
