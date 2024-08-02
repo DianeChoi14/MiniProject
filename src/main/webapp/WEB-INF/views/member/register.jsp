@@ -6,6 +6,8 @@ prefix="c"%>
   <head>
     <meta charset="UTF-8" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script src="/resources/js/timer.js"></script>
     <title>회원 가입 페이지</title>
     <script>
       function outputError(msg, obj) {
@@ -21,6 +23,12 @@ prefix="c"%>
       }
 
       $(function () {
+        // 이메일 주소 입력을 완료하고 blur 되었을 경우
+        $('#userEmail').blur(function (){
+          emailValid();
+        });
+
+
         // 패스워드1을 입력하고 blur 되었을때
         $("#userPwd1").blur(function () {
           let tmpPwd = $("#userPwd1").val();
@@ -141,11 +149,31 @@ prefix="c"%>
         if (!emailRegExp.test(tmpUserEmail)) {
           outputError("이메일 주소 형식이 아닙니다!", $("#userEmail"));
         } else {
+          // 이메일 주소 형식이다...
+          // 유저가 입력한 이메일 주소로 인증 코드 발송(back end) - timer(3분)
+          // 인증코드를 유저에게 입력 받음
+          // 유저가 입력한 인증코드와 백엔드에서 만든 인증코드가 같은지 비교
+          // 같고, 인증시간 안에 인증 완료 통과...
+
+          showAuthenticateDiv();  // 인증 코드를 입력하는 div창을 보여주기
+          startTimer()
+
           clearError($("#userEmail"));
           result = true;
         }
 
         return result;
+      }
+
+      function showAuthenticateDiv() {
+    	alert("인증코드 발송 완료 ~");
+        let authDiv = "<div id='authenticateDiv'>";
+        authDiv += `<input type="text" class="form-control" id="userAuthCode" placeholder="인증코드입력..." />`;
+        authDiv += `<span class='timer'>3:00</span>`;
+        authDiv += `<button type="button" id="authBtn" class="btn btn-primary" onclick="checkAuthCode()">인증</button>`;
+        authDiv += "</div>";
+
+        $(authDiv).insertAfter($("#userEmail"));
       }
 
       function genderValid() {
@@ -341,19 +369,14 @@ prefix="c"%>
       <div class="form-check">
          <div>취미 :</div>
          <div class="hobbies">
-            <span><input class="form-check-input" type="checkbox" id="check1" name="hobby" value="sleep" checked>낮잠</span>
-            <span><input class="form-check-input" type="checkbox" id="check1" name="hobby" value="reading">독서</span>
-            <span><input class="form-check-input" type="checkbox" id="check1" name="hobby" value="coding">코딩</span>
-            <span><input class="form-check-input" type="checkbox" id="check1" name="hobby" value="game">게임</span>
+            <span><input class="form-check-input" type="checkbox" name="hobby" value="sleep" checked>낮잠</span>
+            <span><input class="form-check-input" type="checkbox" name="hobby" value="reading">독서</span>
+            <span><input class="form-check-input" type="checkbox" name="hobby" value="coding">코딩</span>
+            <span><input class="form-check-input" type="checkbox" name="hobby" value="game">게임</span>
          </div>
       </div>
 
-<!--       <div class="form-check">
-         <label for="customRange" class="form-label">신발사이즈</label>
-         <input type="range" class="form-range" id="customRange" min="210" max="300" step="5">
-		onchange 속성, span태그를 이용
-      </div> -->
-
+      
         <div class="mb-3 mt-3">
           <label for="userImg" class="form-label">회원 프로필: </label>
           <input type="file" class="form-control" id="userImg" name="userProfile" onchange="showPreview(this);" />
