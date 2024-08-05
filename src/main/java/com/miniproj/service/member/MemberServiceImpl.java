@@ -2,8 +2,14 @@ package com.miniproj.service.member;
 
 //import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.miniproj.model.MemberVO;
+import com.miniproj.model.PointLogDTO;
 import com.miniproj.persistence.MemberDAO;
+import com.miniproj.persistence.PointLogDAO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +26,8 @@ public class MemberServiceImpl implements MemberService {
 //		this.mDao = mdao;
 //	}
 	
+	private final PointLogDAO pDao; 
+	
 	
 	@Override
 	public boolean idIsDuplicate(String tmpUserId) throws Exception {
@@ -27,6 +35,28 @@ public class MemberServiceImpl implements MemberService {
 		boolean result= false;
 		if(mDao.selectDuplicateId(tmpUserId) == 1) {
 			result=true; // 중복될 경우
+		}
+		return result;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
+	public boolean saveMember(MemberVO registMember) throws Exception {
+		// 1:N관계인 취미컬럼을 하나의 문자열로 저장
+		boolean result = false;
+		String tmpHobbies="";
+		for(String hobby : registMember.getHobby())
+		{
+			tmpHobbies +=  hobby + "," ;
+		}
+		registMember.setHobbies(tmpHobbies);
+		
+		// 1) 회원데이터 db에 저장
+		if(mDao.insertMember(registMember) == 1) {
+			// 2) 회원가입한 멤버에 100포인트 부여
+			if(pDao.insertPointLog(new PointLogDTO(registMember.getUserId(), "회원가입", 100))==1) {
+				result = true;
+			}
 		}
 		return result;
 	}

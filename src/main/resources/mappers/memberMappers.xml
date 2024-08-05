@@ -5,12 +5,30 @@
 <mapper namespace="com.miniproj.mappers.membermapper">
 
 	<update id="updateUserPoint">
-		update member set userPoint = userPoint + (select pointScore from pointdef where pointwhy='글작성') where userId=#{userId}
+		update member set userPoint = userPoint + (select
+		pointScore from pointdef where pointwhy='글작성') where userId=#{userId}
 	</update>
-	
+
 	<!-- 아이디가 같은 데이터가 있는지 조회 -->
 	<select id="selectUserId" resultType="int">
-		select count(*) from member where userId = #{tmpUserId}
+		select count(*) from member
+		where userId = #{tmpUserId}
 	</select>
-	
+
+	<!-- 회원가입 -->
+	<insert id="insertMember">
+		insert into member
+		<if test="userImg != null">
+			(userId, userPwd, userName, gender,
+			mobile, email, hobby,
+			userImg)
+			values(#{userId}, sha1(md5(#{userPwd})), #{userName},
+			#{gender}, #{mobile}, #{email}, #{hobbies}, #{userImg});
+		</if>
+		<if test="userImg == null">
+			(userId, userPwd, userName, gender, mobile, email, hobby)
+			values(#{userId}, sha1(md5(#{userPwd})), #{userName}, #{gender},
+			#{mobile}, #{email}, #{hobbies});
+		</if>
+	</insert>
 </mapper>
