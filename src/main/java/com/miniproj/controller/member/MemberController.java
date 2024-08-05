@@ -1,9 +1,11 @@
 package com.miniproj.controller.member;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.miniproj.model.MemberVO;
 import com.miniproj.model.MyResponseWithoutData;
 import com.miniproj.service.member.MemberService;
+import com.miniproj.util.FileProcess;
 import com.miniproj.util.SendMailService;
 import com.mysql.cj.util.StringUtils;
 
@@ -32,6 +36,7 @@ public class MemberController {
 	
 //	@Autowired
 	private final MemberService mService;
+	private final FileProcess fp;
 	
 	@RequestMapping("/register")
 	public void showRegisterForm() {
@@ -39,25 +44,43 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value="/register", method=RequestMethod.POST)
-	public void registerMember(MemberVO registMember, @RequestParam("userProfile") MultipartFile userProfile) {
+	public String registerMember(MemberVO registMember, @RequestParam("userProfile") 
+	MultipartFile userProfile, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 		
+		String resultPage = "redirect:/";
 		// 프로필 파일이름을 '유저아이디.확장자'로 바꾸기
-		System.out.println("프로필사진 파일명!"+userProfile.getOriginalFilename());
+			System.out.println("프로필사진 파일명!"+userProfile.getOriginalFilename());
 		String tmpUserProfileName = userProfile.getOriginalFilename();
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/userImg");
+			System.out.println("실제파일 저장 경로 : " + realPath);
 		if(!StringUtils.isNullOrEmpty(tmpUserProfileName)) {
 			String ext = tmpUserProfileName.substring(tmpUserProfileName.lastIndexOf('.')+1);
 			registMember.setUserImg(registMember.getUserId() + "." + ext);
-		} else {
-			
-		}
+		} 
 		
 		try {
-			mService.saveMember(registMember);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			if(mService.saveMember(registMember)) {
+				// 회원가입 성공시 홈화면으로
+				redirectAttributes.addAttribute("status", "success");
+				// 프로필파일 업로드여부 확인
+				if(!StringUtils.isNullOrEmpty(tmpUserProfileName)) {
+					fp.saveUserProfileFile(userProfile.getBytes(), realPath, registMember.getUserImg());
+				}
+			}
+		} catch (Exception e) { // IOException, SQLException(DB작업시 발생한 예외)
+			// 가입실패시 회원가입페이지 재로드
 			e.printStackTrace();
+			if(e instanceof IOException) {
+				redirectAttributes.addAttribute("status", "fileFail");
+				// DB에 회원가입한 유저 registMember.getUserId() 회원가입취소
+				// service > dao
+			} else {
+				redirectAttributes.addAttribute("status", "fail");
+			}  
+			resultPage = "redirect:/member/register";
 		}
 		System.out.println("회원가입 진행!"+registMember.toString());
+		return resultPage;
 	}
 	
 	@RequestMapping(value="/isDuplicate", method=RequestMethod.POST, produces="application/json; charset=utf-8")
