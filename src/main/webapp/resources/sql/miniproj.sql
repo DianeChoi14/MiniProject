@@ -276,3 +276,15 @@ select count(*) from member where userId ='dooly';
 -- 취미 배열 추가
 ALTER TABLE `webdiane`.`member` 
 ADD COLUMN `hobby` VARCHAR(60) NULL AFTER `email`;
+
+-- member테이블에 회원가입내용 저장
+use webdiane;
+-- 프로필 파일 올렸을 때(userImg!=null)
+insert into member(userId, userPwd, userName, gender, mobile, email, hobby, userImg)
+values(?, ?, ?, ?, ?, ?, ?, ?);
+-- 프로필 파일을 올리지 않았을 때(userImg = null)
+insert into member(userId, userPwd, userName, gender, mobile, email, hobby)
+values(?, ?, ?, ?, ?, ?, ?);
+
+-- ============================로그인 ==============================================
+
