@@ -21,6 +21,7 @@ import com.miniproj.model.MemberVO;
 import com.miniproj.model.MyResponseWithoutData;
 import com.miniproj.service.member.MemberService;
 import com.miniproj.util.SendMailService;
+import com.mysql.cj.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,8 +40,24 @@ public class MemberController {
 	
 	@RequestMapping(value="/register", method=RequestMethod.POST)
 	public void registerMember(MemberVO registMember, @RequestParam("userProfile") MultipartFile userProfile) {
-		System.out.println("회원가입 진행!"+registMember.toString());
+		
+		// 프로필 파일이름을 '유저아이디.확장자'로 바꾸기
 		System.out.println("프로필사진 파일명!"+userProfile.getOriginalFilename());
+		String tmpUserProfileName = userProfile.getOriginalFilename();
+		if(!StringUtils.isNullOrEmpty(tmpUserProfileName)) {
+			String ext = tmpUserProfileName.substring(tmpUserProfileName.lastIndexOf('.')+1);
+			registMember.setUserImg(registMember.getUserId() + "." + ext);
+		} else {
+			
+		}
+		
+		try {
+			mService.saveMember(registMember);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("회원가입 진행!"+registMember.toString());
 	}
 	
 	@RequestMapping(value="/isDuplicate", method=RequestMethod.POST, produces="application/json; charset=utf-8")
