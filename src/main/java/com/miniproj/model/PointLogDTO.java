@@ -18,5 +18,5 @@ public class PointLogDTO
 {
 	private String pointWho;
 	private String pointWhy;
-	private int pointScore;
+//	private int pointScore;
 }
