@@ -7,7 +7,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
-
+	<!-- 서블릿 객체를 관리하는 설정파일 -->
+	<!-- 서블릿 객체를 만들어주는 태그 : <beans:bean/> -->
 	<!-- DispatcherServlet Context: defines this servlet's request-processing 
 		infrastructure -->
 
@@ -35,6 +36,19 @@
 		<beans:property name="maxUploadSize" value="10485760"></beans:property>
 	</beans:bean>
 
+	<!-- 인터셉터Interceptor 설정 : 필요한 인터셉터 객체를 만들고 관리하도록 -->
+	<beans:bean id="sampleInterceptor"
+		class="com.miniproj.interceptor.InterceptorExample"	>
+		
+	<!-- 인터셉터가 동작하는 매핑주소 설정(uri) -->
+	<interceptors>
+		<interceptor> <!-- '/sampleInterceptor'로 매핑이 들어오면 sampleInterceptor객체가 동작하도록 함 -->
+			<mapping path="/sampleInterceptor"/>
+			<beans:ref bean="sampleInterceptor"/>
+		</interceptor>
+	</interceptors>	
+	
+	</beans:bean>
 	<!-- 아래의 패키지를 하위 패키지까지 조사(scan)하여 필요한 컨트롤러 객체를 만들고, 스프링 컨테이너에 의해 관리되도록 한다 -->
 	<context:component-scan
 		base-package="com.miniproj.controller" />
