@@ -6,7 +6,7 @@
 
 	<update id="updateUserPoint">
 		update member set userPoint = userPoint + (select
-		pointScore from pointdef where pointwhy='글작성') where userId=#{userId}
+		pointScore from pointdef where pointwhy=#{pointWhy}) where userId=#{pointWho}
 	</update>
 
 	<!-- 아이디가 같은 데이터가 있는지 조회 -->
@@ -31,4 +31,9 @@
 			#{mobile}, #{email}, #{hobbies});
 		</if>
 	</insert>
+	
+	<!-- 로그인 -->
+	<select id="loginWithLoginDTO" resultType="com.miniproj.model.MemberVO">
+		select * from member where userId=#{userId} and userPwd=sha1(md5(#{userPwd}))
+	</select>
 </mapper>
