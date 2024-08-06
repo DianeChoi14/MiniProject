@@ -10,7 +10,7 @@
 </head>
 <body>
 	<div class="container">
-		<c:import url="../header.jsp"></c:import>
+		<jsp:include page="../header.jsp"></jsp:include>
 
 
 		<div class="content">
@@ -36,7 +36,7 @@
 			</form>
 		</div>
 
-		<c:import url="../footer.jsp"></c:import>
+		<jsp:include page="../footer.jsp"></jsp:include>
 	</div>
 </body>
 </html>

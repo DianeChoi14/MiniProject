@@ -78,7 +78,7 @@
 <body>
 
 	<div class="container">
-		<c:import url="./header.jsp"></c:import>
+		<jsp:include page="./header.jsp"></jsp:include>
 
 
 		<div class="content">
@@ -86,7 +86,7 @@
 			<div class="top5Board"></div>
 		</div>
 
-		<c:import url="./footer.jsp"></c:import>
+		<jsp:include page="./footer.jsp"></jsp:include>
 	</div>
 
 
