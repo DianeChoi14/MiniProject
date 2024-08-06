@@ -40,12 +40,19 @@
 	<beans:bean id="sampleInterceptor"
 		class="com.miniproj.interceptor.InterceptorExample"	></beans:bean>
 		
+	<beans:bean id="loginInterceptor"
+		class="com.miniproj.interceptor.LoginInterceptor"></beans:bean>
+		
 	<!-- 인터셉터가 동작하는 매핑주소 설정(uri) -->
 	<!-- '/sampleInterceptor'로 매핑이 들어오면 sampleInterceptor객체가 동작하도록 함 -->
 	<interceptors>
 		<interceptor> 
 			<mapping path="/sampleInterceptor"/>
 			<beans:ref bean="sampleInterceptor"/>
+		</interceptor>
+		<interceptor> 
+			<mapping path="/member/login"/>
+			<beans:ref bean="loginInterceptor"/>
 		</interceptor>
 	</interceptors>	
 	
