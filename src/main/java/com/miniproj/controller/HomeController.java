@@ -109,4 +109,10 @@ public class HomeController
 		}
 		return result;
 	}
+	// "/SampleInterceptor.jsp" 를 찾아 request, response
+	@RequestMapping("/sampleInterceptor")
+	public void sampleInterceptor() {
+		
+		System.out.println("sampleInterceptor() 호출!!!!!");
+	}
 }
