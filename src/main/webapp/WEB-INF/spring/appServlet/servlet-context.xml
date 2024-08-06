@@ -38,17 +38,18 @@
 
 	<!-- 인터셉터Interceptor 설정 : 필요한 인터셉터 객체를 만들고 관리하도록 -->
 	<beans:bean id="sampleInterceptor"
-		class="com.miniproj.interceptor.InterceptorExample"	>
+		class="com.miniproj.interceptor.InterceptorExample"	></beans:bean>
 		
 	<!-- 인터셉터가 동작하는 매핑주소 설정(uri) -->
+	<!-- '/sampleInterceptor'로 매핑이 들어오면 sampleInterceptor객체가 동작하도록 함 -->
 	<interceptors>
-		<interceptor> <!-- '/sampleInterceptor'로 매핑이 들어오면 sampleInterceptor객체가 동작하도록 함 -->
+		<interceptor> 
 			<mapping path="/sampleInterceptor"/>
 			<beans:ref bean="sampleInterceptor"/>
 		</interceptor>
 	</interceptors>	
 	
-	</beans:bean>
+	
 	<!-- 아래의 패키지를 하위 패키지까지 조사(scan)하여 필요한 컨트롤러 객체를 만들고, 스프링 컨테이너에 의해 관리되도록 한다 -->
 	<context:component-scan
 		base-package="com.miniproj.controller" />
