@@ -42,7 +42,9 @@
 		
 	<beans:bean id="loginInterceptor"
 		class="com.miniproj.interceptor.LoginInterceptor"></beans:bean>
-		
+	<beans:bean id="authInterceptor"
+		class="com.miniproj.interceptor.AuthInterceptor"></beans:bean>		
+	
 	<!-- 인터셉터가 동작하는 매핑주소 설정(uri) -->
 	<!-- '/sampleInterceptor'로 매핑이 들어오면 sampleInterceptor객체가 동작하도록 함 -->
 	<interceptors>
@@ -53,6 +55,14 @@
 		<interceptor> 
 			<mapping path="/member/login"/>
 			<beans:ref bean="loginInterceptor"/>
+		</interceptor>
+		<!-- 로그인 인증이 필요한 페이지 : 글작성, 글수정, 글삭제, 답글작성/삭제/수정, 관리자페이지 -->
+		<interceptor> 
+			<mapping path="/hboard/saveBoard"/> <!-- 글작성 -->
+			<mapping path="/hboard/modifyBoard"/> <!-- 글/답글 수정 -->
+			<mapping path="/hboard/removeBoard"/> <!-- 글/답글 삭제 -->
+			<mapping path="/hboard/showReplyForm"/> <!-- 답글작성 -->
+			<beans:ref bean="authInterceptor"/>
 		</interceptor>
 	</interceptors>	
 	
