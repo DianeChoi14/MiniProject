@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.miniproj.model.MemberVO;
+import com.mysql.cj.util.StringUtils;
 
 // 직접 로그인하는 동작과정을 인터셉트로 구현
 // get방식 post방식으로 요청되어 인터셉트가 동작하는 것을 구분
@@ -39,7 +40,13 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 				System.out.println("[LoginInterceptor postHandle() : 로그인 성공]");
 				HttpSession ses = request.getSession(); // 로그인요청으로부터 세션을 얻어온다...
 				ses.setAttribute("loginMember", loginMember); // 로그인한 유저의 정보를 세션에 저장
-				response.sendRedirect("/");
+//				if(ses.getAttribute("destPath") != null) {
+//					response.sendRedirect((String)ses.getAttribute("destPath"));
+//				} else {
+//					response.sendRedirect("/");
+//				}
+				Object tmp = ses.getAttribute("destPath");
+				response.sendRedirect((tmp==null)? "/" : (String)tmp);
 			} else {
 				System.out.println("[LoginInterceptor postHandle() : 로그인 실패]");
 				response.sendRedirect("/member/login?status=fail");
