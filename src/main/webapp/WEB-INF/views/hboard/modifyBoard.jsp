@@ -246,7 +246,7 @@
 				</div>
 				<p>
 				<div class="btns">
-					<button type="button" class="btn btn-secondary" onclick="">취소</button>
+					<button type="button" class="btn btn-secondary" onclick="location.href='/hboard/viewBoard?boardNo=${board.boardNo}';">취소</button>
 					<button type="submit" class="btn btn-primary" onclick="">수정저장</button>
 				</div>
 				
