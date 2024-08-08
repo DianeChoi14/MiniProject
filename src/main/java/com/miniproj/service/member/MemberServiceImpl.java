@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.miniproj.model.AutoLoginInfo;
 import com.miniproj.model.LoginDTO;
 import com.miniproj.model.MemberVO;
 import com.miniproj.model.PointLogDTO;
@@ -77,6 +78,15 @@ public class MemberServiceImpl implements MemberService {
 			};
 		}
 		return loginMember;
+	}
+
+	@Override
+	public boolean saveAutoLoginInfo(AutoLoginInfo autoLoginInfo) throws Exception {
+		boolean result = false;
+		if(mDao.updateAutoLoginInfo(autoLoginInfo) == 1) {
+			result = true;
+		}
+		return result;
 	}
 
 }

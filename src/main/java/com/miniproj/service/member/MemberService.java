@@ -1,5 +1,6 @@
 package com.miniproj.service.member;
 
+import com.miniproj.model.AutoLoginInfo;
 import com.miniproj.model.LoginDTO;
 import com.miniproj.model.MemberVO;
 
@@ -12,4 +13,8 @@ public interface MemberService {
 
 	// 로그인을 시키는 메서드
 	MemberVO login(LoginDTO loginDTO) throws Exception;
+	
+	// 자동로그인 정보를 저장하는 메서드
+	boolean saveAutoLoginInfo(AutoLoginInfo autoLoginInfo) throws Exception;
+	
 }

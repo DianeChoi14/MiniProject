@@ -287,4 +287,17 @@ insert into member(userId, userPwd, userName, gender, mobile, email, hobby)
 values(?, ?, ?, ?, ?, ?, ?);
 
 -- ============================로그인 ==============================================
+use webdiane;
+select * from hboard;
 
+-- ?번 글의 작성자(userId) 얻어오는 쿼리문
+select writer from hboard where boardNo = 940;
+-- 자동로그인 기능 구현 : 자동로그인을 체크한 경우 아래 두 컬럼에 세션값과 만료일을 저장 향후에 쿠키에 있는 자동로그인 정보와 DB의 아래 컬럼에 있는 자동로그인 정보가 일치하면 자동로그인을 실행한다
+ALTER TABLE `webdiane`.`member` 
+ADD COLUMN `sesid` VARCHAR(40) NULL AFTER `userPoint`,
+ADD COLUMN `allimit` DATETIME NULL AFTER `sesid`;
+
+-- 자동로그인 정보 저장
+update member set sesid=? , allimit=? where userId=?;
+-- 쿠키에 자동로그인 체크정보가 저장되어있을 때 자동로그인하는 쿼리문
+select * from member where sesid=? and allimit > now();

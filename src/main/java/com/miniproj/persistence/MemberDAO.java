@@ -1,5 +1,6 @@
 package com.miniproj.persistence;
 
+import com.miniproj.model.AutoLoginInfo;
 import com.miniproj.model.LoginDTO;
 import com.miniproj.model.MemberVO;
 import com.miniproj.model.PointLogDTO;
@@ -16,4 +17,7 @@ public interface MemberDAO {
 	
 	// 로그인 메서드
 	MemberVO login(LoginDTO loginDTO) throws Exception;
+
+	// 자동로그인 정보를 저장하는 메서드 
+	int updateAutoLoginInfo(AutoLoginInfo autoLoginInfo) throws Exception ;
 }
