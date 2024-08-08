@@ -1,12 +1,19 @@
 package com.miniproj.interceptor;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.miniproj.model.BoardDetailInfo;
+import com.miniproj.model.MemberVO;
+import com.miniproj.service.hboard.HBoardService;
 import com.miniproj.util.DestinationPath;
+
+import lombok.RequiredArgsConstructor;
 
 
 /**
@@ -24,8 +31,10 @@ import com.miniproj.util.DestinationPath;
 
  */
 
+@RequiredArgsConstructor
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 	
+	private final HBoardService service;
 	/**
 	 * @작성자 : 802-05
 	 * @작성일 : 2024. 8. 7.
@@ -50,7 +59,20 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			response.sendRedirect("/member/login");
 		} else {
 			// 로그인O
-			System.out.println("[AuthInterceptor : 로그인이 되었습니다! ]");
+			System.out.println("[AuthInterceptor : 로그인이 되었습니다! 권한을 확인하세요! ]");
+			// 만약 글수정/삭제 페이지의 호출일 경우, 그 글의 수정/삭제권한(본인의 글) > 경로이동 or 에러메시지 및 리다이렉트 
+			String uri = request.getRequestURI();
+			if(uri.contains("modify") || uri.contains("remove")) {
+				int boardNo = Integer.parseInt(request.getParameter("boardNo")); // db에 가져가서 권한 확인 용
+				System.out.println(boardNo + "번 글 수정/삭제에 대한 권한을 확인합니다...");
+				List<BoardDetailInfo> board = service.read(boardNo);
+				// 비교할 로그인 유저 정보 세션에서 불러오기
+				MemberVO loginMember = (MemberVO) ses.getAttribute("loginMember"); 
+				if(!board.get(0).getWriter().equals(loginMember.getUserId())) {
+					System.out.println(boardNo + "번 글 수정/삭제에 대한 권한을 없음! 상세페이지로 이동~");
+					response.sendRedirect("/hboard/viewBoard?status=authFail&boardNo=" + boardNo);
+				}
+			}
 			goOriginPath = true;
 		}
 		return goOriginPath;
