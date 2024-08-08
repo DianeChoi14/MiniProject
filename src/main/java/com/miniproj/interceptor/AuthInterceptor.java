@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.miniproj.model.BoardDetailInfo;
@@ -31,10 +32,12 @@ import lombok.RequiredArgsConstructor;
 
  */
 
-@RequiredArgsConstructor
+
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 	
-	private final HBoardService service;
+	@Autowired
+	private HBoardService service;
+	
 	/**
 	 * @작성자 : 802-05
 	 * @작성일 : 2024. 8. 7.
