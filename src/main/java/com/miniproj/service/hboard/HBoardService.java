@@ -34,6 +34,15 @@ public interface HBoardService
 	public List<BoardDetailInfo> read(int boardNo, String  ipAddr) throws Exception;
 	
 	// 게시글 수정을 위해 게시글을 불러오는 메서드, read메서드 오버로딩
+	
+	/**
+	 * @작성자 : 802-05
+	 * @작성일 : 2024. 8. 8.
+	 * @method_name : read
+	 * @param : boardNo - 조회할 글 번호
+	 * @return : List<BoardDetailInfo> : 글과 첨부파일(리스트), 작성자 정보를 함께 불러온다
+	 * @throws : DAO단 에러
+	*/
 	public List<BoardDetailInfo> read(int boardNo) throws Exception;
 	
 	// 게시판 글 삭제
