@@ -54,8 +54,10 @@
 		</interceptor>
 		<interceptor> 
 			<mapping path="/member/login"/>
+			<mapping path="/member/loginPOST"/>
 			<beans:ref bean="loginInterceptor"/>
 		</interceptor>
+		
 		<!-- 로그인 인증이 필요한 페이지 : 글작성, 글수정, 글삭제, 답글작성/삭제/수정, 관리자페이지 -->
 		<interceptor> 
 			<mapping path="/hboard/saveBoard"/> <!-- 글작성 -->
