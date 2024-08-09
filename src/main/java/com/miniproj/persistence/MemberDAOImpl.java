@@ -48,6 +48,12 @@ public class MemberDAOImpl implements MemberDAO {
 		return ses.update(NS + ".updateAutoLoginInfo", autoLoginInfo);
 	}
 
+	@Override
+	public MemberVO checkAutoLogin(String savedCookieSessionId) {
+		
+		return ses.selectOne(NS + ".checkAutoLoginUser", savedCookieSessionId);
+	}
+
 	
 }
 
