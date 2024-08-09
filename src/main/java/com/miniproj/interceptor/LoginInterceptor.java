@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.util.WebUtils;
 
 import com.miniproj.model.AutoLoginInfo;
 import com.miniproj.model.MemberVO;
@@ -33,10 +34,40 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		System.out.println("[LoginInterceptor preHandle()호출]");
-		// 이미 로그인이 된 경우 로그인 페이지를 보여줄 필요가 없다
-		// 로그인되어있지 않은 경우에만 로그인페이지를 보여줌
-		return super.preHandle(request, response, handler);
+		boolean isLoginPageShow = false;
+		// 요청이 GET방식일 때만 수행한다
+		if (request.getMethod().toUpperCase().equals("GET")) {
+			System.out.println("[LoginInterceptor preHandle()호출]");
+			// 이미 로그인이 된 경우 로그인 페이지를 보여줄 필요가 없다
+			// 쿠키가 존재하지 않는다면 로그인페이지로 이동
+			
+			Cookie autoLoginCookie = WebUtils.getCookie(request, "al");
+			if(autoLoginCookie != null) { // 쿠키에 저장했던 자동로그인체크 유저의 세션값
+				// 자동로그인 쿠키가 있을 때
+				String savedCookieSessionId = autoLoginCookie.getValue();
+				// 쿠키(맵형식)에 자동로그인정보가 있으면 DB에서 일치하는 유저를 자동로그인시킴 > 로그인페이지 건너뛰기
+				MemberVO autoLoginUser = service.checkAutoLogin(savedCookieSessionId);
+				
+				HttpSession ses = request.getSession();
+				ses.setAttribute("loginMember", autoLoginUser);
+				
+				Object dp = ses.getAttribute("destPath");
+				response.sendRedirect(( dp!=null)? (String)dp : "/" );
+				
+				
+			} else {
+				if(request.getSession().getAttribute("loginMember") == null) {
+					// 자동로그인 쿠키가 없고, 로그인되어있지 않은 경우에 로그인페이지를 보여줌
+					isLoginPageShow = true;
+				} else {
+					// 쿠키가 없고 로그인한 경우
+					isLoginPageShow = false;
+				}
+			} 
+		} else if (request.getMethod().toUpperCase().equals("POST")) {
+			isLoginPageShow = true;
+		}
+		return isLoginPageShow;
 	}
 
 	@Override
@@ -48,6 +79,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 			System.out.println("[LoginInterceptor postHandle()호출]");
 			Map<String, Object> model = modelAndView.getModel();
 			MemberVO loginMember = (MemberVO) model.get("loginMember");
+			
 			if (loginMember != null) {
 				System.out.println("[LoginInterceptor postHandle() : 로그인 성공]");
 				HttpSession ses = request.getSession(); // 로그인요청으로부터 세션을 얻어온다...
