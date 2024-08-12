@@ -39,7 +39,7 @@
 					<li class="nav-item"><a class="nav-link"
 						href="/hboard/listAll">계층형 게시판</a></li>
 					<li class="nav-item"><a class="nav-link"
-						href="javascript:void(0)">댓글형 게시판</a></li>
+						href="/rboard/listAll">댓글형 게시판</a></li>
 
 
 					<c:choose>

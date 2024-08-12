@@ -86,6 +86,7 @@ public class HboardController {
 			model.addAttribute("boardList", list); // 데이터 바인딩
 			model.addAttribute("search", searchCriteria); // 데이터 바인딩
 		} catch (Exception e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "error");
 		}
 
