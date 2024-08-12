@@ -313,8 +313,4 @@ select * from hboard;
 ALTER TABLE `webdiane`.`boardreadlog` 
 ADD COLUMN `boardType` VARCHAR(10) NULL AFTER `boardNo`;
 
--- 게시글 content 사이즈 변경
-ALTER TABLE `webdiane`.`hboard` 
-CHANGE COLUMN `content` `content` LONGTEXT NULL DEFAULT NULL ;
-
 
