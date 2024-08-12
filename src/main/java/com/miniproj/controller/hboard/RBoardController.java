@@ -8,8 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
 import com.miniproj.model.PagingInfo;
 import com.miniproj.model.PagingInfoDTO;
@@ -53,6 +55,16 @@ public class RBoardController {
 			model.addAttribute("exception", "error");
 			
 		}
+		
+	}
+	@RequestMapping("/showSaveBoardForm")
+	public String showSaveBoardForm() {
+		return "/rboard/saveBoardForm";
+	}
+	
+	@RequestMapping(value="/saveBoard", method=RequestMethod.POST)
+	public void saveBoard(HBoardDTO newBoard) {
+		System.out.println(newBoard + "댓글형 게시판에 글을 저장하자~");
 	}
 }
 	
