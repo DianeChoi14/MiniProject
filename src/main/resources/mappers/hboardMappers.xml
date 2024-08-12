@@ -8,18 +8,18 @@
 	<!-- 게시판의 모든 게시글을 번호 내림차순 정렬하여 가져오는 쿼리문 -->
 	<select id="getAllHBoard"
 		resultType="com.miniproj.model.HBoardVO">
-		select * from hboard order by ref desc, refOrder asc limit #{startRowIndex}, #{viewPostCntPerPage}
+		select * from hboard where boardType='hboard' order by ref desc, refOrder asc limit #{startRowIndex}, #{viewPostCntPerPage}
 	</select>
 
 	<!-- 새로운 게시글을 저장하는 쿼리문 -->
 	<insert id="saveNewBoard">
-		insert into hboard(title, content, writer)
-		values(#{title}, #{content}, #{writer})
+		insert into hboard(title, content, writer, boardType)
+		values(#{title}, #{content}, #{writer}, 'hboard')
 	</insert>
 
 	<!-- 저장된 글번호를 가져오는 쿼리문 -->
 	<select id="getMaxNo" resultType="int">
-		select max(boardNo) from hboard
+		select max(boardNo) from hboard where boardType='hboard'
 	</select>
 
 	<!-- 업로드된 첨부파일을 저장하는 쿼리문 -->
@@ -83,7 +83,7 @@
 		on h.boardNo = f.boardNo
 		inner join member m
 		on h.writer = m.userId
-		where h.boardNo=#{boardNo}
+		where h.boardNo=#{boardNo} and boardType='hboard' 
 	</select>
 
 	<!-- 게시글의 조회수를 증가하는 쿼리문 -->
@@ -103,8 +103,8 @@
 
 	<!-- ipAddr의 유저가 boardNo글을 현재 시간에 조회한다고 기록 -->
 	<insert id="saveBoardReadLog">
-		insert into boardreadlog(readWho, boardNo)
-		values(#{readWho}, #{boardNo})
+		insert into boardreadlog(readWho, boardNo, boardType)
+		values(#{readWho}, #{boardNo}, 'hboard')
 	</insert>
 
 	<!-- 조회수 증가한 날짜로 업데이트 -->
@@ -121,8 +121,8 @@
 
 	<!-- 답글을 저장 -->
 	<insert id="insertReplyBoard" >
-		insert into hboard(title, content, writer, ref, step, refOrder)
-		values (#{title}, #{content}, #{writer}, #{ref}, #{step}, #{refOrder})
+		insert into hboard(title, content, writer, ref, step, refOrder, boardType)
+		values (#{title}, #{content}, #{writer}, #{ref}, #{step}, #{refOrder}, 'hboard')
 	</insert>
 	
 	<!-- 부모글에 대한 다른 답글이 있는 상태에서, 부모글에 답글이 추가되는 경우 (자리확보를 위해) 기존 답글의 refOrder값을 수정 -->
@@ -157,12 +157,12 @@
 	
 	<!-- 삭제되지 않은 글 중에서 조회수가 높은 순, 최신글 순 5개 가져오기 -->
 	<select id="selectPopBoards" resultType="com.miniproj.model.HBoardVO">
-		select boardNo, title, postDate from hboard where isDelete='N' order by readCount desc, boardNo desc limit 5
+		select boardNo, title, postDate from hboard where isDelete='N' and boardType='hboard' order by readCount desc, boardNo desc limit 5
 	</select>
 	
 	<!-- 전체 게시글의 갯수 가져오기 -->
 	<select id="selectTotalCnt" resultType="int">
-		select count(*) from hboard
+		select count(*) from hboard where boardType='hboard'
 	</select>
 	
 	<!-- 검색어가 있을 경우 데이터 갯수 가져오기 -->
@@ -179,6 +179,7 @@
 				 where content like #{searchWord}
 			</when>
 		</choose> 
+				and boardType='hboard'
 	</select>
 	
 	<!-- 검색어가 있을 경우 게시글 데이터 가져오기 -->
@@ -195,6 +196,7 @@
 				 where content like #{searchWord}
 			</when>
 		</choose> 
-		order by ref desc, refOrder asc limit #{startRowIndex}, #{viewPostCntPerPage}
+			and boardType='hboard'
+			order by ref desc, refOrder asc limit #{startRowIndex}, #{viewPostCntPerPage}
 	</select>
 </mapper>

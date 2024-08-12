@@ -301,3 +301,16 @@ ADD COLUMN `allimit` DATETIME NULL AFTER `sesid`;
 update member set sesid=? , allimit=? where userId=?;
 -- 쿠키에 자동로그인 체크정보가 저장되어있을 때 자동로그인하는 쿼리문
 select * from member where sesid=? and allimit > now();
+
+-- ===========계층형게시판과 댓글형게시판의 테이블을 함께 사용하기 위해 게시판을 구분하는 용도의 컬럼추가 =============
+ALTER TABLE `webdiane`.`hboard` 
+ADD COLUMN `boardType` VARCHAR(10) NULL AFTER `isDelete`;
+-- 기존의 글들을 계층형게시판 타입의 글로 update 처리
+update hboard set boardType='hboard' where boardNo<947;
+select * from hboard;
+-- 계층형게시판 = 'hboard', 댓글형게시판 = 'rboard'
+-- boardreadlog테이블에 boardType 컬럼 추가
+ALTER TABLE `webdiane`.`boardreadlog` 
+ADD COLUMN `boardType` VARCHAR(10) NULL AFTER `boardNo`;
+
+
