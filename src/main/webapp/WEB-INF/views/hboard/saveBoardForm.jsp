@@ -202,8 +202,7 @@
 			</div>
 			<div class="mb-3">
 				<label for="author" class="form-label">작성자</label> <input
-					type="text" class="form-control" id="author" name="writer"
-					placeholder="작성자를 입력하세요">
+					type="text" class="form-control" id="author" name="writer" value='${sessionScope.loginMember.userId}' readonly>
 			</div>
 			<div class="mb-3">
 				<label for="content" class="form-label">내용</label>
