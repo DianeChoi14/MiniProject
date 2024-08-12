@@ -220,7 +220,7 @@
 
 	<div style="float: right; margin-right: 5px">
 		<button type="button" class="btn btn-outline-primary"
-			onclick="">글쓰기</button>
+			onclick="location.href = '/rboard/showSaveBoardForm';">글쓰기</button>
 	</div>
 
 	<form class="searchBar" action="/hboard/listAll" method="post"
