@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
@@ -32,7 +33,7 @@ public class RBoardController {
 	@RequestMapping("/listAll")
 	public void listAll(Model model, @RequestParam(value="pageNo", defaultValue = "1") int pageNo, @RequestParam(value="pagingSize", defaultValue="10") int pagingSize, SearchCriteriaDTO searchCriteria) {
 		logger.info("페이징 사이즈 "+pagingSize + "씩 " + pageNo + "번 페이지 출력, " + "검색조건 :" + searchCriteria.toString());
-		System.out.println("RBoardController.listAll()~");
+		// System.out.println("RBoardController.listAll()~");
 		
 		PagingInfoDTO dto =  PagingInfoDTO.builder()
 			.pageNo(pageNo)
@@ -63,8 +64,18 @@ public class RBoardController {
 	}
 	
 	@RequestMapping(value="/saveBoard", method=RequestMethod.POST)
-	public void saveBoard(HBoardDTO newBoard) {
-		System.out.println(newBoard + "댓글형 게시판에 글을 저장하자~");
+	public String saveBoard(HBoardDTO newBoard, RedirectAttributes redirectAttributes) {
+		// System.out.println(newBoard + "댓글형 게시판에 글을 저장하자~");
+		String returnPage = "redirect:/rboard/listAll";
+		try {
+			if(service.saveBoard(newBoard)) {
+				redirectAttributes.addAttribute("status", "success");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addAttribute("status", "fail");
+		}
+		return returnPage;
 	}
 }
 	

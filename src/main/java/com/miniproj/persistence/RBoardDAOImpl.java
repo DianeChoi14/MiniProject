@@ -27,20 +27,20 @@ public class RBoardDAOImpl implements RBoardDAO {
 
 	@Override
 	public List<HBoardVO> selectAllBoard(PagingInfo pi) throws Exception {
-		System.out.println("!");
+		// System.out.println("!");
 		List<HBoardVO> lst = ses.selectList(NS + ".getAllHBoard", pi);
-		for(HBoardVO h : lst)
-		{
-			System.out.println(h.toString());
-		}
+//		for(HBoardVO h : lst)
+//		{
+//			System.out.println(h.toString());
+//		}
 		
 		return ses.selectList(NS + ".getAllHBoard", pi);
 	}
 
 	@Override
 	public int insertNewBoard(HBoardDTO newBoard) {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		return ses.insert(NS + ".saveNewBoard", newBoard);
 	}
 
 	@Override

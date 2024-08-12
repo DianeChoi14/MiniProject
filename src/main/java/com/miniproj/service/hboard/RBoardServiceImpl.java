@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.miniproj.model.BoardDetailInfo;
@@ -14,7 +16,10 @@ import com.miniproj.model.HBoardVO;
 import com.miniproj.model.HReplyBoardDTO;
 import com.miniproj.model.PagingInfo;
 import com.miniproj.model.PagingInfoDTO;
+import com.miniproj.model.PointLogDTO;
 import com.miniproj.model.SearchCriteriaDTO;
+import com.miniproj.persistence.MemberDAO;
+import com.miniproj.persistence.PointLogDAO;
 import com.miniproj.persistence.RBoardDAO;
 import com.mysql.cj.util.StringUtils;
 
@@ -25,12 +30,14 @@ import lombok.RequiredArgsConstructor;
 public class RBoardServiceImpl implements RBoardService {
 
 	private final RBoardDAO rDao; 
+	private final PointLogDAO pDao;
+	private final MemberDAO mDao;
 	
 	@Override
 	@Transactional(readOnly = true)
 	public Map<String, Object> getAllBoard(PagingInfoDTO dto, SearchCriteriaDTO searchCriteria) throws Exception {
 
-		System.out.println("!service");
+		// System.out.println("!service");
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		// 페이징정보
 		PagingInfo pi = makePagingInfo(dto, searchCriteria);
@@ -57,7 +64,7 @@ public class RBoardServiceImpl implements RBoardService {
 			// 전체 게시글 수 세팅(검색어 없을 때)
 			pi.setTotalPostCnt(rDao.getTotalPostCnt()); 
 		} else {
-			System.out.println("검색결과수 :" + rDao.getTotalPostCnt(sc));
+			// System.out.println("검색결과수 :" + rDao.getTotalPostCnt(sc));
 			pi.setTotalPostCnt(rDao.getTotalPostCnt(sc)); // 검색조건에 따라 데이터 세팅
 		}
 		
@@ -68,14 +75,27 @@ public class RBoardServiceImpl implements RBoardService {
 		pi.setStartPageNoCurBlock();
 		pi.setEndPageNoCurBlock();
 
-		System.out.println(pi.toString() + "페이징 처리되었다!!!!");
+		// System.out.println(pi.toString() + "페이징 처리되었다!!!!");
 		return pi;
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
 	public boolean saveBoard(HBoardDTO newBoard) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		boolean result = false;
+//		1. newBoard를 DAO단을 통해 insert해본다 
+		if (rDao.insertNewBoard(newBoard) == 1) {
+//			1. 글작성자의 포인트를 부여한다. (select+insert)
+			PointLogDTO pointLogDTO = new PointLogDTO(newBoard.getWriter(), "글작성");
+			if (pDao.insertPointLog(pointLogDTO) == 1) {
+//				3. 작성자의 userPoint값을 update
+				if (mDao.updateUserPoint(pointLogDTO) == 1) {
+					result = true;
+				}
+			}
+		}
+
+		return result;
 	}
 
 	@Override
