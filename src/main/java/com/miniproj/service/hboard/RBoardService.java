@@ -23,7 +23,7 @@ public interface RBoardService {
 	public boolean modifyBoard(HBoardDTO modifyBoard) throws Exception;	
 		
 	// 게시판 상세 보기
-	public List<BoardDetailInfo> read(int boardNo, String  ipAddr) throws Exception;
+	public BoardDetailInfo read(int boardNo, String  ipAddr) throws Exception;
 		
 	// 게시글 수정을 위해 게시글을 불러오는 메서드, read메서드 오버로딩
 		

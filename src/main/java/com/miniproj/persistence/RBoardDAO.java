@@ -24,7 +24,7 @@ public interface RBoardDAO  {
 	int insertBoardUpFile(BoardUpFilesVODTO upFile) throws Exception;
 		
 	// 게시글의 상세정조블 얻어오는 메서드
-	List<BoardDetailInfo> selectBoardByBoardNo(int boardNo) throws Exception;
+	BoardDetailInfo selectBoardByBoardNo(int boardNo) throws Exception;
 		
 	// 게시글의 조회수를 증가하는 메서드
 	int updateReadCount(int boardNo);

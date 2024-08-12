@@ -82,6 +82,7 @@ public class RBoardServiceImpl implements RBoardService {
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
 	public boolean saveBoard(HBoardDTO newBoard) throws Exception {
+		
 		boolean result = false;
 //		1. newBoard를 DAO단을 통해 insert해본다 
 		if (rDao.insertNewBoard(newBoard) == 1) {
@@ -105,9 +106,24 @@ public class RBoardServiceImpl implements RBoardService {
 	}
 
 	@Override
-	public List<BoardDetailInfo> read(int boardNo, String ipAddr) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public BoardDetailInfo read(int boardNo, String ipAddr) throws Exception {
+		BoardDetailInfo boardInfo = rDao.selectBoardByBoardNo(boardNo);
+		System.out.println("댓글형게시판 상세보기 서비스단!");
+		// 조회수 증가 > 글을 읽어오기 전에 조회수를 가져와서 글을 가져왔을 경우 조회수를 1 늘린다.
+		if (boardInfo != null) {
+			// ipAddr유저가 boardNo글을 조회한 적이 없다.
+			if (rDao.selectDateDiff(boardNo, ipAddr) == -1) {
+				if (rDao.saveBoardReadLog(boardNo, ipAddr) == 1) { // 조회내역 저장
+					//updateReadCount(boardNo, boardInfo);
+				}
+			} else if (rDao.selectDateDiff(boardNo, ipAddr) >= 1) {
+				//updateReadCount(boardNo, boardInfo);
+				rDao.updateReadWhen(boardNo, ipAddr);
+			}
+
+		}
+		return boardInfo;
+
 	}
 
 	@Override

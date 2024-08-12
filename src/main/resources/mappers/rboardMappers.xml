@@ -8,7 +8,8 @@
 	<!-- 게시판의 모든 게시글을 번호 내림차순 정렬하여 가져오는 쿼리문 -->
 	<select id="getAllHBoard"
 		resultType="com.miniproj.model.HBoardVO">
-		select * from hboard where boardType='rboard' order by boardNo desc limit #{startRowIndex}, #{viewPostCntPerPage}
+		select * from hboard where boardType='rboard' order by
+		boardNo desc limit #{startRowIndex}, #{viewPostCntPerPage}
 	</select>
 
 	<!-- 새로운 게시글(댓글 형게시판을 저장하는 쿼리문 -->
@@ -19,7 +20,8 @@
 
 	<!-- 저장된 글번호를 가져오는 쿼리문 -->
 	<select id="getMaxNo" resultType="int">
-		select max(boardNo) from hboard where boardType='hboard'
+		select max(boardNo) from hboard
+		where boardType='rboard'
 	</select>
 
 	<!-- 업로드된 첨부파일을 저장하는 쿼리문 -->
@@ -40,50 +42,25 @@
 		<result column="content" property="content" javaType="String" />
 		<result column="writer" property="writer" javaType="String" />
 		<result column="postDate" property="postDate"
-			javaType="java.sql.Timestamp" /> <!-- Timestamp는 기본 클래스가 아니므로 타입에 클래스까지 적어줘야함 -->
+			javaType="java.sql.Timestamp" />
 		<result column="readCount" property="readCount" javaType="int" />
-		<result column="ref" property="ref" javaType="int" />
-		<result column="step" property="step" javaType="int" />
-		<result column="refOrder" property="refOrder" javaType="int" />
+		<result column="isDelete" property="isDelete" javaType="String" />
 
 		<result column="userName" property="userName" javaType="String" />
 		<result column="email" property="email" javaType="String" />
-		<result column="isDelete" property="isDelete"
-				javaType="String" />
-
-		<!-- 리스트타입은 collection 태그로 묶어서 사용 -->
-		<collection property="fileList"
-			ofType="com.miniproj.model.BoardUpFilesVODTO"
-			javaType="java.util.ArrayList">
-			<result column="boardUpFileNo" property="boardUpFileNo"
-				javaType="int" />
-			<result column="newFileName" property="newFileName"
-				javaType="String" />
-			<result column="originalFileName" property="originalFileName"
-				javaType="String" />
-			<result column="thumbFileName" property="thumbFileName"
-				javaType="String" />
-			<result column="ext" property="ext" javaType="String" />
-			<result column="size" property="size" javaType="long" />
-			<result column="boardNo" property="boardNo" javaType="int" />
-			<result column="base64Img" property="base64Img"
-				javaType="String" />	
-		</collection>
 
 	</resultMap>
 	<!-- 게시글의 상세정보를 담는 조인문 -->
 	<select id="selectBoardDetailInfoByBoardNo"
 		resultMap="boardDetailInfoMap">
-		select h.boardNo, h.title, h.content, 
-		h.writer,
-		h.postDate, h.readCount, h.ref, h.step, h.refOrder, h.isDelete,
-		f.*, m.username, m.email
-		from
-		hboard as h left outer join boardupfiles f
-		on h.boardNo = f.boardNo
-		inner join member m
+		select h.boardNo, h.title, h.content, h.writer, h.postDate,
+		h.readCount, h.isDelete, m.userName, m.email
+		from hboard h
+		inner join
+		member m
 		on h.writer = m.userId
-		where h.boardNo=#{boardNo} and boardType='hboard' 
+		where h.boardNo=#{boardNo} and
+		boardType='rboard'
 	</select>
 
 	<!-- 게시글의 조회수를 증가하는 쿼리문 -->
@@ -96,7 +73,8 @@
 	<select id="selectBoardDateDiff" resultType="int">
 		select ifnull(
 		DATEDIFF(now(),
-		(select readWhen from boardreadlog where readWho=#{readWho} and
+		(select readWhen from boardreadlog where
+		readWho=#{readWho} and
 		boardNo=#{boardNo})
 		), -1) as datediff;
 	</select>
@@ -104,7 +82,7 @@
 	<!-- ipAddr의 유저가 boardNo글을 현재 시간에 조회한다고 기록 -->
 	<insert id="saveBoardReadLog">
 		insert into boardreadlog(readWho, boardNo, boardType)
-		values(#{readWho}, #{boardNo}, 'hboard')
+		values(#{readWho}, #{boardNo}, 'rboard')
 	</insert>
 
 	<!-- 조회수 증가한 날짜로 업데이트 -->
@@ -120,83 +98,96 @@
 	</update>
 
 	<!-- 답글을 저장 -->
-	<insert id="insertReplyBoard" >
-		insert into hboard(title, content, writer, ref, step, refOrder, boardType)
-		values (#{title}, #{content}, #{writer}, #{ref}, #{step}, #{refOrder}, 'hboard')
+	<insert id="insertReplyBoard">
+		insert into hboard(title, content,
+		writer, ref, step, refOrder, boardType)
+		values (#{title}, #{content},
+		#{writer}, #{ref}, #{step}, #{refOrder}, 'rboard')
 	</insert>
-	
-	<!-- 부모글에 대한 다른 답글이 있는 상태에서, 부모글에 답글이 추가되는 경우 (자리확보를 위해) 기존 답글의 refOrder값을 수정 -->
+
+	<!-- 부모글에 대한 다른 답글이 있는 상태에서, 부모글에 답글이 추가되는 경우 (자리확보를 위해) 기존 답글의 refOrder값을 
+		수정 -->
 	<update id="updateBoardREfOrder">
-		update hboard set refOrder=refOrder+1 where ref=#{ref} and refOrder>#{refOrder}
+		update hboard set refOrder=refOrder+1 where
+		ref=#{ref} and refOrder>#{refOrder}
 	</update>
 
 	<!-- 첨부파일이 있다면 서버에서 삭제하기 전에 해당 글의 첨부파일 정보를 불러온다 -->
-	<select id="selectBoardUpFiles" resultType="com.miniproj.model.BoardUpFilesVODTO">
+	<select id="selectBoardUpFiles"
+		resultType="com.miniproj.model.BoardUpFilesVODTO">
 		select * from boardupfiles where boardNo=#{boardNo}
 	</select>
-	
+
 	<!-- boardupfiles에서 boardNo번 글의 첨부파일을 >전부< 삭제하는 쿼리문 -->
 	<delete id="deleteAllBoardUpFiles">
 		delete from boardupfiles where boardNo=#{boardNo}
 	</delete>
 
-	<!-- boardNo번 글을 삭제하는 쿼리문  -->
+	<!-- boardNo번 글을 삭제하는 쿼리문 -->
 	<update id="deleteBoardByBoardNo">
-		update hboard set isDelete='Y', title='', content='' where boardNo=#{boardNo}
+		update hboard set isDelete='Y', title='', content=''
+		where boardNo=#{boardNo}
 	</update>
-	
-	<!--  boardNo번의 게시글을 수정하는 쿼리문 -->
+
+	<!-- boardNo번의 게시글을 수정하는 쿼리문 -->
 	<update id="updateBoardByBoardNo">
-		update hboard set title=#{title}, content=#{content} where boardNo=#{boardNo};
+		update hboard set title=#{title}, content=#{content}
+		where boardNo=#{boardNo};
 	</update>
-	
+
 	<!-- 첨부파일의 PK번호(boardUpFileNo) 로 첨부파일을 일부만 삭제하는 메서드 -->
 	<delete id="deleteBoardUpFileByPK">
-		delete from boardupfiles where boardUpFileNo=#{boardUpFileNo}
+		delete from boardupfiles where
+		boardUpFileNo=#{boardUpFileNo}
 	</delete>
-	
+
 	<!-- 삭제되지 않은 글 중에서 조회수가 높은 순, 최신글 순 5개 가져오기 -->
-	<select id="selectPopBoards" resultType="com.miniproj.model.HBoardVO">
-		select boardNo, title, postDate from hboard where isDelete='N' and boardType='hboard' order by readCount desc, boardNo desc limit 5
+	<select id="selectPopBoards"
+		resultType="com.miniproj.model.HBoardVO">
+		select boardNo, title, postDate from hboard where
+		isDelete='N' and boardType='rboard' order by readCount desc, boardNo
+		desc limit 5
 	</select>
-	
+
 	<!-- 전체 게시글의 갯수 가져오기 -->
 	<select id="selectTotalCnt" resultType="int">
-		select count(*) from hboard where boardType='rboard'
+		select count(*) from
+		hboard where boardType='rboard'
 	</select>
-	
+
 	<!-- 검색어가 있을 경우 데이터 갯수 가져오기 -->
 	<select id="selectTotatlCntWithSearchCriteria" resultType="int">
-		select count(*) from hboard 
+		select count(*) from hboard
 		<choose>
 			<when test="searchType =='title'">
-				 where title like #{searchWord}
+				where title like #{searchWord}
 			</when>
 			<when test="searchType =='writer'">
-				 where writer like #{searchWord}
+				where writer like #{searchWord}
 			</when>
 			<when test="searchType =='content'">
-				 where content like #{searchWord}
+				where content like #{searchWord}
 			</when>
-		</choose> 
-				and boardType='rboard'
+		</choose>
+		and boardType='rboard'
 	</select>
-	
+
 	<!-- 검색어가 있을 경우 게시글 데이터 가져오기 -->
-		<select id="getSearchBoardWithPaging" resultType="com.miniproj.model.HBoardVO">
-		select * from hboard 
+	<select id="getSearchBoardWithPaging"
+		resultType="com.miniproj.model.HBoardVO">
+		select * from hboard
 		<choose>
 			<when test="searchType =='title'">
-				 where title like #{searchWord}
+				where title like #{searchWord}
 			</when>
 			<when test="searchType =='writer'">
-				 where writer like #{searchWord}
+				where writer like #{searchWord}
 			</when>
 			<when test="searchType =='content'">
-				 where content like #{searchWord}
+				where content like #{searchWord}
 			</when>
-		</choose> 
-			and boardType='rboard'
-			order by boardNo desc limit #{startRowIndex}, #{viewPostCntPerPage}
+		</choose>
+		and boardType='rboard'
+		order by boardNo desc limit #{startRowIndex}, #{viewPostCntPerPage}
 	</select>
 </mapper>
