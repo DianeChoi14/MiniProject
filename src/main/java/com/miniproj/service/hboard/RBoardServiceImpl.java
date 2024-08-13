@@ -101,18 +101,16 @@ public class RBoardServiceImpl implements RBoardService {
 
 		return result;
 	}
-//////////////////////////////////////////////////////////////////////////////////////////
+
 	@Override
 	public boolean modifyBoard(HBoardDTO modifyBoard) throws Exception {
 		boolean result = false;
-		// 1) 게시글 내용 update
-		if(rDao.updateBoardbyBoardNo(modifyBoard)==1) {
-
+		if(hDao.updateBoardbyBoardNo(modifyBoard)==1) {
 			result = true;
 		}
 		return result;
 	}
-//////////////////////////////////////////////////////////////////////////////////////////
+
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
 	public BoardDetailInfo read(int boardNo, String ipAddr) throws Exception {
@@ -142,6 +140,7 @@ public class RBoardServiceImpl implements RBoardService {
 	}
 	
 	@Override
+	@Transactional(readOnly = true)
 	public BoardDetailInfo read(int boardNo) throws Exception {
 		BoardDetailInfo boardInfo = rDao.selectBoardByBoardNo(boardNo);
 		return boardInfo;

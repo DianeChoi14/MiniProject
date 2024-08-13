@@ -69,12 +69,6 @@
 		where boardNo=#{boardNo}
 	</update>
 
-	<!-- boardNo번의 게시글을 수정하는 쿼리문 -->
-	<update id="updateBoardByBoardNo">
-		update hboard set title=#{title}, content=#{content}
-		where boardNo=#{boardNo};
-	</update>
-
 	<!-- 첨부파일의 PK번호(boardUpFileNo) 로 첨부파일을 일부만 삭제하는 메서드 -->
 	<delete id="deleteBoardUpFileByPK">
 		delete from boardupfiles where
