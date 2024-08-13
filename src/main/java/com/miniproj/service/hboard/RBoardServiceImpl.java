@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.miniproj.model.BoardDetailInfo;
+import com.miniproj.model.BoardUpFileStatus;
 import com.miniproj.model.BoardUpFilesVODTO;
 import com.miniproj.model.HBoardDTO;
 import com.miniproj.model.HBoardVO;
@@ -18,6 +19,7 @@ import com.miniproj.model.PagingInfo;
 import com.miniproj.model.PagingInfoDTO;
 import com.miniproj.model.PointLogDTO;
 import com.miniproj.model.SearchCriteriaDTO;
+import com.miniproj.persistence.HBoardDAO;
 import com.miniproj.persistence.MemberDAO;
 import com.miniproj.persistence.PointLogDAO;
 import com.miniproj.persistence.RBoardDAO;
@@ -32,6 +34,7 @@ public class RBoardServiceImpl implements RBoardService {
 	private final RBoardDAO rDao; 
 	private final PointLogDAO pDao;
 	private final MemberDAO mDao;
+	private final HBoardDAO hDao;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -98,38 +101,50 @@ public class RBoardServiceImpl implements RBoardService {
 
 		return result;
 	}
-
+//////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public boolean modifyBoard(HBoardDTO modifyBoard) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
-	}
+		boolean result = false;
+		// 1) 게시글 내용 update
+		if(rDao.updateBoardbyBoardNo(modifyBoard)==1) {
 
+			result = true;
+		}
+		return result;
+	}
+//////////////////////////////////////////////////////////////////////////////////////////
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
 	public BoardDetailInfo read(int boardNo, String ipAddr) throws Exception {
 		BoardDetailInfo boardInfo = rDao.selectBoardByBoardNo(boardNo);
 		System.out.println("댓글형게시판 상세보기 서비스단!");
 		// 조회수 증가 > 글을 읽어오기 전에 조회수를 가져와서 글을 가져왔을 경우 조회수를 1 늘린다.
 		if (boardInfo != null) {
 			// ipAddr유저가 boardNo글을 조회한 적이 없다.
-			if (rDao.selectDateDiff(boardNo, ipAddr) == -1) {
-				if (rDao.saveBoardReadLog(boardNo, ipAddr) == 1) { // 조회내역 저장
-					//updateReadCount(boardNo, boardInfo);
+			if (hDao.selectDateDiff(boardNo, ipAddr) == -1) {
+				if (hDao.saveBoardReadLog(boardNo, ipAddr) == 1) { // 조회내역 저장
+					updateReadCount(boardNo, boardInfo);
 				}
-			} else if (rDao.selectDateDiff(boardNo, ipAddr) >= 1) {
-				//updateReadCount(boardNo, boardInfo);
-				rDao.updateReadWhen(boardNo, ipAddr);
+			} else if (hDao.selectDateDiff(boardNo, ipAddr) >= 1) {
+				updateReadCount(boardNo, boardInfo);
+				hDao.updateReadWhen(boardNo, ipAddr);
 			}
 
 		}
 		return boardInfo;
 
 	}
-
+	
+	private void updateReadCount(int boardNo, BoardDetailInfo boardInfo) {
+		if (hDao.updateReadCount(boardNo) == 1) {
+			boardInfo.setReadCount(boardInfo.getReadCount() + 1);
+		}
+	}
+	
 	@Override
-	public List<BoardDetailInfo> read(int boardNo) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public BoardDetailInfo read(int boardNo) throws Exception {
+		BoardDetailInfo boardInfo = rDao.selectBoardByBoardNo(boardNo);
+		return boardInfo;
 	}
 
 	@Override

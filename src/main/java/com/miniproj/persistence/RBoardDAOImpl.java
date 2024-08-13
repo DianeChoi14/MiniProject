@@ -68,18 +68,6 @@ public class RBoardDAOImpl implements RBoardDAO {
 	}
 
 	@Override
-	public int selectDateDiff(int boardNo, String ipAddr) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int saveBoardReadLog(int boardNo, String ipAddr) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public int updateReadWhen(int boardNo, String ipAddr) throws Exception {
 		// TODO Auto-generated method stub
 		return 0;
@@ -123,8 +111,8 @@ public class RBoardDAOImpl implements RBoardDAO {
 
 	@Override
 	public int updateBoardbyBoardNo(HBoardDTO modifyBoard) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		return ses.update(NS + ".updateBoardByBoardNo", modifyBoard);
 	}
 
 	@Override

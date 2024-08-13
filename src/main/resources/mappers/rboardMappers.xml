@@ -63,66 +63,6 @@
 		boardType='rboard'
 	</select>
 
-	<!-- 게시글의 조회수를 증가하는 쿼리문 -->
-	<update id="updateReadCount">
-		update hboard set readCount = readCount+1 where
-		boardNo=#{boardNo}
-	</update>
-
-	<!-- ipAddr의 유저가 boardNo글을 조회한 시간차를 얻는 메서드 ( 조회한 적이 없으면 -1반환) -->
-	<select id="selectBoardDateDiff" resultType="int">
-		select ifnull(
-		DATEDIFF(now(),
-		(select readWhen from boardreadlog where
-		readWho=#{readWho} and
-		boardNo=#{boardNo})
-		), -1) as datediff;
-	</select>
-
-	<!-- ipAddr의 유저가 boardNo글을 현재 시간에 조회한다고 기록 -->
-	<insert id="saveBoardReadLog">
-		insert into boardreadlog(readWho, boardNo, boardType)
-		values(#{readWho}, #{boardNo}, 'rboard')
-	</insert>
-
-	<!-- 조회수 증가한 날짜로 업데이트 -->
-	<update id="updateBoardReadLog">
-		update boardreadlog set readWhen = now() where
-		readWho=#{readWho} and boardNo=#{boardNo}
-	</update>
-
-	<!-- 글 번호를 ref컬럼에 업데이트 -->
-	<update id="updateBoardRef">
-		update hboard set ref=#{boardNo} where
-		boardNo=#{boardNo}
-	</update>
-
-	<!-- 답글을 저장 -->
-	<insert id="insertReplyBoard">
-		insert into hboard(title, content,
-		writer, ref, step, refOrder, boardType)
-		values (#{title}, #{content},
-		#{writer}, #{ref}, #{step}, #{refOrder}, 'rboard')
-	</insert>
-
-	<!-- 부모글에 대한 다른 답글이 있는 상태에서, 부모글에 답글이 추가되는 경우 (자리확보를 위해) 기존 답글의 refOrder값을 
-		수정 -->
-	<update id="updateBoardREfOrder">
-		update hboard set refOrder=refOrder+1 where
-		ref=#{ref} and refOrder>#{refOrder}
-	</update>
-
-	<!-- 첨부파일이 있다면 서버에서 삭제하기 전에 해당 글의 첨부파일 정보를 불러온다 -->
-	<select id="selectBoardUpFiles"
-		resultType="com.miniproj.model.BoardUpFilesVODTO">
-		select * from boardupfiles where boardNo=#{boardNo}
-	</select>
-
-	<!-- boardupfiles에서 boardNo번 글의 첨부파일을 >전부< 삭제하는 쿼리문 -->
-	<delete id="deleteAllBoardUpFiles">
-		delete from boardupfiles where boardNo=#{boardNo}
-	</delete>
-
 	<!-- boardNo번 글을 삭제하는 쿼리문 -->
 	<update id="deleteBoardByBoardNo">
 		update hboard set isDelete='Y', title='', content=''

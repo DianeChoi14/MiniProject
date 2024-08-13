@@ -103,8 +103,8 @@
 
 	<!-- ipAddr의 유저가 boardNo글을 현재 시간에 조회한다고 기록 -->
 	<insert id="saveBoardReadLog">
-		insert into boardreadlog(readWho, boardNo, boardType)
-		values(#{readWho}, #{boardNo}, 'hboard')
+		insert into boardreadlog(readWho, boardNo)
+		values(#{readWho}, #{boardNo})
 	</insert>
 
 	<!-- 조회수 증가한 날짜로 업데이트 -->

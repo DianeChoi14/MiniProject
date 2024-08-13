@@ -35,7 +35,7 @@ public interface RBoardService {
 	 * @return : List<BoardDetailInfo> : 글과 첨부파일(리스트), 작성자 정보를 함께 불러온다
 	 * @throws : DAO단 에러
 	*/
-	public List<BoardDetailInfo> read(int boardNo) throws Exception;
+	public BoardDetailInfo read(int boardNo) throws Exception;
 		
 	// 게시판 글 삭제
 	public List<BoardUpFilesVODTO> removeBoard(int boardNo) throws Exception;
@@ -45,4 +45,5 @@ public interface RBoardService {
 
 	// 인기글 5개 가져오기
 	public List<HBoardVO> getPopularBoards() throws Exception;
+
 }
