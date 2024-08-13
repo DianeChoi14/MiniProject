@@ -12,6 +12,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.miniproj.model.BoardDetailInfo;
 import com.miniproj.model.MemberVO;
 import com.miniproj.service.hboard.HBoardService;
+import com.miniproj.service.hboard.RBoardService;
 import com.miniproj.util.DestinationPath;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	
 	@Autowired
 	private HBoardService service;
+	
+	@Autowired
+	private RBoardService rservice;
 	
 	/**
 	 * @작성자 : 802-05
@@ -68,13 +72,31 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			if(uri.contains("modify") || uri.contains("remove")) {
 				int boardNo = Integer.parseInt(request.getParameter("boardNo")); // db에 가져가서 권한 확인 용
 				System.out.println(boardNo + "번 글 수정/삭제에 대한 권한을 확인합니다...");
-				List<BoardDetailInfo> board = service.read(boardNo);
+				System.out.println("이전에 있다가 요청된 페이지" + uri );
+				
 				// 비교할 로그인 유저 정보 세션에서 불러오기
 				MemberVO loginMember = (MemberVO) ses.getAttribute("loginMember"); 
-				if(!board.get(0).getWriter().equals(loginMember.getUserId())) {
-					System.out.println(boardNo + "번 글 수정/삭제에 대한 권한을 없음! 상세페이지로 이동~");
-					response.sendRedirect("/hboard/viewBoard?status=authFail&boardNo=" + boardNo);
+				
+				// 계층형 게시판의 글수정이나 글삭제의 경우 read메서드가 List<BoardDetailInfo>를 반환
+				// 글의 작성자는 배열의 0번째에 있음
+				if(uri.contains("hboard")) {
+					List<BoardDetailInfo> board = service.read(boardNo);
+					
+					if(!board.get(0).getWriter().equals(loginMember.getUserId())) {
+						System.out.println(boardNo + "번 글 수정/삭제에 대한 권한을 없음! 상세페이지로 이동~");
+						response.sendRedirect("/rboard/viewBoard?status=authFail&boardNo=" + boardNo);
+					}
+				// 답글형 게시판의 글수정이나 글삭제의 경우 read메서드가 BoardDetailInfo를 반환
+				// 글의 작성자는 배열에 있다.
+				} else if (uri.contains("rboard")) {
+					BoardDetailInfo board = rservice.read(boardNo);
+					if(!board.getWriter().equals(loginMember.getUserId())) {
+						System.out.println(boardNo + "번 글 수정/삭제에 대한 권한을 없음! 상세페이지로 이동~");
+						response.sendRedirect("/rboard/viewBoard?status=authFail&boardNo=" + boardNo);
+					}
+					
 				}
+				
 			}
 			goOriginPath = true;
 		}
