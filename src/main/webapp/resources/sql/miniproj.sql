@@ -303,6 +303,7 @@ update member set sesid=? , allimit=? where userId=?;
 select * from member where sesid=? and allimit > now();
 
 -- ===========계층형게시판과 댓글형게시판의 테이블을 함께 사용하기 위해 게시판을 구분하는 용도의 컬럼추가 =============
+use webdiane;
 ALTER TABLE `webdiane`.`hboard` 
 ADD COLUMN `boardType` VARCHAR(10) NULL AFTER `isDelete`;
 -- 기존의 글들을 계층형게시판 타입의 글로 update 처리
@@ -315,3 +316,35 @@ ADD COLUMN `boardType` VARCHAR(10) NULL AFTER `boardNo`;
 -- 게시글 content 사이즈 변경
 ALTER TABLE `webdiane`.`hboard` 
 CHANGE COLUMN `content` `content` LONGTEXT NULL DEFAULT NULL ;
+
+select h.boardNo, h.title, h.content, 
+		h.writer,
+		h.postDate, h.readCount, h.isDelete,
+		m.username, m.email
+		from hboard h
+		inner join member m
+		on h.writer = m.userId
+		where h.boardNo=951 and boardType='rboard';
+        
+-- boardreadlog테이블의 boardType컬럼 삭제
+ALTER TABLE `webdiane`.`boardreadlog` 
+DROP COLUMN `boardType`;
+select * from hboard limit 5;
+-- -------------------- 댓글기능구현 ---------------------
+use webdiane;
+-- 하나의 게시글에 여러개의 댓글 > 일대다 관계
+CREATE TABLE `webdiane`.`replyboard` (
+  `replyNo` INT NOT NULL AUTO_INCREMENT,
+  `replyer` VARCHAR(8) NULL,
+  `content` VARCHAR(200) NULL,
+  `regDate` DATETIME NULL DEFAULT now(),
+  `boardNo` INT NOT NULL,
+  PRIMARY KEY (`replyNo`))
+COMMENT = '댓글을 저장하는 테이블';
+-- replyboard FK설정
+-- 수정테이블, 제약조건 이름, 참조테이블 및 컬럼
+alter table replyboard
+add constraint replyer_member_fk foreign key (replyer) references member(userId)
+on delete cascade;
+alter table replyboard
+add constraint boardNo_hboard_fk foreign key (boardNo) references hboard(boardNo);
