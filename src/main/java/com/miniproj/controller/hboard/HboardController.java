@@ -2,6 +2,7 @@ package com.miniproj.controller.hboard;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,15 +67,13 @@ public class HboardController {
 	// 게시판전체목록리스트를 출력하는 메소드
 	// defaultValue : pageNo쿼리스트링 값이 생략되어 호출되면 그 값이 1로 초기값이 부여되도록 함(400에러 방지)
 	@RequestMapping("/listAll")
-	public void listAll(Model model, @RequestParam(value="pageNo", defaultValue = "1") int pageNo, @RequestParam(value="pagingSize", defaultValue="10") int pagingSize, SearchCriteriaDTO searchCriteria) {
-		logger.info("페이징 사이즈 "+pagingSize + "씩 " + pageNo + "번 페이지 출력, " + "검색조건 :" + searchCriteria.toString());
+	public void listAll(Model model, @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+			@RequestParam(value = "pagingSize", defaultValue = "10") int pagingSize, SearchCriteriaDTO searchCriteria) {
+		logger.info("페이징 사이즈 " + pagingSize + "씩 " + pageNo + "번 페이지 출력, " + "검색조건 :" + searchCriteria.toString());
 		System.out.println("HBoardController.listAll()~");
-		
-		PagingInfoDTO dto =  PagingInfoDTO.builder()
-			.pageNo(pageNo)
-			.pagingSize(pagingSize)
-			.build();
-		
+
+		PagingInfoDTO dto = PagingInfoDTO.builder().pageNo(pageNo).pagingSize(pagingSize).build();
+
 		// 서비스단 호출
 		List<HBoardVO> list = null;
 		Map<String, Object> result = null;
@@ -293,49 +292,50 @@ public class HboardController {
 	// 아래의 viewBoard() 메서드는 /viewBoard, /modifyBoard(게시글 수정을 위해 게시글 호출) 기능일 때 두 경우에
 	// 호출된다
 	@RequestMapping(value = { "/viewBoard", "/modifyBoard" })
-	public String viewBoard(@RequestParam("boardNo") int boardNo, Model model, HttpServletRequest request) {
-
+	public String viewBoard(@RequestParam("boardNo") String boardNo, Model model, HttpServletRequest request) {
 		String returnViewPage = "";
-		String ipAddr = GetClientIPAddr.getClientIp(request);
 		List<BoardDetailInfo> boardDetailInfo = null;
 
-		System.out.println("=========" + ipAddr + "가" + boardNo + "글을 조회한다!=================");
-		System.out.println("URI출력 : " + request.getRequestURI());
-		// 수정페이지 호출 시에는 조회수 업데이트 X, 상세보기와 수정페이지는 뷰단이 다르다
-
 		try {
+
+			String ipAddr = GetClientIPAddr.getClientIp(request);
+			System.out.println(ipAddr + "가 " + boardNo + "번 글을 조회한다!");
+
+//	      System.out.println("uri : " +  request.getRequestURI());
+
 			if (request.getRequestURI().equals("/hboard/viewBoard")) {
-				System.out.println("게시판상세보기 호출~~~~~~~~~~~~~~~");
+				System.out.println("게시판 상세보기 호출..................");
 				returnViewPage = "/hboard/viewBoard";
-				boardDetailInfo = service.read(boardNo, ipAddr);
+				boardDetailInfo = service.read(Integer.parseInt(boardNo), ipAddr);
 
 			} else if (request.getRequestURI().equals("/hboard/modifyBoard")) {
-				System.out.println("게시판 수정페이지 호출~~~~~~~~~~~~~~~~~~~~~~~~~");
+				System.out.println("게시판 수정 호출 .................");
 				returnViewPage = "/hboard/modifyBoard";
-				boardDetailInfo = service.read(boardNo);
+				boardDetailInfo = service.read(Integer.parseInt(boardNo));
 
 				int fileCount = -1;
 				for (BoardDetailInfo b : boardDetailInfo) {
-					// DB에서 가저온 업로드된 파일리스트를 멤버변수에 할당
 					fileCount = b.getFileList().size();
-					this.modifyFileList = b.getFileList();
+					this.modifyFileList = b.getFileList(); // db에서 가져온 업로드된 파일리스트를 멤버변수에 할당
 				}
 				model.addAttribute("fileCount", fileCount);
 
-				System.out.println("===================================================");
-				System.out.println("========수정페이지 파일리스트에 있는 파일들=========");
-				for (BoardUpFilesVODTO f : this.modifyFileList) {
-					System.out.println(f.toString());
-				}
-				System.out.println("===================================================");
+				outputCurModifyFileList();
+
 			}
-		} catch (Exception e1) {
-			e1.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			returnViewPage = "redirect:/hboard/listAll?status=fail";
+		} catch (Exception ex) {
+			
 			returnViewPage = "redirect:/hboard/listAll?status=fail";
 		}
 
 		model.addAttribute("boardDetailInfo", boardDetailInfo);
+
 		return returnViewPage;
+
 	}
 
 //	@RequestMapping("/modifyBoard")
@@ -416,13 +416,13 @@ public class HboardController {
 				System.out.println(f.toString());
 			}
 			System.out.println("===================================================");
-			
+
 			// next >> DB에 저장(service에 호출) IOException 보다 더 상위의 Exception으로 변경
 			modifyBoard.setFileList(modifyFileList);
-			
-			if(service.modifyBoard(modifyBoard)) {
+
+			if (service.modifyBoard(modifyBoard)) {
 				redirectAttributes.addAttribute("status", "success");
-				
+
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -431,6 +431,5 @@ public class HboardController {
 		}
 		return "redirect:/hboard/viewBoard?boardNo=" + modifyBoard.getBoardNo();
 	}
-	
-	
+
 }
