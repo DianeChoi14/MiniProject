@@ -2,8 +2,12 @@ package com.miniproj.reply;
 
 import java.util.List;
 
+import com.miniproj.model.PagingInfo;
 import com.miniproj.model.ReplyVO;
 
 public interface ReplyDAO {
-	public List<ReplyVO> getAllReplies(int boardNo) throws Exception;
+	public List<ReplyVO> getAllReplies(int boardNo, PagingInfo pi) throws Exception;
+
+	public int getTotalPostCnt(int boardNo) throws Exception;
+	
 }
