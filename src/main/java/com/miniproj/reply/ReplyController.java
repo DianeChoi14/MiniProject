@@ -25,9 +25,10 @@ public class ReplyController {
 	
 	private final ReplyService rService;
 	
-	@GetMapping("/all/{boardNo}/{pageNo}") // GET방식일 때 데이터를 얻어옴, {} : path variable
+	// produces = {"application/json; charset=UTF-8;"}) : 반환값은 json타입이고, utf-8로 인코딩되어있다 라는 메타정보
+	@GetMapping(value="/all/{boardNo}/{pageNo}", produces = {"application/json; charset=UTF-8;"}) // GET방식일 때 데이터를 얻어옴, {} : path variable
  	public ResponseEntity getAllReplyByBoardNo(@PathVariable("boardNo") int boardNo, @PathVariable("pageNo") int pageNo) {
-		System.out.println(boardNo + "번의 모든 댓글을 얻어오자!");
+		System.out.println(boardNo + "번의 모든 댓글을 얻어오자!( 댓글 페이징 : " + pageNo +" )");
 		
 		ResponseEntity result = null;
 		Map<String, Object> replies = null;
