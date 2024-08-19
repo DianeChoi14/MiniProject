@@ -15,14 +15,14 @@
 	// 웹문서가 로딩되면 실행되는 달라펑션 $(document).ready(function(){}) 이 원형,
 	// 제이쿼리를 안 썼을 때 window.onload = function(){}와 같은 의미
 	$(function() {
-		getAllReplies();
+		getAllReplies(pageNo);
 		// Close, X 버튼 클릭하면 모달창 종료
 		$('.modalCloseBtn').click(function() {
 			$('#myModal').hide(100);
 		});
 	});
 	
-	function getAllReplies() {
+	function getAllReplies(pageNo) {
 		$.ajax({
 			url : "/reply/all/${param.boardNo}/" + pageNo, 	
 			type : 'get', 
@@ -43,31 +43,77 @@
 	}
 	
 	function outputReplies(replies) {
-		let output = `<div class="list-group">`;
-		
-		$.each(replies.data.replyList, function(i, reply){
-			output +=`<a href="#" class="list-group-item list-group-item-action reply">`;
-			output += `<div class='replyBody'>`;
-			output += `<div class='replyerProfile'>`;
-			output += `<img src='/resources/userImg/\${reply.userImg}'/>`;
-			output += `</div>`;	
-			output += `<div class='replyBodyArea'>`;
-			output += `<div class='replyContent'>\${reply.content}</div>`;		
-			output += `<div class='replyInfo'>`;
-			let bwnTime = processPostDate(reply.regDate);
-			output += `<div class='regDate'>\${bwnTime}</div>`;
-			output += `<div class='replyer' onmouseover='showReplyInfo(this);' onmouseout='hideReplyInfo(this);'>\${reply.replyer}</div>`;
-			output += `<div class='replyerInfo'>\${reply.userName}(\${reply.email})</div>`;
-			output += `</div>`;		
-			output += `</div>`;
-			output += `</div>`;
-			output += `</a>`;
-			
-		});
-		  
-		output += `</div>`;
-		$(".replyList").html(output);
+	      let output = `<div class="list-group">`;
+	      
+	      if(replies.data.replyList.length == 0) {
+	         output += `<div class="empty">`;
+	         output += `<img src ='/resources/images/empty.png'>`;
+	         output += `<div>댓글이 없습니다.</div>`;
+	         output += `</div>`;
+	         
+	      } else {
+	    	  $.each(replies.data.replyList, function(i, reply) {
+	 	         output += `<a href="#" class="list-group-item list-group-item-action reply">`;      
+	 	         output += `<div class='replyBody'>`;
+	 	         
+	 	         output += `<div class='replyerProfile'>`;
+	 	         output += `<img src='/resources/userImg/\${reply.userImg}'/>`;
+	 	         output += `</div>`;
+	 	         
+	 	         output += `<div class='replyBodyArea'>`;
+	 	         output += `<div class='replyContent'>\${reply.content}</div>`;
+	 	         
+	 	         output += `<div class='replyInfo'>`;
+	 	         let betweenTime = processPostDate(reply.regDate);
+	 	         output += `<div class='regDate'>\${betweenTime}</div>`;
+	 	         
+	 	         output += `<div class='replyer' onmouseover='showReplyInfo(this);' onmouseout='hideReplyInfo(this);'>`;
+	 	         output += `\${reply.replyer}</div>`;
+	 	         output += `<div class='replyerInfo'>\${reply.userName}(\${reply.email})</div>`;
+	 	         
+	 	         output += `</div>`;
+	 	         
+	 	         output += `</div>`;
+	 	         output += `</div>`;
+	 	         output += `</a>`;
+	 	      });   
+	    	  outputPagination(replies);
+	      }
+	      
+	      
+	        
+	      output += `</div>`;
+	      
+	      $(".replyList").html(output);
 	}
+	
+	// 댓글 페이징 작업
+	function outputPagination(replies) {
+		let output = `<ul class="pagination justify-content-center" style="margin:20px 0">`;
+		let pagingInfo = replies.data.pagingInfo;
+		
+		if (pageNo >1) {
+			output += `<li class="page-item"><a class="page-link" onclick="getAllReplies(--pageNo)">Previous</a></li>`;
+		}
+				
+		for (let i = pagingInfo.startPageNoCurBlock ; i<=pagingInfo.endPageNoCurBlock ; i++) {
+			if(pageNo==i){
+				output += `<li class="page-item active"><a class="page-link" onclick="pageNo=\{i}; getAllReplies(\${i});">\${i}</a></li>`;
+			} else {
+				output += `<li class="page-item"><a class="page-link" onclick="pageNo=\{i};getAllReplies(\${i});">\${i}</a></li>`;
+			}
+			
+		}
+		
+		if (pageNo < pagingInfo.totalPageCnt) {
+			output += `<li class="page-item"><a class="page-link" onclick="getAllReplies(++pageNo)">Next</a></li>`;
+		}
+		
+		output += `</ul>`;
+		$('.replyPagination').html(output);
+		
+	}
+	
 	// 댓글작성일시를 방금전, n분 전, n시간 전.. 의 형식으로 출력
 	function processPostDate(writtenDate) {
 		const postDate = new Date(writtenDate); // 댓글작성시간
@@ -81,14 +127,15 @@
 			{name : "분", time : 60}
 		];
 		for(let val of times) {
-			let bwnTime = Math.floor(diff / val.time);
-			console.log(diff, bwnTime);
+			let betweenTime = Math.floor(diff / val.time);
+			console.log(diff, betweenTime);
 			
-			if(bwnTime>0 && val.name =="일") {
-				return bwnTime + val.name + "전";
-			} else if (bwnTime>0 && val.name !="일") {
+			if(betweenTime>0 && val.name !="일") {
+				return betweenTime + val.name + "전";
+				
+			} else if (betweenTime>0 && val.name =="일") {
 				return postDate.toLocaleDateString();
-			}
+			} 
 			
 			return "방금 전";
 		}
@@ -211,7 +258,9 @@
 				</div>
 			
 				<div class="replyList">
+					<div class="replyPagination">
 					
+					</div>
 				</div>
 		</div>
 
