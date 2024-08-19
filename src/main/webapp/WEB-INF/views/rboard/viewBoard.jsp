@@ -47,27 +47,32 @@
 		
 		$.each(replies.data.replyList, function(i, reply){
 			output +=`<a href="#" class="list-group-item list-group-item-action reply">`;
-				output += `<div class='replyBody'>`;
-					output += `<div class='replyerProfile'>`;
-					output += `<img src='/resources/userImg/\${reply.userImg}'/>`;
-					output += `</div>`;
-				
-					output += `<div class='replyBodyArea'>`;
-						output += `<div class='replyContent'>\${reply.content}</div>`;
-					
-						output += `<div class='replyInfo'>`;
-								output += `<div class='regDate'>\${reply.regDate}</div>`;
-								output += `<div class='replyer'>\${reply.replyer}</div>`;
-						output += `</div>`;
-					
-					output += `</div>`;
-				output += `</div>`;
+			output += `<div class='replyBody'>`;
+			output += `<div class='replyerProfile'>`;
+			output += `<img src='/resources/userImg/\${reply.userImg}'/>`;
+			output += `</div>`;	
+			output += `<div class='replyBodyArea'>`;
+			output += `<div class='replyContent'>\${reply.content}</div>`;		
+			output += `<div class='replyInfo'>`;
+			output += `<div class='regDate'>\${reply.regDate}</div>`;
+			output += `<div class='replyer' onmouseover='showReplyInfo(this);' onmouseout='hideReplyInfo(this);'>\${reply.replyer}</div>`;
+			output += `<div class='replyerInfo'>\${reply.userName}(\${reply.email})</div>`;
+			output += `</div>`;		
+			output += `</div>`;
+			output += `</div>`;
 			output += `</a>`;
 			
 		});
 		  
-			output += `</div>`;
+		output += `</div>`;
 		$(".replyList").html(output);
+	}
+	
+	function hideReplyInfo(obj) {
+		$(obj).next().hide();
+	}
+	function showReplyInfo(obj) {
+		$(obj).next().show();
 	}
 	
 	function showRemoveModal() {	
@@ -107,11 +112,18 @@
 	border: 1px solid green;
 }
 .replyInfo {
-	disply: flex;
+	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	font-size : 0.8rem;
 	color : rgba(0,0,0,0.6);
+}
+.replyerInfo {
+	color : white;
+	background-color: #333;
+	padding: 5px;
+	border-radius: 4px;
+	display : none;
 }
 
 </style>
