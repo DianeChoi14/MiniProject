@@ -54,7 +54,8 @@
 			output += `<div class='replyBodyArea'>`;
 			output += `<div class='replyContent'>\${reply.content}</div>`;		
 			output += `<div class='replyInfo'>`;
-			output += `<div class='regDate'>\${reply.regDate}</div>`;
+			let bwnTime = processPostDate(reply.regDate);
+			output += `<div class='regDate'>\${bwnTime}</div>`;
 			output += `<div class='replyer' onmouseover='showReplyInfo(this);' onmouseout='hideReplyInfo(this);'>\${reply.replyer}</div>`;
 			output += `<div class='replyerInfo'>\${reply.userName}(\${reply.email})</div>`;
 			output += `</div>`;		
@@ -67,7 +68,31 @@
 		output += `</div>`;
 		$(".replyList").html(output);
 	}
-	
+	// 댓글작성일시를 방금전, n분 전, n시간 전.. 의 형식으로 출력
+	function processPostDate(writtenDate) {
+		const postDate = new Date(writtenDate); // 댓글작성시간
+		const now = new Date(); // 현재시간
+		
+		let diff = (now-postDate) / 1000; // timestamp가 m/s 값이므로, 시간차이를 초단위로 구하기 위함
+		
+		const times = [
+			{name : "일", time : 60*60*24},
+			{name : "시간", time : 60*60},
+			{name : "분", time : 60}
+		];
+		for(let val of times) {
+			let bwnTime = Math.floor(diff / val.time);
+			console.log(diff, bwnTime);
+			
+			if(bwnTime>0 && val.name =="일") {
+				return bwnTime + val.name + "전";
+			} else if (bwnTime>0 && val.name !="일") {
+				return postDate.toLocaleDateString();
+			}
+			
+			return "방금 전";
+		}
+	}
 	function hideReplyInfo(obj) {
 		$(obj).next().hide();
 	}
