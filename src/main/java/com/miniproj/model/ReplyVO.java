@@ -21,4 +21,8 @@ public class ReplyVO {
 	private String content;
 	private Timestamp regDate;
 	private int boardNo;
+	private String userImg;
+	private String userName;
+	private String email;
+	
 }
