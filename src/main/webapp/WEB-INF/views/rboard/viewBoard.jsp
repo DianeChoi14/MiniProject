@@ -98,9 +98,9 @@
 				
 		for (let i = pagingInfo.startPageNoCurBlock ; i<=pagingInfo.endPageNoCurBlock ; i++) {
 			if(pageNo==i){
-				output += `<li class="page-item active"><a class="page-link" onclick="pageNo=\{i}; getAllReplies(\${i});">\${i}</a></li>`;
+				output += `<li class="page-item active"><a class="page-link" onclick="pageNo=\${i}; getAllReplies(\${i});">\${i}</a></li>`;
 			} else {
-				output += `<li class="page-item"><a class="page-link" onclick="pageNo=\{i};getAllReplies(\${i});">\${i}</a></li>`;
+				output += `<li class="page-item"><a class="page-link" onclick="pageNo=\${i};getAllReplies(\${i});">\${i}</a></li>`;
 			}
 			
 		}
@@ -153,6 +153,7 @@
 		$('#myModal').show(500); // .show() 괄호 안에 숫자를 넣으면 m/s단위로 애니메이션 추가됨
 	}
 </script>
+
 <style>
 .content {
 	margin-top: 10px;
@@ -258,10 +259,11 @@
 				</div>
 			
 				<div class="replyList">
-					<div class="replyPagination">
+					
+				</div>
+				<div class="replyPagination">
 					
 					</div>
-				</div>
 		</div>
 
 		<!-- The Modal -->
