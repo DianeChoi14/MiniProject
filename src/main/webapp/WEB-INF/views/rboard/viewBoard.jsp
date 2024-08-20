@@ -22,6 +22,48 @@
 		});
 	});
 	
+	// 댓글저장
+	function saveReply() {
+		let boardNo = $('#boardNo').val();
+		let content = $('#replyContent').val();
+		let replyer = 'dooly'
+		const newReply = {
+			'boardNo' : boardNo,
+			'content' : content,
+			'replyer' : replyer
+		};
+		console.log(JSON.stringify(newReply)) // JSON.stringify({..}) 객체의 값을 json문자열로 표현(실제로는 그냥 문자열..)
+			
+		
+		if(content.length<10){
+			alert('댓글의 내용을 10자 이상 입력하세요')
+			return;
+		} else {
+			$.ajax({
+				url : "/reply/" + boardNo , 	
+				type : 'post', 
+				dataType : 'json',					// 수신받을 데이터 타입
+				data : JSON.stringify(newReply),	// 송신할 데이터 아입
+				headers : {
+					"Content-Type" : "application/json"
+				},									// 송신하는 데이터가 (문자열이지만) json임을 백엔드단에 알려줌
+				async : false, 
+				success : function(data) { 	
+					console.log(data);
+					if(data.resultCode == 200 || data.resultMsg == "SUCCESS"){
+						$('#replyContent').val(''); // 댓글입력창 비우고
+						getAllReplies(1); // 댓글 출력하고 1페이지 불러오기
+					}
+				},
+				error : function(data) {
+					console.log(data);
+					alert("댓글을 저장하지 못 했습니다...")
+				}
+			});	
+		}
+		// 로그인 X >> 로그인 후 댓글달 수 있도록 인터셉트(authInterceptor가)하고 다시 이 페이지로 돌아오도록
+	}
+	
 	function getAllReplies(pageNo) {
 		$.ajax({
 			url : "/reply/all/${param.boardNo}/" + pageNo, 	
@@ -198,6 +240,22 @@
 	border-radius: 4px;
 	display : none;
 }
+.replayInputArea {
+	display : flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+.replayInputArea input {
+	flex : 1;
+	width : 50%;
+	margin-left : 1em;
+}
+.replayInputArea img {
+	border : 2px solid rgba(0,0,255,0.1);
+	border-radius: 45px;
+	margin-left : 1em;
+}
 
 </style>
 </head>
@@ -259,11 +317,19 @@
 				</div>
 			
 				<div class="replyList">
-					
 				</div>
-				<div class="replyPagination">
+				<div class="replyPagination">	
+				</div>
+				<div class="replayInputArea">
 					
+					<label for="replyContent" class="form-label">댓글</label> 
+					<input
+						type="text" class="form-control" id="replyContent" >
+						
+					<div>
+					<img src="/resources/images/saveReply.png" onclick="saveReply();"/>
 					</div>
+				</div>
 		</div>
 
 		<!-- The Modal -->
