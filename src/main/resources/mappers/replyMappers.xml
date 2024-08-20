@@ -7,14 +7,20 @@
 		select r.*, m.userImg,
 		m.userName, m.email from replyboard r
 		inner join member m
-		on r.replyer = m.userId
+		on r.replyer =
+		m.userId
 		where boardNo= #{boardNo}
-		order by replyNo desc 
+		order by replyNo desc
 		limit #{startRowIndex}, #{viewPostCntPerPage}
 	</select>
 	<select id="selectReplyTotalCnt" resultType="int">
 		select count(*) from
 		replyboard where boardNo=#{boardNo}
 	</select>
+	<insert id="saveReply">
+		insert into replyboard (replyer, content, boardNo)
+		values (#{replyer}, #{content}, #{boardNo})
+
+	</insert>
 </mapper>
 

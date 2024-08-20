@@ -5,11 +5,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.miniproj.model.PagingInfo;
 import com.miniproj.model.PagingInfoDTO;
+import com.miniproj.model.PointLogDTO;
+import com.miniproj.model.ReplyDTO;
 import com.miniproj.model.ReplyVO;
+import com.miniproj.persistence.MemberDAO;
+import com.miniproj.persistence.PointLogDAO;
 import com.mysql.cj.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 public class ReplyServiceImpl implements ReplyService {
 
 	private final ReplyDAO rDao;
+	private final PointLogDAO pDao;
+	private final MemberDAO mDao;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -45,6 +53,26 @@ public class ReplyServiceImpl implements ReplyService {
 
 		return pi;
 		
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
+	public boolean saveReply(ReplyDTO newReply) throws Exception {
+		boolean result = false;
+		// 댓글 저장 insert
+		if (rDao.insertNewReply(newReply)==1) {
+			// 포인트 부여 insert
+			PointLogDTO pointLogDTO = new PointLogDTO(newReply.getReplyer(), "댓글작성");
+			if(pDao.insertPointLog(pointLogDTO) == 1) {
+				// 포인트 부여받은 멤버 userPoint update
+				if (mDao.updateUserPoint(pointLogDTO) == 1) {
+					result = true;
+				}
+			}
+			
+		}
+		
+		return result;
 	}
 
 }

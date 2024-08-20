@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import com.miniproj.model.PagingInfo;
+import com.miniproj.model.ReplyDTO;
 import com.miniproj.model.ReplyVO;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,12 @@ public class ReplyDAOImpl implements ReplyDAO {
 	public int getTotalPostCnt(int boardNo) throws Exception {
 
 		return ses.selectOne(NS + ".selectReplyTotalCnt", boardNo);
+	}
+
+	@Override
+	public int insertNewReply(ReplyDTO newReplyDTO) throws Exception {
+		
+		return ses.insert(NS + ".saveReply", newReplyDTO);
 	}
 
 }

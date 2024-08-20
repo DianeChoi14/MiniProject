@@ -3,6 +3,7 @@ package com.miniproj.reply;
 import java.util.List;
 
 import com.miniproj.model.PagingInfo;
+import com.miniproj.model.ReplyDTO;
 import com.miniproj.model.ReplyVO;
 
 public interface ReplyDAO {
@@ -10,4 +11,5 @@ public interface ReplyDAO {
 
 	public int getTotalPostCnt(int boardNo) throws Exception;
 	
+	int insertNewReply(ReplyDTO newReplyDTO)throws Exception;
 }
