@@ -26,7 +26,7 @@
 	function saveReply() {
 		let boardNo = $('#boardNo').val();
 		let content = $('#replyContent').val();
-		let replyer = 'dooly'
+		let replyer = preAuth();
 		const newReply = {
 			'boardNo' : boardNo,
 			'content' : content,
@@ -35,10 +35,10 @@
 		console.log(JSON.stringify(newReply)) // JSON.stringify({..}) 객체의 값을 json문자열로 표현(실제로는 그냥 문자열..)
 			
 		
-		if(content.length<10){
-			alert('댓글의 내용을 10자 이상 입력하세요')
-			return;
-		} else {
+		if (content.length < 1) {
+	         alert('댓글 내용을 입력 하세요...!');
+	         return;
+	      } else if (content.length >= 1 && replyer != null){
 			$.ajax({
 				url : "/reply/" + boardNo , 	
 				type : 'post', 
@@ -62,6 +62,17 @@
 			});	
 		}
 		// 로그인 X >> 로그인 후 댓글달 수 있도록 인터셉트(authInterceptor가)하고 다시 이 페이지로 돌아오도록
+	}
+	
+	// 댓글 저장/수정/삭제 시 로그인 인증
+	function preAuth() {
+		let replyer = '${sessionScope.loginMember.userId}';
+		if (replyer == '') {
+			// 로그인 X
+			location.href = "/member/login?redirectUrl=viewBoard&boardNo=${param.boardNo}"; // get방식, 로그인페이지로 이동 > 로그인 인터셉드 작동
+		} else {
+			return '${sessionScope.loginMember.userId}';
+		}
 	}
 	
 	function getAllReplies(pageNo) {
@@ -157,31 +168,32 @@
 	}
 	
 	// 댓글작성일시를 방금전, n분 전, n시간 전.. 의 형식으로 출력
-	function processPostDate(writtenDate) {
-		const postDate = new Date(writtenDate); // 댓글작성시간
-		const now = new Date(); // 현재시간
-		
-		let diff = (now-postDate) / 1000; // timestamp가 m/s 값이므로, 시간차이를 초단위로 구하기 위함
-		
-		const times = [
-			{name : "일", time : 60*60*24},
-			{name : "시간", time : 60*60},
-			{name : "분", time : 60}
-		];
-		for(let val of times) {
-			let betweenTime = Math.floor(diff / val.time);
-			console.log(diff, betweenTime);
-			
-			if(betweenTime>0 && val.name !="일") {
-				return betweenTime + val.name + "전";
-				
-			} else if (betweenTime>0 && val.name =="일") {
-				return postDate.toLocaleDateString();
-			} 
-			
-			return "방금 전";
-		}
+	   function processPostDate(writtenDate) {
+      const postDate = new Date(writtenDate);  // 댓글 작성시간
+      const now = new Date();  // 현재 시간
+      
+      let diff = (now-postDate) / 1000; // 시간 차 (초단위)
+      
+      const times = [
+         {name : "일", time : 60 * 60 * 24},
+         {name : "시간", time : 60 * 60},
+         {name : "분", time : 60}
+      ];
+      
+      for (let val of times) {
+         let betweenTime = Math.floor(diff / val.time);
+         console.log(writtenDate, diff, betweenTime);
+         
+         if (betweenTime > 0 && val.name != "일") {  // 하루보다 크지 않다면..
+            return betweenTime + val.name + "전";
+         } else if (betweenTime > 0 && val.name == "일") { // 하루보다 큰 값이라면 그냥 작성일 출력
+            return postDate.toLocaleString();
+         }
+      }
+      
+      return "방금전"; 
 	}
+	
 	function hideReplyInfo(obj) {
 		$(obj).next().hide();
 	}

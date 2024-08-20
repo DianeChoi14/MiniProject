@@ -11,7 +11,7 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script type="text/javascript">
 	$(function(){
-		$(.rememberCheck).click(function(){
+		$('.rememberCheck').click(function(){
 			alert('자동로그인은 공공장소에서 사용하지 않을 것을 권고드립니다..');
 		});
 		

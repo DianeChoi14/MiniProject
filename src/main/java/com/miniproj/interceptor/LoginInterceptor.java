@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.print.attribute.standard.Destination;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +23,7 @@ import org.springframework.web.util.WebUtils;
 import com.miniproj.model.AutoLoginInfo;
 import com.miniproj.model.MemberVO;
 import com.miniproj.service.member.MemberService;
+import com.miniproj.util.DestinationPath;
 import com.mysql.cj.util.StringUtils;
 
 // 직접 로그인하는 동작과정을 인터셉트로 구현
@@ -35,11 +37,23 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		boolean isLoginPageShow = false;
+		HttpSession ses = request.getSession();
 		// 요청이 GET방식일 때만 수행한다
 		if (request.getMethod().toUpperCase().equals("GET")) {
 			System.out.println("[LoginInterceptor preHandle()호출]");
 			// 이미 로그인이 된 경우 로그인 페이지를 보여줄 필요가 없다
 			// 쿠키가 존재하지 않는다면 로그인페이지로 이동
+			if (request.getParameter("redirectUrl") !=null) {
+				// 댓글 작성/수정/삭제 시도하려다 로그인페이지로 인터셉트 되었을 때
+				String uri = request.getParameter("redirectUrl");
+				int boardNo = Integer.parseInt(request.getParameter("boardNo"));
+				
+				if (uri.contains("view")) {
+					// 로그인 후 이전 페이지로 이동
+					ses.setAttribute("destPath", "/rboard/viewBoard?boardNo=" + boardNo);
+				}
+			}
+			
 			
 			Cookie autoLoginCookie = WebUtils.getCookie(request, "al");
 			if(autoLoginCookie != null) { // 쿠키에 저장했던 자동로그인체크 유저의 세션값
@@ -48,7 +62,6 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 				// 쿠키(맵형식)에 자동로그인정보가 있으면 DB에서 일치하는 유저를 자동로그인시킴 > 로그인페이지 건너뛰기
 				MemberVO autoLoginUser = service.checkAutoLogin(savedCookieSessionId);
 				
-				HttpSession ses = request.getSession();
 				ses.setAttribute("loginMember", autoLoginUser);
 				
 				Object dp = ses.getAttribute("destPath");
