@@ -20,7 +20,18 @@
 		$('.modalCloseBtn').click(function() {
 			$('#myModal').hide(100);
 		});
+		getPreInputReplyContent();
+		
 	});
+	
+	// 로그인 전 작성한 댓글내용 호출
+	function getPreInputReplyContent() {
+		let replyContent = localStorage.getItem("replyContent");
+		if (replyContent != '' || replyContent != null) {
+			$('#replyContent').val(replyContent);
+			localStorage.removeItem("replyContent");
+		}
+	}
 	
 	// 댓글저장
 	function saveReply() {
@@ -67,10 +78,20 @@
 	// 댓글 저장/수정/삭제 시 로그인 인증
 	function preAuth() {
 		let replyer = '${sessionScope.loginMember.userId}';
+		let replyContent = $('#replyContent').val();
 		if (replyer == '') {
+			
 			// 로그인 X
+			// 로컬스토리지에 댓글내용이 있다면 저장한다
+			if(replyContent != '') {
+				localStorage.setItem("replyContent", replyContent);
+			}
 			location.href = "/member/login?redirectUrl=viewBoard&boardNo=${param.boardNo}"; // get방식, 로그인페이지로 이동 > 로그인 인터셉드 작동
+		
 		} else {
+			// 로컬(세션)스토리지에 이전에 저장했던 댓글이 내용이 있다면 댓글입력창에 붙여넣기
+			// 로컬(세션)스토리지에 저장했던 댓글을 삭제한다............
+			
 			return '${sessionScope.loginMember.userId}';
 		}
 	}
