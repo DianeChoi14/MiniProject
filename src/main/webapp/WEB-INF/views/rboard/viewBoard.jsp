@@ -24,6 +24,17 @@
 		
 	});
 	
+	function modifyReply(obj) {
+		let output = `<input type="text" class="form-control" id="replyContent" value="\${content}" />`
+		output += `<img src="/resources/images/saveReply.png" onclick="modifyReplysave();"/>`;
+		
+		$('.replyContent').html();
+	}
+	
+	function removeReply(replyNo) {
+		alert(replyNo + "번 댓글을 삭제합니다?");
+	}
+	
 	// 로그인 전 작성한 댓글내용 호출
 	function getPreInputReplyContent() {
 		let replyContent = localStorage.getItem("replyContent");
@@ -135,8 +146,17 @@
 	 	         output += `</div>`;
 	 	         
 	 	         output += `<div class='replyBodyArea'>`;
-	 	         output += `<div class='replyContent'>\${reply.content}</div>`;
+	 	         output += `<div class='replyHeader'><div class='replyContent'>\${reply.content}</div>`;
 	 	         
+	 	         if(reply.replyer == '${sessionScope.loginMember.userId}'){
+	 	        	// 로그인햇을 때, 댓글작성자일 때 버튼 보이기
+	 	        	output += `<div class='replyBtns'><img src="/resources/images/modify.png" onclick="modifyReply(${reply.replyNo});"  />`;
+	 	         	output += `<img src="/resources/images/remove.png" onclick="removeReply(\${reply.replyNo});" /></div></div>`;
+	 	         } else {
+	 	        	 // 로그인 안 했을 때, 댓글작성자가 아닐 때 replyBtns비우기
+	 	        	output += `<div class='replyBtns'></div></div>`
+	 	         }
+	 	         	 	         
 	 	         output += `<div class='replyInfo'>`;
 	 	         let betweenTime = processPostDate(reply.regDate);
 	 	         output += `<div class='regDate'>\${betweenTime}</div>`;
@@ -154,8 +174,6 @@
 	    	  outputPagination(replies);
 	      }
 	      
-	      
-	        
 	      output += `</div>`;
 	      
 	      $(".replyList").html(output);
@@ -288,6 +306,18 @@
 	border : 2px solid rgba(0,0,255,0.1);
 	border-radius: 45px;
 	margin-left : 1em;
+}
+.replyHeader {
+	display:flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+.replyContent {
+	flex : 1;
+}
+.replyBtns img {
+	width : 30px;
 }
 
 </style>
