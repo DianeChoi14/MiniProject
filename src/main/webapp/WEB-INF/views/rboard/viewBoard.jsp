@@ -25,10 +25,52 @@
 	});
 	
 	function modifyReply(replyNo) {
-		let output = `<input type="text" class="form-control" id="replyContent" value="\${content}" />`
-		output += `<img src="/resources/images/saveReply.png" onclick="modifyReplysave();"/>`;
+		let output = `<div class="modifyReplyArea">`;
+		output += `<input type="text" class="form-control" id="modifyReplyContent" placeholder="댓글수정" />`
+		output += `<img src="/resources/images/saveReply.png" onclick="modifyReplysave(\${replyNo});"/></div>`;
+		if ($(`#reply_\${replyNo}`).find('.modifyReplyArea').length == 0) {
+			$(output).insertBefore($(`#reply_\${replyNo}`).find('.replyInfo'));
+			$(`#reply_\${replyNo}`).find('input').focus();
+		}
 		
-		$('.replyContent').html();
+	}
+	
+	// 수정 댓글 저장
+	function modifyReplysave(replyNo) {
+		let content = $('#modifyReplyContent').val();
+		let replyer = '${sessionScope.loginMember.userId}'
+		
+		if (content == '') {
+			alert('수정할 댓글을 입력하세요..');
+		} else {
+			const modifyReply = {
+			"replyNo" : replyNo,
+			"content" : content,
+			"replyer" : replyer
+			};
+			$.ajax({
+				url : "/reply/" + replyNo, 	
+				type : 'put', 
+				dataType : 'json',					// 수신받을 데이터 타입
+				data : JSON.stringify(modifyReply),	// 송신할 데이터 아입
+				headers : {
+					"Content-Type" : "application/json", // 송신하는 데이터가 (문자열이지만) json임을 백엔드단에 알려줌
+					"X-HTTP-Method-Override" : "POST"	 // 웹브라우저에서 put이나 delete, patch등 REST에서 사용되는 HTTP메서드가 동작하지 않는 과거의 웹브라우저에선느 POST방식으로 동작하도록한다
+				},									
+				async : false, 
+				success : function(data) { 	
+					console.log(data);
+					if(data.resultCode == 200 || data.resultMsg == "SUCCESS"){
+						getAllReplies(1); // 댓글 출력하고 1페이지 불러오기
+					}
+				},
+				error : function(data) {
+					console.log(data);
+					alert("댓글을 저장하지 못 했습니다...")
+				}
+			});	
+		}
+		
 	}
 	
 	function removeReply(replyNo) {
@@ -138,7 +180,7 @@
 	         
 	      } else {
 	    	  $.each(replies.data.replyList, function(i, reply) {
-	 	         output += `<a href="#" class="list-group-item list-group-item-action reply" id="reply_\${reply.replyNo}">`;      
+	 	         output += `<div class="list-group-item list-group-item-action reply" id="reply_\${reply.replyNo}">`;      
 	 	         output += `<div class='replyBody'>`;
 	 	         
 	 	         output += `<div class='replyerProfile'>`;
@@ -150,7 +192,7 @@
 	 	         
 	 	         if(reply.replyer == '${sessionScope.loginMember.userId}'){
 	 	        	// 로그인햇을 때, 댓글작성자일 때 버튼 보이기
-	 	        	output += `<div class='replyBtns'><img src="/resources/images/modify.png" onclick="modifyReply(${reply.replyNo});"  />`;
+	 	        	output += `<div class='replyBtns'><img src="/resources/images/modify.png" onclick="modifyReply(\${reply.replyNo});"  />`;
 	 	         	output += `<img src="/resources/images/remove.png" onclick="removeReply(\${reply.replyNo});" /></div></div>`;
 	 	         } else {
 	 	        	 // 로그인 안 했을 때, 댓글작성자가 아닐 때 replyBtns비우기
@@ -169,7 +211,7 @@
 	 	         
 	 	         output += `</div>`;
 	 	         output += `</div>`;
-	 	         output += `</a>`;
+	 	         output += `</div>`;
 	 	      });   
 	    	  outputPagination(replies);
 	      }
@@ -319,7 +361,23 @@
 .replyBtns img {
 	width : 30px;
 }
-
+.modifyReplyArea {
+	display : flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+.modifyReplyArea input {
+	flex : 1;
+	width : 50%;
+	margin-left : 1em;
+}
+.modifyReplyArea img {
+	width : 30px;
+	border : 2px solid rgba(0,0,255,0.1);
+	border-radius: 15px;
+	margin : 1em;
+}
 </style>
 </head>
 <body>
