@@ -379,3 +379,6 @@ where boardNo=949 ;
 
 -- 수정 댓글 
 update replyboard set content=? , regDate=now() where replyNo=?;
+
+-- ?번 댓글 삭제
+delete from replyboard where replyNo=?;

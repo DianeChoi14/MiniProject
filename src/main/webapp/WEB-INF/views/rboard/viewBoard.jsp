@@ -74,6 +74,7 @@
 	}
 	
 	function removeReply(replyNo) {
+		// 모달창 호출...
 		alert(replyNo + "번 댓글을 삭제합니다?");
 	}
 	
