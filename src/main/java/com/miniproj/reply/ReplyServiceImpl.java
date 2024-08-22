@@ -75,4 +75,13 @@ public class ReplyServiceImpl implements ReplyService {
 		return result;
 	}
 
+	@Override
+	public boolean saveModifyReply(ReplyDTO replyDTO) throws Exception {
+		boolean result = false;
+		if(rDao.updateReply(replyDTO)==1) {
+			result = true;
+		}
+		return result;
+	}
+
 }

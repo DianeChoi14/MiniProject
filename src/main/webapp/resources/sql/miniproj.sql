@@ -332,6 +332,7 @@ DROP COLUMN `boardType`;
 select * from hboard limit 5;
 -- -------------------- 댓글기능구현 ---------------------
 use webdiane;
+select * from hboard where boardType='rboard' order by boardNo desc;
 -- 하나의 게시글에 여러개의 댓글 > 일대다 관계
 CREATE TABLE `webdiane`.`replyboard` (
   `replyNo` INT NOT NULL AUTO_INCREMENT,
@@ -348,3 +349,33 @@ add constraint replyer_member_fk foreign key (replyer) references member(userId)
 on delete cascade;
 alter table replyboard
 add constraint boardNo_hboard_fk foreign key (boardNo) references hboard(boardNo);
+
+-- 댓글 등록해보기..
+insert into replyboard (replyer, content, boardNo)
+values ('gildong2', '분 표시하는 기능 테스트!!', 949);
+
+-- ~번 글에 대한 모든 댓글을 얻어오는 쿼리문
+select * from replyboard where boardNo=952;
+
+-- ?번 글에 대한 게시글과 모든 댓글을 얻어오는 쿼리문
+select * from hboard h inner join replyboard r on h.boardNo = r.boardNo where h.boardNo=952 and boardType='rboard';
+-- 조인문은 from부터 쓰기 시작하기...
+-- inner join에서... on 다음에는'=' 이퀄 조건으로 쓸 수 있는 것, 그 밖의 조건은 where
+-- outer join에서... 한쪽 테이블(left/right outer)에 누락된 데이터가 있을 때 
+
+-- ?번 글의 댓글 얻어오기
+select * from replyboard where boardNo=951;
+
+-- 댓글갯수 얻어오기
+select count(*) from replyboard where boardNo=?;
+-- 댓글 페이징을 위한 쿼리문 
+select * from replyboard where boardNo=949 order by replyNo limit 1, 5;
+
+-- 모든 댓글 + 댓글 작성자의 프로필
+select r.*, m.userImg, m.userName, m.email from replyboard r 
+inner join member m
+on r.replyer = m.userId
+where boardNo=949 ;
+
+-- 수정 댓글 
+update replyboard set content=? , regDate=now() where replyNo=?;

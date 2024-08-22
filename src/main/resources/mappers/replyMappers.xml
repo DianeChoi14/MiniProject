@@ -22,5 +22,8 @@
 		values (#{replyer}, #{content}, #{boardNo})
 
 	</insert>
+	<update id="updateReply">
+		update replyboard set content=#{content}, regDate=now() where replyNo=#{replyNo}
+	</update>
 </mapper>
 

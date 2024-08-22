@@ -63,4 +63,19 @@ public class ReplyController {
 		}
 		return result;
 	}
+	
+	@RequestMapping(value="/{replyNo}", produces = {"application/json; charset=UTF-8;"}, method=RequestMethod.PUT)
+	public ResponseEntity modifyReply(@RequestBody ReplyDTO replyDTO, @PathVariable("replyNo") int replyNo ) {
+		System.out.println(replyNo + "번 수정댓글을 저장하자 : " + replyDTO.toString());
+		ResponseEntity result=null;
+		try {
+			if(rService.saveModifyReply(replyDTO)) {
+				result = new ResponseEntity(MyResponseWithData.success(), HttpStatus.OK);
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = new ResponseEntity(MyResponseWithData.fail(), HttpStatus.BAD_REQUEST);
+		}
+		return result;
+	}
 }

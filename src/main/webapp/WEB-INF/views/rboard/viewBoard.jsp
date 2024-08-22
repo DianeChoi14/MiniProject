@@ -49,7 +49,7 @@
 			"replyer" : replyer
 			};
 			$.ajax({
-				url : "/reply/" + replyNo, 	
+				url : '/reply/' + replyNo, 	
 				type : 'put', 
 				dataType : 'json',					// 수신받을 데이터 타입
 				data : JSON.stringify(modifyReply),	// 송신할 데이터 아입
