@@ -47,9 +47,14 @@ public class MemberServiceImpl implements MemberService {
 		// 1:N관계인 취미컬럼을 하나의 문자열로 저장
 		boolean result = false;
 		String tmpHobbies="";
-		for(String hobby : registMember.getHobby())
+		for(int i=0; i<registMember.getHobby().length; i++ )
 		{
-			tmpHobbies +=  hobby + "," ;
+			if(i == registMember.getHobby().length -1) {
+				tmpHobbies += registMember.getHobby()[i];
+			} else {
+				tmpHobbies += registMember.getHobby()[i] + ", ";
+			}
+			
 		}
 		registMember.setHobbies(tmpHobbies);
 		
