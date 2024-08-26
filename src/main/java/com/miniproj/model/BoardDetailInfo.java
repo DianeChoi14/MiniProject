@@ -37,6 +37,7 @@ public class BoardDetailInfo {
 	private int refOrder;
 	private String isDelete;
 	
+	
 //	private int boardUpFileNo;
 //	private String newFileName;
 //	private String originalFileName;
@@ -48,6 +49,6 @@ public class BoardDetailInfo {
 
 	private String userName;
 	private String email;
-	
+	private String hobbies;
 	
 }

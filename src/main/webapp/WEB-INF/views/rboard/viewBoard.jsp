@@ -411,6 +411,15 @@
 							value="${board.writer}(${board.email})" readonly>
 					</div>
 					<div class="mb-3">
+						<label class="form-label">취미</label> 
+						<div class="hobbies">
+							<c:forTokens var="hobby" items="${board.hobbies}" delims=",">
+								<span class="badge bg-info">${hobby}</span>
+							</c:forTokens>
+						</div>
+					</div>
+					
+					<div class="mb-3">
 						<label for="postDate" class="form-label">작성일</label> <input
 							type="text" class="form-control" id="postDate"
 							value="${board.postDate}" readonly>
