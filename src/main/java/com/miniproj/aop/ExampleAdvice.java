@@ -1,5 +1,7 @@
 package com.miniproj.aop;
 
+import org.apache.catalina.tribes.util.Arrays;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -15,12 +17,14 @@ public class ExampleAdvice {
 	
 	// 인터셉터 - 특정 uri를 실행할 때 작동 됨, 컨트롤러단에 건다-서블릿에 의해 동작하므로..
 	// AOP - 특정틀래스-메서드를 실행할 때 작동 됨, 서비스단에 건다
-	@Before("execution(public * com.miniproj.service.hboard.HBoardServiceImpl.*(..))")
-	public void startAOP() {
+	@Before("execution(public * com.miniproj.service.hboard.HBoardServiceImpl.saveBoard(..))")
+	public void startAOP(JoinPoint jp) {
 		System.out.println("============================== AOP 시작 =================================");
+		Object[] params = jp.getArgs(); // 걸려있는 메서드의 매개변수를 object배열로 가져온다 
+		System.out.println(Arrays.toString(params));
 	}
 	
-	@After("execution(public * com.miniproj.service.hboard.HBoardServiceImpl.*(..))")
+	@After("execution(public * com.miniproj.service.hboard.HBoardServiceImpl.saveBoard(..))")
 	public void endAOP() {
 		System.out.println("================================ AOP 끝 =================================");
 	}
