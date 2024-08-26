@@ -18,6 +18,8 @@
       http://www.springframework.org/schema/tx 
       http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 
+	<!-- AspectJ 라이브러리르 이용해 Proxy객체를 생성하도록 설정(aop관련설정) -->
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
 	<!-- Root Context: defines shared resources visible to all other web components -->
 
 	<tx:annotation-driven/> <!-- 트랜잭션처리를 어노테이션 방식으로 진행하겠다는 의미 -->
