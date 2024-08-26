@@ -20,4 +20,5 @@ public class LoginDTO {
 	private String userId;
 	private String userPwd;
 	private boolean remember;
+	private String ipAddr;
 }
