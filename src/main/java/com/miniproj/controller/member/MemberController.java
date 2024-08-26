@@ -26,6 +26,7 @@ import com.miniproj.model.MemberVO;
 import com.miniproj.model.MyResponseWithoutData;
 import com.miniproj.service.member.MemberService;
 import com.miniproj.util.FileProcess;
+import com.miniproj.util.GetClientIPAddr;
 import com.miniproj.util.SendMailService;
 import com.mysql.cj.util.StringUtils;
 
@@ -158,8 +159,11 @@ public class MemberController {
 	}
 
 	@RequestMapping(value = "/loginPOST", method = RequestMethod.POST)
-	public void loginPOST(LoginDTO loginDTO, Model model) {
+	public void loginPOST(LoginDTO loginDTO, Model model, HttpServletRequest req) {
 		System.out.println(loginDTO);
+		
+		loginDTO.setIpAddr(GetClientIPAddr.getClientIp(req)); // 아이피주소를 서비스단에서도 참조할 수 있도록 DTO에 저장
+		
 		try {
 			MemberVO loginMember = mService.login(loginDTO);
 			if (loginMember != null) {
