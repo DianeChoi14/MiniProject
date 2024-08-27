@@ -382,3 +382,13 @@ update replyboard set content=? , regDate=now() where replyNo=?;
 
 -- ?번 댓글 삭제
 delete from replyboard where replyNo=?;
+
+
+use webdiane;
+select * from member;
+commit;
+
+-- 계정 비활성화 기능을 위한 'islock'컬럼 추가
+ALTER TABLE `webdiane`.`member` 
+ADD COLUMN `islock` VARCHAR(1) NULL DEFAULT 'N' AFTER `allimit`;
+
