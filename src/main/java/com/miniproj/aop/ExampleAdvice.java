@@ -15,8 +15,8 @@ public class ExampleAdvice {
 	// Advice : AOP로 구현할 객체를 명시
 	private static final Logger logger = LoggerFactory.getLogger(ExampleAdvice.class);
 	
-	// 인터셉터 - 특정 uri를 실행할 때 작동 됨, 컨트롤러단에 건다-서블릿에 의해 동작하므로..
-	// AOP - 특정틀래스-메서드를 실행할 때 작동 됨, 서비스단에 건다
+	// 인터셉터 - 특정 uri를 실행할 때 작동 됨, 서블릿(컨트롤러단)에 의해 동작하므로..
+	// AOP - 특정틀래스-메서드를 실행할 때 작동 됨, 스프링(서비스단)에서 동작한다
 	@Before("execution(public * com.miniproj.service.hboard.HBoardServiceImpl.saveBoard(..))")
 	public void startAOP(JoinPoint jp) {
 		System.out.println("============================== AOP 시작 =================================");

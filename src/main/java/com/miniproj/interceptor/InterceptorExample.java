@@ -14,7 +14,7 @@ public class InterceptorExample extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		System.out.println("인터셉터 preHnadle : boolean반환값에 따라 컨트롤러단의 해당 메서드로 제어가 돌아간다/가지 않는다");
+		//System.out.println("인터셉터 preHnadle : boolean반환값에 따라 컨트롤러단의 해당 메서드로 제어가 돌아간다/가지 않는다");
 		return super.preHandle(request, response, handler); // 부모가 가지고 있는 결과값을 호출해서 반환
 //		return true; // 반환값에 따라 컨트롤러단의 해당 메서드로 제어가 돌아간다
 //		return false; // 반환값에 따라 컨트롤러단의 해당 메서드로 제어가 돌아가지 않는다
@@ -24,7 +24,7 @@ public class InterceptorExample extends HandlerInterceptorAdapter {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
-		System.out.println("인터셉터 postHnadle========================== ");
+		//System.out.println("인터셉터 postHnadle========================== ");
 		super.postHandle(request, response, handler, modelAndView);
 	}
 
@@ -33,7 +33,7 @@ public class InterceptorExample extends HandlerInterceptorAdapter {
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
-		System.out.println("인터셉터 afterCompletion----------------------------");
+		//System.out.println("인터셉터 afterCompletion----------------------------");
 		
 	}
 	
