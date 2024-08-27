@@ -154,8 +154,10 @@ public class MemberController {
 	}
 
 	@RequestMapping("/login")
-	public void loginGET() {
-
+	public void loginGET( HttpSession ses) {
+		if(ses.getAttribute("destPath") != null) {
+			ses.removeAttribute("destPath");
+		}
 	}
 
 	@RequestMapping(value = "/loginPOST", method = RequestMethod.POST)
@@ -166,7 +168,11 @@ public class MemberController {
 		
 		try {
 			MemberVO loginMember = mService.login(loginDTO);
+			
 			if (loginMember != null) {
+				if (loginMember.getIslock().equals("Y")) {
+					System.out.println("계정이 잠김 유저가 로그인 : " + loginMember.getUserId());
+				}
 				System.out.println("MemberController : 로그인 성공~");
 				// 모델에 로그인정보 바인딩해서 인터셉터로 이동~
 				model.addAttribute("loginMember", loginMember);
@@ -192,5 +198,11 @@ public class MemberController {
 		System.out.println("로그아웃 이후의 세션 : " + session.getId());
 		return "redirect:/";
 
+	}
+	
+	@RequestMapping("/reAuth")
+	public String showReAuth() {
+		
+		return "/member/reAuth";
 	}
 }
