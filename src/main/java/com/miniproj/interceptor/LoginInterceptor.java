@@ -38,9 +38,10 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 			throws Exception {
 		boolean isLoginPageShow = false;
 		HttpSession ses = request.getSession();
+		
 		// 요청이 GET방식일 때만 수행한다
 		if (request.getMethod().toUpperCase().equals("GET")) {
-			System.out.println("[LoginInterceptor preHandle()호출]");
+			// System.out.println("[LoginInterceptor preHandle()호출]");
 			// 이미 로그인이 된 경우 로그인 페이지를 보여줄 필요가 없다
 			// 쿠키가 존재하지 않는다면 로그인페이지로 이동
 			if (request.getParameter("redirectUrl") !=null) {
@@ -87,26 +88,34 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 		
+		HttpSession ses = request.getSession(); // 로그인요청으로부터 세션을 얻어온다...
+		
 		// 포스트방식으로 호출됐을 때만 이 인터셉트가 실행됨
 		if (request.getMethod().toUpperCase().equals("POST")) {
-			System.out.println("[LoginInterceptor postHandle()호출]");
+			// System.out.println("[LoginInterceptor postHandle()호출]");
 			Map<String, Object> model = modelAndView.getModel();
 			MemberVO loginMember = (MemberVO) model.get("loginMember");
 			
 			if (loginMember != null) {
-				System.out.println("[LoginInterceptor postHandle() : 로그인 성공]");
-				HttpSession ses = request.getSession(); // 로그인요청으로부터 세션을 얻어온다...
-				ses.setAttribute("loginMember", loginMember); // 로그인한 유저의 정보를 세션에 저장
+				// System.out.println("[LoginInterceptor postHandle() : 로그인 성공]");
 				
-				// request에서 자동로그인 체크 여부 확인(로그인 성공한 사람) > 쿠키에 저장
-				if(request.getParameter("remember")!=null) { // getParameter : on/null
-					saveAutoLoginInfo(request, response); // 자동로그인 정보 저장 메서드
+				if (loginMember.getIslock().equals("Y")) {
+					System.out.println("인터셉터 : 계정이 잠김 유저가 로그인 : " + loginMember.getUserId());
+					ses.setAttribute("destPath", "/member/reAuth");
+				} else {// 계정이 잠기지 않은 유저
+					ses.setAttribute("loginMember", loginMember); // 로그인한 유저의 정보를 세션에 저장
+					
+					// request에서 자동로그인 체크 여부 확인(로그인 성공한 사람) > 쿠키에 저장
+					if(request.getParameter("remember")!=null) { // getParameter : on/null
+						saveAutoLoginInfo(request, response); // 자동로그인 정보 저장 메서드
+					}
 				}
 				
 				Object tmp = ses.getAttribute("destPath");
 				response.sendRedirect((tmp==null)? "/" : (String)tmp);
+				
 			} else {
-				System.out.println("[LoginInterceptor postHandle() : 로그인 실패]");
+				// System.out.println("[LoginInterceptor postHandle() : 로그인 실패]");
 				response.sendRedirect("/member/login?status=fail");
 			} 
 		}
