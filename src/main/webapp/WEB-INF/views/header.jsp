@@ -19,10 +19,11 @@
 	border: 2px solid #595959;
 	padding: 4px;
 }
+
 .userArea {
-	display : flex;
+	display: flex;
 	align-items: center;
-	color : rgba(255, 255, 255, 0.55)
+	color: rgba(255, 255, 255, 0.55)
 }
 </style>
 </head>
@@ -44,11 +45,12 @@
 
 					<c:choose>
 						<c:when test="${sessionScope.loginMember != null }">
-							<li class="nav-item userArea"><img
-								src="/resources/userImg/${sessionScope.loginMember.userImg }"
-								class="userProfile" /> <span class="userName">
-									${sessionScope.loginMember.userName} </span> <a class="nav-link"
-								href="/member/logout" style="margin-left:4px">로그아웃</a></li>
+							<li class="nav-item userArea">
+									<a href="/member/myPage"/> <span class="userName">
+											${sessionScope.loginMember.userName} </span></a>
+								<a class="nav-link" href="/member/logout"
+								style="margin-left: 4px">로그아웃</a>
+							</li>
 						</c:when>
 						<c:otherwise>
 							<li class="nav-item"><a class="nav-link"
