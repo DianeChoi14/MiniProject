@@ -392,3 +392,5 @@ commit;
 ALTER TABLE `webdiane`.`member` 
 ADD COLUMN `islock` VARCHAR(1) NULL DEFAULT 'N' AFTER `allimit`;
 
+-- 계정을 비활성화하는 쿼리문
+update member set islock ='Y' where userId='doolyk';
