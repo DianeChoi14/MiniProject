@@ -13,6 +13,19 @@
 	$(function() {
 		// window.onload()와 같다
 		showBasicInfo();
+		
+		$('#msgContent').keyup(function(evt){
+			let val = $(this).val();
+			
+			
+			$('.curLength').html(val.length);
+			
+			if(evt.keyCode == 13) {
+				
+				alert(val);
+			}
+			
+		});
 	});
 
 	function showBasicInfo() {
@@ -70,6 +83,39 @@
 		$('#receiveUser').html(output);
 		
 	}
+	
+	function send() {
+		let sender = '${sessionScope.loginMember.userId}';
+		let receiver = $('#receiveUser').val();
+		let msgContent = $('#msgContent').val();
+		let message = {
+				"sender" : sender,
+				"receiver" : receiver,
+				"msgContent" : msgContent
+		}
+		
+		console.log(message);
+		
+		$.ajax({
+			url : '/message/send', 	
+			type : 'post', 
+			data : JSON.stringify(message),
+			dataType : 'json',				
+			headers : {
+				'Content-Type' : 'application/json'
+			},
+			async : false, 
+			success : function(data) { 	
+				console.log(data);
+				if(data.resultCode==200) {
+					alert("쪽지 발송 성공");
+				}
+			},
+			error : function(data) {
+				console.log(data);
+			}
+		});
+	}
 </script>
 <style>
 .msgInputArea {
@@ -120,12 +166,14 @@
 					onclick="showMessage();">쪽지</a>
 					<div class="message">
 						<div class="msgInputArea">
-						<select id="receiveUser"> <!-- 동적 바인딩 :  -->
-							
-						</select>
-							<input type="text" class="form-control" id="msgContent"
-								placeholder="메시지 내용~..." /> <img
-								src="/resources/images/saveReply.png" onclick="" />
+						<div class="msgContentLength"><span class="curLength"></span> / 100 </div>
+						<div class="msgInputBody">
+							<select id="receiveUser">
+								<!-- 동적 바인딩 :  -->
+							</select> 
+							<input type="text" class="form-control" id="msgContent" placeholder="메시지 내용..." />
+							<img src="/resources/images/sendMessage.png" onclick="send()" />
+						</div>		
 						</div>
 					</div></li>
 			</ul>

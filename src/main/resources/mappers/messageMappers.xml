@@ -6,5 +6,9 @@
 	<select id="getFriends" resultType="com.miniproj.model.FriendVO">
 		select userId as friendId, userName as friendName from member where userId != #{userId}
 	</select>
+	<!-- 보낸 메세지를 DB에 insert하는 쿼리문 -->
+    <insert id="sendMessage">
+       insert into message(sender, receiver, msgContent) values (#{sender}, #{receiver}, #{msgContent})
+    </insert>
 </mapper>
 
