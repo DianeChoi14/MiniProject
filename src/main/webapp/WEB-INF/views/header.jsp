@@ -46,7 +46,10 @@
 					<c:choose>
 						<c:when test="${sessionScope.loginMember != null }">
 							<li class="nav-item userArea">
-									<a href="/member/myPage"/> <span class="userName">
+								<img
+								src="/resources/userImg/${sessionScope.loginMember.userImg }"
+								class="userProfile" />
+									<a href="/member/myPage"> <span class="userName">
 											${sessionScope.loginMember.userName} </span></a>
 								<a class="nav-link" href="/member/logout"
 								style="margin-left: 4px">로그아웃</a>
