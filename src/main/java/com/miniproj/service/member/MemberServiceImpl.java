@@ -101,4 +101,11 @@ public class MemberServiceImpl implements MemberService {
 		return mDao.checkAutoLogin(savedCookieSessionId);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public MemberVO getUserInfo(String userId) throws Exception {
+		
+		return mDao.selectMemberByUserId(userId);
+	}
+
 }

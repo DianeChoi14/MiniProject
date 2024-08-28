@@ -18,6 +18,9 @@ public interface MemberService {
 	boolean saveAutoLoginInfo(AutoLoginInfo autoLoginInfo) throws Exception;
 
 	// 자동로그인 쿠키 확인
-	MemberVO checkAutoLogin(String savedCookieSessionId)  throws Exception;
+	MemberVO checkAutoLogin(String savedCookieSessionId) throws Exception;
+
+	// 아이디로 유저의 정보를 얻어오는 메서드
+	MemberVO getUserInfo(String userId) throws Exception;
 	
 }

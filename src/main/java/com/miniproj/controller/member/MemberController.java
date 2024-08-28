@@ -205,4 +205,21 @@ public class MemberController {
 		
 		return "/member/reAuth";
 	}
+	
+	@RequestMapping("/myPage")
+	public String showMyPage(HttpSession ses, Model model) {
+		// MemberVO가 DB와 세션에 저장된 정보에 차이가 있기 때문에 서비스단을 불러온다
+		// insert/update/delete된 정보를 불러올 때를 대비해서 MemberVO를 만들어 둔다... 
+		MemberVO member = (MemberVO) ses.getAttribute("loginMember");
+		try {
+			member = mService.getUserInfo(member.getUserId());
+			model.addAttribute("memberInfo", member);
+		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "/member/myPage";
+	}
 }
