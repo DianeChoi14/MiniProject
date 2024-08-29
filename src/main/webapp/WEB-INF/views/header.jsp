@@ -45,15 +45,15 @@
 
 					<c:choose>
 						<c:when test="${sessionScope.loginMember != null }">
-							<li class="nav-item userArea">
-								<img
+							<li class="nav-item userArea"><img
 								src="/resources/userImg/${sessionScope.loginMember.userImg }"
-								class="userProfile" />
-									<a href="/member/myPage"> <span class="userName">
-											${sessionScope.loginMember.userName} </span></a>
-								<a class="nav-link" href="/member/logout"
-								style="margin-left: 4px">로그아웃</a>
-							</li>
+								class="userProfile" /> <a href="/member/myPage"> <span
+									class="userName"> ${sessionScope.loginMember.userName} </span>
+									<c:if test="${sessionScope.unReadMsgCnt != null}">
+										<span class="badge bg-danger">${sessionScope.unReadMsgCnt}</span>
+									</c:if>
+							</a> <a class="nav-link" href="/member/logout"
+								style="margin-left: 4px">로그아웃</a></li>
 						</c:when>
 						<c:otherwise>
 							<li class="nav-item"><a class="nav-link"
