@@ -44,6 +44,8 @@
 		class="com.miniproj.interceptor.LoginInterceptor"></beans:bean>
 	<beans:bean id="authInterceptor"
 		class="com.miniproj.interceptor.AuthInterceptor"></beans:bean>		
+	<beans:bean id="messageInterceptor"
+		class="com.miniproj.interceptor.MessageConfirmInterceptor"></beans:bean>		
 	
 	<!-- 인터셉터가 동작하는 매핑주소 설정(uri) -->
 	<!-- '/sampleInterceptor'로 매핑이 들어오면 sampleInterceptor객체가 동작하도록 함 -->
@@ -57,7 +59,24 @@
 			<mapping path="/member/loginPOST"/>
 			<beans:ref bean="loginInterceptor"/>
 		</interceptor>
-		
+		<!-- 아래의 uri에 접근해있고 로그인을 했다면 본인에게 온 쪽지의 갯수를 가져와 출력하게한다 -->
+		<interceptor>
+			<mapping path="/" />
+			<mapping path="/hboard/saveBoard"/> <!-- 글작성 -->
+			<mapping path="/hboard/modifyBoard"/> <!-- 글/답글 수정 -->
+			<mapping path="/hboard/removeBoard"/> <!-- 글/답글 삭제 -->
+			<mapping path="/hboard/showReplyForm"/> <!-- 답글작성 -->
+			<mapping path="/hboard/viewBoard"/> 
+			<mapping path="/hboard/listAll"/> 
+			
+			<mapping path="/rboard/showSaveBoardForm"/> <!-- 댓글형게시판 글작성 -->
+			<mapping path="/rboard/modifyBoard"/> <!-- 댓글형게시판 글수정 -->
+			<mapping path="/rboard/listAll"/> 
+			<mapping path="/rboard/viewBoard"/> 
+			
+			<mapping path="/member/myPage"/> <!-- 마이페이지 -->
+			<beans:ref bean="messageInterceptor" />
+		</interceptor>
 		<!-- 로그인 인증이 필요한 페이지 : 글작성, 글수정, 글삭제, 답글작성/삭제/수정, 관리자페이지 -->
 		<interceptor> 
 			<mapping path="/hboard/saveBoard"/> <!-- 글작성 -->
