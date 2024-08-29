@@ -10,5 +10,11 @@
     <insert id="sendMessage">
        insert into message(sender, receiver, msgContent) values (#{sender}, #{receiver}, #{msgContent})
     </insert>
+    <select id="getMessages" resultType="com.miniproj.model.MessageVO">
+    	select msgId, sender, msgContent, msgWrittenDate from message where receiver=#{receiver} order by msgId desc
+    </select>
+    <update id="updateIsRead">
+    	update message set isRead='Y' where msgId=#{msgId};
+    </update>
 </mapper>
 

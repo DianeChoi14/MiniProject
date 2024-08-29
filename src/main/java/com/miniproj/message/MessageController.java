@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.miniproj.model.FriendVO;
 import com.miniproj.model.MessageDTO;
+import com.miniproj.model.MessageVO;
 import com.miniproj.model.MyResponseWithData;
 import com.miniproj.model.ResponseType;
 
@@ -56,5 +57,20 @@ public class MessageController {
 			result = new ResponseEntity(MyResponseWithData.fail(), HttpStatus.BAD_REQUEST);
 		}
 		return result;
+	}
+	
+	@GetMapping(value="/receive/{userId}")
+	public ResponseEntity getReceivedMsg(@PathVariable("userId") String receiver) {
+		System.out.println(receiver + "에게 온 쪽지를 가져오자.....");
+		ResponseEntity result = null;
+		try {
+			List<MessageVO> list = msgService.getReceivedMessages(receiver);
+			result = new ResponseEntity(MyResponseWithData.success(list), HttpStatus.OK);
+		} catch (Exception e) {
+			result = new ResponseEntity(MyResponseWithData.fail(), HttpStatus.BAD_REQUEST);
+		}
+		
+		return result;
+				
 	}
 }
