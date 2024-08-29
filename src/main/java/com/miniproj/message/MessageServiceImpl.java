@@ -44,4 +44,11 @@ public class MessageServiceImpl implements MessageService {
 		}
 		return lst;
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public int getMessageCount(String userId) throws Exception {
+
+		return msgDao.selectMessagesCount(userId);
+	}
 }

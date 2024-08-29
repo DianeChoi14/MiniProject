@@ -13,5 +13,7 @@ public interface MessageDAO {
 
 	List<MessageVO> selectMessages(String receiver) throws Exception;
 
-	int updateIsRead(int msgId);
+	int updateIsRead(int msgId) throws Exception;
+
+	int selectMessagesCount(String userId) throws Exception;
 }
