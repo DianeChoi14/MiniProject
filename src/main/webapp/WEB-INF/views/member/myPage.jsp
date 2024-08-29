@@ -79,6 +79,7 @@
 	}
 	
 	function outputMessage(data) {
+		
 		let output = `<table class="table table-striped">`;
 		output += `<thead><tr><th>#</th><th>보낸사람</th><th>내용</th><th>시간</th></tr></thead>`;
 		output += `<tbody>`;
@@ -88,7 +89,8 @@
 			output += `<td>\${msg.msgId}</td>`;
 			output += `<td>\${msg.sender}</td>`;
 			output += `<td>\${msg.msgContent}</td>`;
-			output += `<td>\${msg.msgWrittenDate}</td>`;
+			let betweenTime = msgDate(msg.msgWrittenDate);
+			output += `<td>\${betweenTime}</td>`;
 			output += `</tr>`;			
 		});
 
@@ -96,6 +98,33 @@
 	    
 		$('.outputMsgArea').html(output)
 	}
+	
+	// 쪽지작성일시를 방금전, n분 전, n시간 전.. 의 형식으로 출력
+	function msgDate(writtenDate) {
+	      const msgDate = new Date(writtenDate);  // 댓글 작성시간
+	      const now = new Date();  // 현재 시간
+	      
+	      let diff = (now-msgDate) / 1000; // 시간 차 (초단위)
+	      
+	      const times = [
+	         {name : "일", time : 60 * 60 * 24},
+	         {name : "시간", time : 60 * 60},
+	         {name : "분", time : 60}
+	      ];
+	      
+	      for (let val of times) {
+	         let betweenTime = Math.floor(diff / val.time);
+	         console.log(writtenDate, diff, betweenTime);
+	         
+	         if (betweenTime > 0 && val.name != "일") {  // 하루보다 크지 않다면..
+	            return betweenTime + val.name + "전";
+	         } else if (betweenTime > 0 && val.name == "일") { // 하루보다 큰 값이라면 그냥 작성일 출력
+	            return msgDate.toLocaleString();
+	         }
+	      }
+	      
+	      return "방금전"; 
+		}
 	
 	function getReceiveUsers() {
 		// 쪽지를 보낼 수 있는 유저의 목록을 가져옴
