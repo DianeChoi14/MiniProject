@@ -9,6 +9,10 @@
 <title>Insert title here</title>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbit&display=swap"
+	rel="stylesheet">
 <script>
 		// 검색버튼을 눌렀을 때 searchType가 -1이거나 searchWord가 '' 이면 검색어가 제대로 입력되지 않았으므로
 		//백엔드단으로 데이터를 넘기지 않는다.
@@ -118,7 +122,14 @@
 			});
 		}; 
 	</script>
-
+<style>
+* {
+	font-family: "Orbit", sans-serif; <!-- 띄어쓰기가 특수문자가 있을 수 있으므로 ""로 묶임, 앞의 폰트가 사용할 수 없을 경우 뒤으 폰트로 적용됨-->
+	font-weight: 400;
+	font-style: normal ;
+	
+}
+</style>
 </head>
 <body>
 	<div class="container"></div>
