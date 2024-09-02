@@ -121,4 +121,9 @@ public class HomeController
 		
 		System.out.println("sampleInterceptor() 호출!!!!!");
 	}
+	
+	@RequestMapping("/chartEx1")
+	public String showChartPage() {
+		return "/chartEx2" ;
+	}
 }

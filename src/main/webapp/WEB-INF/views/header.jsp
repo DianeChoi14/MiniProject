@@ -41,6 +41,9 @@
 						href="/hboard/listAll">계층형 게시판</a></li>
 					<li class="nav-item"><a class="nav-link"
 						href="/rboard/listAll">댓글형 게시판</a></li>
+						
+					<li class="nav-item"><a class="nav-link"
+						href="/chartEx1">차트연습</a></li>
 
 
 					<c:choose>
