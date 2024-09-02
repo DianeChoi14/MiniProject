@@ -199,4 +199,9 @@
 			and boardType='hboard'
 			order by ref desc, refOrder asc limit #{startRowIndex}, #{viewPostCntPerPage}
 	</select>
+	
+	<!-- 차트 연습 -->
+	<select id="getSeoulTemp" resultType="com.miniproj.model.SeoulTempVO">
+		SELECT * FROM seoultemp where writtenDate like '2023%';
+	</select>
 </mapper>

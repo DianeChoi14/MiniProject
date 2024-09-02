@@ -16,6 +16,7 @@ import com.miniproj.model.HBoardVO;
 import com.miniproj.model.HReplyBoardDTO;
 import com.miniproj.model.PagingInfo;
 import com.miniproj.model.SearchCriteriaDTO;
+import com.miniproj.model.SeoulTempVO;
 
 @Repository // 아래의 클래스가 dao객체임을 명시
 public class HBoardDAOImpl implements HBoardDAO 
@@ -202,6 +203,13 @@ public class HBoardDAOImpl implements HBoardDAO
 		params.put("viewPostCntPerPage", pi.getViewPostCntPerPage());
 		
 		return ses.selectList(NS + ".getSearchBoardWithPaging", params);
+	}
+
+
+	@Override
+	public List<SeoulTempVO> getSeoulTemp() throws Exception {
+		
+		return ses.selectList(NS + ".getSeoulTemp");
 	}
 	
 	

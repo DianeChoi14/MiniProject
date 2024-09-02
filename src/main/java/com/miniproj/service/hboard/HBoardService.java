@@ -10,6 +10,7 @@ import com.miniproj.model.HBoardVO;
 import com.miniproj.model.HReplyBoardDTO;
 import com.miniproj.model.PagingInfoDTO;
 import com.miniproj.model.SearchCriteriaDTO;
+import com.miniproj.model.SeoulTempVO;
 
 //// Service단에서 해야할 작업
 //1) Controller단에서 넘겨진 파라미터를 처리한 후(비즈니스 로직에 의해(트랜잭션처리를 통해))
@@ -53,6 +54,9 @@ public interface HBoardService
 
 	// 인기글 5개 가져오기
 	public List<HBoardVO> getPopularBoards() throws Exception;
+
+	// 차트연습
+	public List<SeoulTempVO> getSeoulTemp() throws Exception;
 
 	// 게시판 페이징
 
