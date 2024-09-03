@@ -140,4 +140,9 @@ public class HomeController
 		}
 		return result;
 	}
+	
+	@RequestMapping("/mapEx1")
+	public String showMapEx1() {
+		return "/tour/tourList";
+	}
 }
