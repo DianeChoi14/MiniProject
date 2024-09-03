@@ -145,4 +145,9 @@ public class HomeController
 	public String showMapEx1() {
 		return "/tour/tourList";
 	}
+	
+	@RequestMapping("/tourSub")
+	public String showMapEx1Sub() {
+		return "/tour/tourSub";
+	}
 }
