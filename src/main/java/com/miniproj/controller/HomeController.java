@@ -30,9 +30,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 
+import com.google.gson.Gson;
 import com.miniproj.model.HBoardVO;
 import com.miniproj.model.MyResponseWithData;
 import com.miniproj.model.MyResponseWithoutData;
+import com.miniproj.model.SearchBookJSON;
 import com.miniproj.service.hboard.HBoardService;
 
 import javax.servlet.http.Cookie;
@@ -189,11 +191,17 @@ public class HomeController
         String responseBody = get(apiURL,requestHeaders); // url과 id secret을 담아서 보냄 > 응답 : json문자열
 
         System.out.println(responseBody);
-        
+        makeJavaObject(responseBody);
         // 이 응답결과는 DB에 존재하지 않으므로 insert시키자 > DTO객체로 만들자 : json문자열을 자바객체로 만든다
         return responseBody;
 	}
 	
+	private void makeJavaObject(String responseBody) {
+		Gson gson = new Gson();
+		SearchBookJSON obj = gson.fromJson(responseBody, SearchBookJSON.class);
+		System.out.println(obj.toString());
+	}
+
 	private String get(String apiUrl, Map<String, String> requestHeaders){
         HttpURLConnection con = connect(apiUrl);
         try {
@@ -253,4 +261,5 @@ public class HomeController
             throw new RuntimeException("API 응답을 읽는 데 실패했습니다.", e);
         }
     }
+
 }
