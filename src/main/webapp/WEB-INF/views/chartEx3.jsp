@@ -6,19 +6,14 @@
 <head>
 <meta charset="UTF-8">
 <title>INDEX</title>
-<script
-   src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<!-- font -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=538f5a0703238f35c77384fc3289d2f7"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link
-   href="https://fonts.googleapis.com/css2?family=Dongle:wght@300;400;700&display=swap"
-   rel="stylesheet">
-<!-- ------------------------------------------------------------------------------------- -->
-
-<!-- chart library -->
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<!-- ------------------------------------------------------------------------------------- -->
+<link href="https://fonts.googleapis.com/css2?family=Diphylleia&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 </head>
 <script>
 google.charts.load('current', {'packages':['line']});
