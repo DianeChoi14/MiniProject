@@ -1,10 +1,21 @@
 package com.miniproj.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +26,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.miniproj.model.HBoardVO;
@@ -150,4 +163,94 @@ public class HomeController
 	public String showMapEx1Sub() {
 		return "/tour/tourSub";
 	}
+	
+	@RequestMapping("/bookSearch")
+	public String showBookSearch() {
+		return "/bookSearch";
+	}
+	
+	@RequestMapping(value="/searchBook", produces = "application/json; charset=utf-8")
+	public @ResponseBody String searchBook(@RequestParam("searchValue") String query) {
+		System.out.println(query + "책의 검색결과를 찾아보자~");
+		String clientId = "_hhwmA2RY2Kci1filIV5"; //애플리케이션 클라이언트 아이디
+        String clientSecret = "eXFNzAVgpU"; //애플리케이션 클라이언트 시크릿
+        String text = null;
+        try {
+            text = URLEncoder.encode(query, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("검색어 인코딩 실패", e);
+        }
+        String apiURL = "https://openapi.naver.com/v1/search/book.json?query=" + text; // json을 요청할 api주소
+        
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("X-Naver-Client-Id", clientId);
+        requestHeaders.put("X-Naver-Client-Secret", clientSecret);
+        
+        String responseBody = get(apiURL,requestHeaders); // url과 id secret을 담아서 보냄 > 응답 : json문자열
+
+        System.out.println(responseBody);
+        
+        // 이 응답결과는 DB에 존재하지 않으므로 insert시키자 > DTO객체로 만들자 : json문자열을 자바객체로 만든다
+        return responseBody;
+	}
+	
+	private String get(String apiUrl, Map<String, String> requestHeaders){
+        HttpURLConnection con = connect(apiUrl);
+        try {
+            con.setRequestMethod("GET"); // 통신방식 GET으로 지정
+            
+            // Map을 반복하기 위해 Map.Entry<K,V>사용
+            // 반복하여 request객체의 속성에 넣어줌
+            for(Map.Entry<String, String> header : requestHeaders.entrySet()) {
+                con.setRequestProperty(header.getKey(), header.getValue()); // api서버에 접속하기 위한 requestHeaders의 아이디와 비밀번호 요청
+            }
+
+            int responseCode = con.getResponseCode(); // api서버에 접속하여 응답코드를 얻어 옴
+            if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
+                return readBody(con.getInputStream()); // 내 컴퓨터CPU로 (네이버API서버가 보내주는/응답하는)들어오는 2진 데이터 > readBody() 호출
+            } else { // 오류 발생
+                return readBody(con.getErrorStream());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("API 요청과 응답 실패", e);
+        } finally {// try catch여부와 상관없이 실행됨
+            con.disconnect(); // api접속 해제
+        }
+    }
+	
+	// apiURL 주소로부터 그 주소의 서버에 접속할 수 있는 connection객체를 얻어서 반환해줌
+	private HttpURLConnection connect(String apiUrl){
+        try {
+            URL url = new URL(apiUrl); // String으로 된 서버의 주소를 실제 url객체로 만듦
+            return (HttpURLConnection)url.openConnection(); // URLConnection : DB에서 
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("API URL이 잘못되었습니다. : " + apiUrl, e);
+        } catch (IOException e) {
+            throw new RuntimeException("연결이 실패했습니다. : " + apiUrl, e);
+        }
+    }
+	
+    private String readBody(InputStream body){
+        // Reader : 한 글자씩 읽음, 다른 작업 불가
+    	InputStreamReader streamReader = null;
+		try {
+			streamReader = new InputStreamReader(body, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+        
+
+        try (BufferedReader lineReader = new BufferedReader(streamReader)) { // try (객체) : 객체를 만드는데 성공한다면 실행문 실행
+        	// BufferedReader메모리에서 읽은 글자를 조합해서 반환, 다른 작업 가능
+            StringBuilder responseBody = new StringBuilder(); // StringBuilder객체 생성
+            String line;
+            while ((line = lineReader.readLine()) != null) { // 데이터의 끝이 아닐동안 반복하면서 읽음
+                responseBody.append(line);
+            }
+            return responseBody.toString(); // json문자열
+        } catch (IOException e) {
+            throw new RuntimeException("API 응답을 읽는 데 실패했습니다.", e);
+        }
+    }
 }
