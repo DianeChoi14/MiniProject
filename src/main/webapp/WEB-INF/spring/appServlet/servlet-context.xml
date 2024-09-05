@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans
-	xmlns="http://www.springframework.org/schema/mvc"
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 	<!-- 서블릿 객체를 관리하는 설정파일 -->
@@ -15,6 +16,9 @@
 	<!-- Enables the Spring MVC @Controller programming model : @Controller 
 		어노테이션 방식으로 설정하겠다 -->
 	<annotation-driven />
+	
+<!-- 예약스케줄러를 어노테이션 방식으로 동작시키겠다
+	<task:annotation-driven scheduler="scheduler"/> -->
 
 	<!-- 정적인 파일(css, javascript, image 등)을 /resources 폴더 아래 위치하게 하고 /resources/**로 
 		매핑한다 -->
