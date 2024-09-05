@@ -30,7 +30,8 @@
 	$(function() {
 		getTour();
 		getAdditionalImages();
-		$('.next').click(function(){
+		/* $('.next').click(function(){
+			
 			$('.carousel-item').eq(slideNo).removeClass('active');
 			$('.carousel-indicators').eq(slideNo).removeClass('active');
 			$('.carousel-indicators').eq(slideNo).removeAttr('aria-current');
@@ -55,7 +56,7 @@
 			$('.carousel-item').eq(--slideNo).addClass('active');
 			$('.carousel-indicators').eq(slideNo).addClass('active');
 			$('.carousel-indicators').eq(slideNo).removeAttr('aria-current');
-		});
+		}); */
 	});
 
 	function getTour() {
@@ -107,17 +108,25 @@
 		let output = '';
 		let indicatorOutput = '';
 		$.each(images, function(i, image){
-			output += `<div class="carousel-item">`;
+			if(i==0){
+				output += `<div class="carousel-item active">`;
+				indicatorOutput +=`<button type="button" data-bs-target="#carousel" data-bs-slide-to="\${i}" class="active"></button>`;
+				
+			} else {
+				output += `<div class="carousel-item">`;
+				indicatorOutput +=`<button type="button" data-bs-target="#carousel" data-bs-slide-to="\${i}"></button>`;
+			}
+			
 			output += `<img src="\${image.originimgurl}" alt="\${image.imgname}" class="d-block w-100">`;
 			output += `</div>`;
-			indicatorOutput +=`<button type="button" data-bs-target="#carousel" data-bs-slide-to="\${i}"></button>`;
+/* 			indicatorOutput +=`<button type="button" data-bs-target="#carousel" data-bs-slide-to="\${i}"></button>`; */
 
 		});
 		$('.carousel-inner').html(output);
-		$('.carousel-item').eq(slideNo).addClass('active');
+/* 		$('.carousel-item').eq(slideNo).addClass('active'); */
 		$('.carousel-indicators').html(indicatorOutput);
-		$('.carousel-indicators button').eq(slideNo).addClass('active');
-		$('.carousel-indicators button').eq(slideNo).attr("aria-current", "true");
+/* 		$('.carousel-indicators button').eq(slideNo).addClass('active');
+		$('.carousel-indicators button').eq(slideNo).attr("aria-current", "true"); */
 	}
 
 	function showMap(mapx, mapy, mlevel) {
@@ -140,6 +149,13 @@
 	}
 </script>
 <style>
+.carousel-inner {
+	display : flex;
+	align-items : center;
+	width : 500px;
+	height : 400 px;
+	
+}
 </style>
 
 </head>
