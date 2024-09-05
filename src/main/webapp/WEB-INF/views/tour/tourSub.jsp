@@ -149,7 +149,7 @@
 	}
 </script>
 <style>
-.carousel-inner {
+.slide {
 	display : flex;
 	align-items : center;
 	width : 500px;
