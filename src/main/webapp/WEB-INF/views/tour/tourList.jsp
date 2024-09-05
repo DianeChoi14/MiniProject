@@ -29,7 +29,7 @@
 	function getTourList() {
 		$('.loading').show();
 		$.ajax({
-					url : `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=\${serviceKey}&numOfRows=20&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=A&contentTypeId=39&areaCode=1`,
+					url : `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=\${serviceKey}&numOfRows=20&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=A&contentTypeId=12&areaCode=1`,
 					type : 'GET',
 					dataType : 'json',
 					success : function(data) {
