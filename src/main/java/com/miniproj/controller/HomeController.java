@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import com.miniproj.model.MyResponseWithData;
 import com.miniproj.model.MyResponseWithoutData;
 import com.miniproj.model.SearchBookJSON;
 import com.miniproj.service.hboard.HBoardService;
+import com.miniproj.util.PropertiestTask;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -61,6 +63,15 @@ public class HomeController
 		if(ses.getAttribute("destPath") != null) {
 			ses.removeAttribute("destPath");
 		}
+		
+		// properties에서 설정파일을 불러오기(아이디와 비밀번호 key들을 저장해놓고 불러오기 위한 용도)
+		try {
+			System.out.println(PropertiestTask.getPropertiesValue("key"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
